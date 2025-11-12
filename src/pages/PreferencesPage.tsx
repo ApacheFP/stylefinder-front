@@ -52,45 +52,45 @@ const PreferencesPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-8">
-        <h1 className="text-2xl font-bold text-center text-gray-900 mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
+      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        <h1 className="text-xl md:text-2xl font-bold text-center text-gray-900 mb-6 md:mb-8">
           Your Preferences
         </h1>
 
         {/* Gender Selection */}
-        <div className="mb-8">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+        <div className="mb-6 md:mb-8">
+          <label className="block text-sm md:text-base font-medium text-gray-700 mb-3">
             Gender
           </label>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-3 md:gap-4">
             {(['man', 'woman', 'non-binary'] as const).map((gender) => (
-              <label key={gender} className="flex items-center cursor-pointer">
+              <label key={gender} className="flex items-center cursor-pointer min-h-[44px] min-w-[44px]">
                 <input
                   type="radio"
                   name="gender"
                   value={gender}
                   checked={preferences.gender === gender}
                   onChange={() => handleGenderChange(gender)}
-                  className="mr-2 text-primary focus:ring-primary"
+                  className="mr-2 w-4 h-4 text-primary focus:ring-primary"
                 />
-                <span className="capitalize">{gender}</span>
+                <span className="capitalize text-sm md:text-base">{gender}</span>
               </label>
             ))}
           </div>
         </div>
 
         {/* Favorite Styles */}
-        <div className="mb-8">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+        <div className="mb-6 md:mb-8">
+          <label className="block text-sm md:text-base font-medium text-gray-700 mb-3">
             Favorite Styles
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 md:gap-3">
             {STYLES.map((style) => (
               <button
                 key={style}
                 onClick={() => toggleStyle(style)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-colors active:scale-95 ${
                   preferences.favoriteStyles.includes(style)
                     ? 'bg-blue-100 text-primary border-2 border-primary'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -103,16 +103,16 @@ const PreferencesPage = () => {
         </div>
 
         {/* Favorite Colors */}
-        <div className="mb-8">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
+        <div className="mb-6 md:mb-8">
+          <label className="block text-sm md:text-base font-medium text-gray-700 mb-3">
             Favorite Colors
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 md:gap-3">
             {COLORS.map((color) => (
               <button
                 key={color}
                 onClick={() => toggleColor(color)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-colors active:scale-95 ${
                   preferences.favoriteColors.includes(color)
                     ? 'bg-blue-100 text-primary border-2 border-primary'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -125,7 +125,7 @@ const PreferencesPage = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           <Button
             variant="outline"
             size="lg"

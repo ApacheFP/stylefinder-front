@@ -35,12 +35,12 @@ const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
     ref
   ) => {
   return (
-    <div className="px-8 py-5 bg-background border-t border-border">
+    <div className="px-4 sm:px-8 py-4 sm:py-5 bg-background border-t border-border">
       <div className="max-w-[900px] mx-auto">
-        {/* Filters */}
-        <div className="flex gap-4 mb-4 items-center justify-center">
+        {/* Filters - Stack on mobile, row on desktop */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 items-stretch sm:items-center justify-center">
           {/* Budget */}
-          <div className="flex flex-col items-center gap-1.5">
+          <div className="flex flex-col items-center gap-1.5 flex-1 sm:flex-initial">
             <label className="text-[13px] font-roboto font-bold text-text-medium">
               Budget Max
             </label>
@@ -54,7 +54,7 @@ const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
                 })
               }
               disabled={hasMessages}
-              className={`w-32 px-4 py-3 font-inter text-[13px] text-text-dark placeholder:text-text-muted border border-border-input rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary ${
+              className={`w-full sm:w-32 px-4 py-3 font-inter text-[13px] text-text-dark placeholder:text-text-muted border border-border-input rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary ${
                 hasMessages ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''
               }`}
               placeholder="e.g. '150'"
@@ -62,7 +62,7 @@ const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
           </div>
 
           {/* Outfit Type */}
-          <div className="flex flex-col items-center gap-1.5">
+          <div className="flex flex-col items-center gap-1.5 flex-1 sm:flex-initial">
             <label className="text-[13px] font-roboto font-bold text-text-medium">
               Outfit Type
             </label>
@@ -76,7 +76,7 @@ const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
                   })
                 }
                 disabled={hasMessages}
-                className={`w-28 px-4 py-3 pr-10 font-inter text-[14px] text-text-dark border border-border-input rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary appearance-none bg-white ${
+                className={`w-full sm:w-28 px-4 py-3 pr-10 font-inter text-[14px] text-text-dark border border-border-input rounded-[20px] focus:outline-none focus:ring-2 focus:ring-primary appearance-none bg-white ${
                   hasMessages ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'cursor-pointer'
                 }`}
               >
@@ -93,11 +93,11 @@ const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
 
         {/* Item Selection - Only show when Partial is selected */}
         {filters.outfitType === 'partial' && (
-          <div className="mb-3 bg-[#F8F9FA] border border-border rounded-2xl px-8 py-2.5">
-            <p className="text-center text-[14px] font-roboto font-medium text-text-dark mb-2.5">
+          <div className="mb-3 bg-[#F8F9FA] border border-border rounded-2xl px-4 sm:px-8 py-2.5">
+            <p className="text-center text-[13px] sm:text-[14px] font-roboto font-medium text-text-dark mb-2.5">
               Select the items of interest:
             </p>
-            <div className="flex gap-5 items-center justify-center flex-wrap">
+            <div className="flex gap-3 sm:gap-5 items-center justify-center flex-wrap">
               {/* Jacket / Blazer */}
               <label className={`flex items-center gap-2 ${hasMessages ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}>
                 <input

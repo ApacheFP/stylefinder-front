@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, X } from 'lucide-react';
 import type { ChatHistory } from '../../types';
 import { staggerContainer, staggerItem } from '../../utils/animations';
 
@@ -8,9 +8,18 @@ interface SidebarProps {
   currentChatId?: string;
   onSelectChat: (chatId: string) => void;
   onNewChat: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-const Sidebar = ({ chatHistory, currentChatId, onSelectChat, onNewChat }: SidebarProps) => {
+const Sidebar = ({ 
+  chatHistory, 
+  currentChatId, 
+  onSelectChat, 
+  onNewChat,
+  isOpen = true,
+  onClose
+}: SidebarProps) => {
   // Check if user is logged in (simplified check - in real app use AuthContext)
   // Toggle this between true/false to test logged in/out states
   const isLoggedIn = true; // TODO: Replace with actual auth check from useAuth()
@@ -18,7 +27,37 @@ const Sidebar = ({ chatHistory, currentChatId, onSelectChat, onNewChat }: Sideba
   if (isLoggedIn) {
     // Logged in view
     return (
-      <aside className="w-64 bg-white border-r border-border flex flex-col h-screen">
+      <>
+        {/* Mobile Overlay */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Sidebar */}
+        <motion.aside
+          initial={false}
+          animate={{
+            x: isOpen ? 0 : -280,
+          }}
+          transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+          className="fixed lg:static top-0 left-0 w-64 lg:w-64 bg-white border-r border-border flex flex-col h-screen z-50"
+        >
+          {/* Close button - only on mobile */}
+          <button
+            onClick={onClose}
+            className="lg:hidden absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            aria-label="Close sidebar"
+          >
+            <X className="w-5 h-5 text-text-dark" />
+          </button>
         {/* New Chat Button */}
         <div className="p-4">
           <motion.button
@@ -69,13 +108,44 @@ const Sidebar = ({ chatHistory, currentChatId, onSelectChat, onNewChat }: Sideba
             </motion.div>
           </div>
         </div>
-      </aside>
+        </motion.aside>
+      </>
     );
   }
 
   // Logged out view
   return (
-    <aside className="w-64 bg-white border-r border-border flex flex-col h-screen">
+    <>
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar */}
+      <motion.aside
+        initial={false}
+        animate={{
+          x: isOpen ? 0 : -280,
+        }}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className="fixed lg:static top-0 left-0 w-64 lg:w-64 bg-white border-r border-border flex flex-col h-screen z-50"
+      >
+        {/* Close button - only on mobile */}
+        <button
+          onClick={onClose}
+          className="lg:hidden absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          aria-label="Close sidebar"
+        >
+          <X className="w-5 h-5 text-text-dark" />
+        </button>
       {/* Centered content container */}
       <div className="flex-1 flex items-center justify-center">
         <div className="w-full px-6">
@@ -90,7 +160,8 @@ const Sidebar = ({ chatHistory, currentChatId, onSelectChat, onNewChat }: Sideba
           </p>
         </div>
       </div>
-    </aside>
+      </motion.aside>
+    </>
   );
 };
 

@@ -31,13 +31,13 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 border border-border">
-        <h1 className="text-2xl font-roboto font-bold text-center text-text-dark mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-border">
+        <h1 className="text-xl md:text-2xl font-roboto font-bold text-center text-text-dark mb-6">
           Create Your Account
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
           <Input
             label="Name"
             type="text"
@@ -81,7 +81,7 @@ const SignUpPage = () => {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm font-inter text-text-medium">
+        <p className="mt-6 text-center text-sm md:text-base font-inter text-text-medium">
           Already have an account?{' '}
           <Link to="/login" className="text-primary font-bold hover:underline">
             Log In

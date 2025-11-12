@@ -20,7 +20,7 @@ const ProductCard = ({ item }: ProductCardProps) => {
 
   return (
     <motion.div
-      className="bg-white rounded-xl border border-border overflow-hidden transition-all duration-500 ease-out max-w-[200px] cursor-pointer group hover:shadow-2xl hover:border-primary/30"
+      className="bg-white rounded-xl border border-border overflow-hidden transition-all duration-500 ease-out w-full sm:max-w-[200px] cursor-pointer group hover:shadow-2xl hover:border-primary/30"
       whileHover={{ scale: 1.03, y: -6 }}
       whileTap={tapScale}
       initial={{ opacity: 0, y: 20 }}

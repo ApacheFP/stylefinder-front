@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
 import { useImageUpload } from '../hooks/useImageUpload';
@@ -6,6 +6,7 @@ import { useImageUpload } from '../hooks/useImageUpload';
 // import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'; // 🔧 DISABLED
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
+import HamburgerMenu from '../components/ui/HamburgerMenu';
 import ChatEmptyState from '../components/chat/ChatEmptyState';
 import ChatMessage from '../components/chat/ChatMessage';
 import ChatMessageSkeleton from '../components/chat/ChatMessageSkeleton';
@@ -169,30 +170,26 @@ const ChatPage = () => {
   // const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
   const scrollRef = useRef<HTMLDivElement>(null);
   const handleScroll = () => {};
-  const showScrollButton = false;
-  const scrollToBottom = () => {};
+  
+  // Sidebar state for mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Close sidebar on mobile when screen resizes to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true);
+      }
+    };
+
+    handleResize(); // Check on mount
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 🔧 FEATURE DISABLED: Keyboard shortcuts (uncomment to enable)
-  // const inputRef = useRef<HTMLInputElement>(null);
-  // useKeyboardShortcuts([
-  //   {
-  //     key: 'k',
-  //     metaKey: true,
-  //     action: () => inputRef.current?.focus(),
-  //     description: 'Focus on input',
-  //   },
-  //   {
-  //     key: 'k',
-  //     ctrlKey: true,
-  //     action: () => inputRef.current?.focus(),
-  //     description: 'Focus on input (Windows/Linux)',
-  //   },
-  //   {
-  //     key: 'Escape',
-  //     action: () => inputRef.current?.blur(),
-  //     description: 'Unfocus input',
-  //   },
-  // ]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  // useKeyboardShortcuts([...]);
 
   const handleNewChat = () => {
     clearMessages();
@@ -228,12 +225,32 @@ const ChatPage = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
+      {/* Hamburger Menu - Mobile Only */}
+      <HamburgerMenu
+        isOpen={isSidebarOpen}
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
+
       {/* Sidebar */}
       <Sidebar
         chatHistory={chatHistory}
         currentChatId={currentChatId}
-        onSelectChat={handleSelectChat}
-        onNewChat={handleNewChat}
+        onSelectChat={(chatId) => {
+          handleSelectChat(chatId);
+          // Close sidebar on mobile after selection
+          if (window.innerWidth < 1024) {
+            setIsSidebarOpen(false);
+          }
+        }}
+        onNewChat={() => {
+          handleNewChat();
+          // Close sidebar on mobile after creating new chat
+          if (window.innerWidth < 1024) {
+            setIsSidebarOpen(false);
+          }
+        }}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       {/* Main Content */}

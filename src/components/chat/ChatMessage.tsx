@@ -48,8 +48,8 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
 
           {message.outfit && (
             <>
-              {/* Product Cards */}
-              <div className="grid grid-cols-3 gap-4 mb-4">
+              {/* Product Cards - Responsive Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 justify-items-center sm:justify-items-start">
                 {message.outfit.items.map((item) => (
                   <ProductCard key={item.id} item={item} />
                 ))}
