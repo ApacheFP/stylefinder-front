@@ -36,6 +36,22 @@ Complete guide to all documentation files in this project.
 
 ## 🗄️ Backend Integration
 
+### [API_INTEGRATION_MAP.md](./API_INTEGRATION_MAP.md) 🗺️ **START HERE FOR API**
+**Mappa esatta delle chiamate API nel frontend**
+- Dove sono i file service
+- Quali endpoint servono al backend
+- Formato richieste/risposte atteso
+- Cosa fare quando backend è pronto
+- **Documento perfetto per coordinamento frontend/backend**
+
+### [BACKEND_ANALYSIS.md](./BACKEND_ANALYSIS.md) 🔍
+**Analisi completa backend attuale**
+- Compatibilità con frontend
+- Gap analysis dettagliata
+- Roadmap di integrazione
+- Timeline stimata
+- **Da leggere per capire stato attuale**
+
 ### [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) 🎯 **RECOMMENDED**
 **Complete Supabase setup guide**
 - Project creation
