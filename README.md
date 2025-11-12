@@ -75,20 +75,256 @@ src/
 - ✅ **Mock Data** - Working with fake data until backend is ready
 - 🔄 **API Layer Ready** - Services prepared for backend integration
 
-## 🔌 Backend Integration
+## 🔌 Backend Integration Guide
 
-This is a **frontend-only implementation**. The backend is being developed by the backend team.
+This is a **frontend-only implementation**. The backend team needs to implement the API endpoints described below.
 
-**What's ready for backend:**
-- Service layer in `src/services/` with API endpoints structure
-- TypeScript interfaces in `src/types/` for request/response models
-- Mock data in `src/utils/mockData.ts` (to be replaced with real API calls)
-- Axios instance configured in `src/services/api.ts`
+### 📋 Overview for Backend Team
 
-**To integrate with backend:**
-1. Update `VITE_API_BASE_URL` in `.env` with your backend URL
-2. Replace mock responses in services with real API calls
-3. Authentication token handling is already implemented
+The frontend is **fully functional** with mock data and ready for integration. All API calls are abstracted in service layers, making integration straightforward.
+
+### 🗂️ What's Already Implemented (Frontend)
+
+- ✅ Complete service layer in `src/services/`
+- ✅ TypeScript interfaces for all requests/responses in `src/types/`
+- ✅ Axios HTTP client configured with interceptors in `src/services/api.ts`
+- ✅ JWT token management (automatic header injection)
+- ✅ Error handling and user feedback (toast notifications)
+- ✅ Mock data in `src/utils/mockData.ts` (temporary, for UI development)
+
+### 🔗 Required API Endpoints
+
+#### 1. Authentication (`src/services/authService.ts`)
+
+**POST** `/api/auth/register`
+```typescript
+// Request body
+{
+  email: string;
+  password: string;
+  name: string;
+}
+
+// Response
+{
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  }
+}
+```
+
+**POST** `/api/auth/login`
+```typescript
+// Request body
+{
+  email: string;
+  password: string;
+}
+
+// Response
+{
+  token: string;
+  user: {
+    id: string;
+    email: string;
+    name: string;
+  }
+}
+```
+
+**GET** `/api/auth/me` (requires authentication)
+```typescript
+// Response
+{
+  id: string;
+  email: string;
+  name: string;
+  preferences?: UserPreferences;
+}
+```
+
+#### 2. User Preferences (`src/services/preferencesService.ts`)
+
+**GET** `/api/preferences` (requires authentication)
+```typescript
+// Response
+{
+  styles: string[];        // e.g., ["casual", "elegant", "sporty"]
+  budget: {
+    min: number;
+    max: number;
+  };
+  favoriteColors: string[]; // e.g., ["black", "blue", "white"]
+  sizes: {
+    top?: string;          // e.g., "M", "L"
+    bottom?: string;
+    shoes?: string;
+  };
+}
+```
+
+**POST** `/api/preferences` (requires authentication)
+```typescript
+// Request body
+{
+  styles: string[];
+  budget: {
+    min: number;
+    max: number;
+  };
+  favoriteColors: string[];
+  sizes: {
+    top?: string;
+    bottom?: string;
+    shoes?: string;
+  };
+}
+
+// Response
+{
+  success: boolean;
+  preferences: UserPreferences; // Same as above
+}
+```
+
+#### 3. Chat & AI Recommendations (`src/services/chatService.ts`)
+
+**POST** `/api/chat/message` (requires authentication)
+```typescript
+// Request body
+{
+  message: string;
+  chatId?: string;         // If continuing existing chat
+  imageData?: string;      // Base64 encoded image (optional)
+}
+
+// Response
+{
+  chatId: string;
+  message: {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: string;     // ISO 8601 format
+    outfits?: Outfit[];    // Array of outfit recommendations
+  }
+}
+```
+
+**GET** `/api/chat/history` (requires authentication)
+```typescript
+// Response
+{
+  chats: Array<{
+    id: string;
+    title: string;         // First user message (truncated)
+    lastMessage: string;
+    timestamp: string;     // ISO 8601 format
+    messageCount: number;
+  }>
+}
+```
+
+**GET** `/api/chat/:chatId` (requires authentication)
+```typescript
+// Response
+{
+  id: string;
+  messages: Array<{
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: string;
+    outfits?: Outfit[];
+  }>
+}
+```
+
+### 📦 TypeScript Type Definitions
+
+All types are defined in `src/types/index.ts`:
+
+```typescript
+interface OutfitItem {
+  id: string;
+  name: string;
+  brand: string;
+  price: number;
+  imageUrl: string;
+  link: string;          // URL to product on e-commerce site
+  category: string;      // e.g., "top", "bottom", "shoes", "accessories"
+}
+
+interface Outfit {
+  id: string;
+  items: OutfitItem[];
+  totalPrice: number;
+  style: string;         // e.g., "casual", "elegant"
+}
+
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  outfits?: Outfit[];
+  imageUrl?: string;     // If user uploaded image
+}
+```
+
+### 🔧 Integration Steps for Backend Team
+
+1. **Set up CORS**: Allow requests from `http://localhost:5173` (development) and your production frontend URL
+2. **Implement JWT authentication**: Frontend expects `Bearer <token>` in Authorization header
+3. **Handle file uploads**: For image-based outfit recommendations (base64 or multipart/form-data)
+4. **Error responses**: Return proper HTTP status codes and error messages in format:
+   ```json
+   {
+     "error": "Error message here",
+     "code": "ERROR_CODE"
+   }
+   ```
+5. **Test with frontend**: Update `.env` file with `VITE_API_BASE_URL=http://your-backend-url`
+
+### 🔄 How to Integrate
+
+**Step 1**: Backend team implements endpoints listed above
+
+**Step 2**: Update environment variable in `.env`:
+```bash
+VITE_API_BASE_URL=http://localhost:8000  # or your backend URL
+```
+
+**Step 3**: Remove mock responses in service files:
+- `src/services/authService.ts`
+- `src/services/preferencesService.ts`
+- `src/services/chatService.ts`
+
+**Step 4**: Test integration - all UI features should work with real data!
+
+### 📝 Notes for Backend Team
+
+- **AI Integration**: The chat endpoint should integrate with an AI model (e.g., OpenAI, Claude) to:
+  - Understand user requests (natural language)
+  - Fetch products from e-commerce APIs (Zalando, ASOS, etc.)
+  - Generate outfit recommendations based on user preferences
+  - Handle image uploads for visual search
+  
+- **Product Data**: You'll need to integrate with e-commerce APIs or scrape product data
+  
+- **Caching**: Consider caching AI responses and product data for better performance
+  
+- **Rate Limiting**: Implement rate limiting for AI API calls
+
+### 📞 Questions?
+
+For questions about the frontend implementation or API contracts, contact the frontend team or check:
+- `BACKEND_INTEGRATION.md` - Detailed backend integration guide
+- `src/types/index.ts` - All TypeScript interfaces
+- `src/services/*.ts` - Service layer implementation
 
 ## React Compiler
 
