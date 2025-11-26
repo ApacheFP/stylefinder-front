@@ -80,7 +80,6 @@ const Sidebar = ({
             <motion.div
               className="space-y-1"
               variants={staggerContainer}
-              initial="hidden"
               animate="visible"
             >
               {chatHistory.length === 0 ? (

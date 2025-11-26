@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import { Paperclip } from 'lucide-react';
 import Button from '../ui/Button';
+import { Send } from "lucide-react";
 
 interface ChatInputProps {
   inputMessage: string;
@@ -88,9 +89,10 @@ const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
             disabled={(!inputMessage.trim() && !selectedImage) || isLoading}
             variant="primary"
             size="md"
-            className="rounded-lg"
+            className="rounded-full"
+            aria-label="Invia messaggio"
           >
-            Send
+            <Send className="h-5 w-5" />
           </Button>
         </div>
       </div>

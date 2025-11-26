@@ -15,6 +15,9 @@ import TypingIndicator from '../components/ui/TypingIndicator';
 import { chatService } from '../services/chatService';
 import type { ChatHistory } from '../types';
 
+function beutifyUsername(name: string) {
+  return name.trim().toLowerCase().charAt(0).toUpperCase() + name.slice(1)
+}
 const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
@@ -23,7 +26,8 @@ const ChatPage = () => {
   // Auth context
   const { isAuthenticated, user } = useAuth();
   const isLoggedIn = isAuthenticated;
-  const userName = user?.name || 'Guest';
+  let userName = user?.name || 'Guest';
+  userName = beutifyUsername(userName)
 
   // Custom hooks
   const { 
