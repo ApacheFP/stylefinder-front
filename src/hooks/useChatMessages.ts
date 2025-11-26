@@ -1,148 +1,151 @@
 import { useState } from 'react';
 import type { ChatMessage, OutfitFilters } from '../types';
+import { chatService } from '../services/chatService';
 import { showToast } from '../utils/toast';
 
 export const useChatMessages = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentChatId, setCurrentChatId] = useState<string>();
+  const [currentChatId, setCurrentChatId] = useState<string | undefined>();
+  const [currentChatTitle, setCurrentChatTitle] = useState<string | undefined>();
   const [loadingExplanationId, setLoadingExplanationId] = useState<string | null>(null);
 
-  const loadChatMessages = (chatId: string, chatMessages: ChatMessage[]) => {
+  const loadChatMessages = async (chatId: string, preloadedMessages?: ChatMessage[]) => {
     setCurrentChatId(chatId);
-    setMessages(chatMessages);
+    
+    if (preloadedMessages) {
+      setMessages(preloadedMessages);
+      return;
+    }
+
+    // Load from API if not preloaded
+    try {
+      const fetchedMessages = await chatService.getChatConversation(chatId);
+      setMessages(fetchedMessages);
+    } catch (error) {
+      console.error('Failed to load chat messages:', error);
+      showToast.error('Failed to load conversation');
+    }
   };
 
   const sendMessage = async (
     content: string,
-    imageUrl?: string,
-    _filters?: OutfitFilters, // Prefixed with _ to indicate intentionally unused
+    imageFile?: File,
+    filters?: OutfitFilters,
     onSuccess?: () => void
   ) => {
-    if (!content.trim() && !imageUrl) {
+    if (!content.trim() && !imageFile) {
       showToast.error('Please enter a message or attach an image');
       return;
     }
 
+    // Create user message for immediate display
     const userMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `temp-${Date.now()}`,
       role: 'user',
       content: content || 'Attached an image',
       timestamp: new Date(),
-      imageUrl,
+      imageUrl: imageFile ? URL.createObjectURL(imageFile) : undefined,
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
-    // TODO: Call API to get outfit recommendations with image
-    // For now, use mock response
-    setTimeout(() => {
+    try {
+      const response = await chatService.sendMessage(
+        content,
+        filters || { outfitType: 'full', selectedItems: [] },
+        currentChatId,
+        imageFile
+      );
+
+      // Update chat ID if this was a new conversation
+      if (response.conv_id && !currentChatId) {
+        setCurrentChatId(response.conv_id);
+        setCurrentChatTitle(response.conv_title);
+      }
+
+      // Update user message image URL if backend returned one
+      if (response.img_url) {
+        setMessages((prev) => 
+          prev.map((msg) => 
+            msg.id === userMessage.id 
+              ? { ...msg, imageUrl: response.img_url! }
+              : msg
+          )
+        );
+      }
+
+      // Transform and add assistant message
+      const outfitData = chatService.transformOutfitResponse(response.content);
+      
       const assistantMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
+        id: `assistant-${Date.now()}`,
         role: 'assistant',
-        content: "Absolutely! Here's a great outfit recommendation based on your request:",
+        content: outfitData.message,
         timestamp: new Date(),
         outfit: {
-          id: Date.now().toString(),
-          totalPrice: 199.97,
-          items: [
-            {
-              id: 'new1',
-              name: 'Navy Blue Blazer',
-              price: 89.99,
-              category: 'blazer',
-              brand: 'J.Crew',
-              imageUrl: 'https://via.placeholder.com/300x400?text=Navy+Blazer',
-              link: '#',
-            },
-            {
-              id: 'new2',
-              name: 'Oxford Shirt',
-              price: 49.99,
-              category: 'shirt',
-              brand: 'Brooks Brothers',
-              imageUrl: 'https://via.placeholder.com/300x400?text=Oxford+Shirt',
-              link: '#',
-            },
-            {
-              id: 'new3',
-              name: 'Chino Pants',
-              price: 59.99,
-              category: 'pants',
-              brand: 'Banana Republic',
-              imageUrl: 'https://via.placeholder.com/300x400?text=Chino+Pants',
-              link: '#',
-            },
-          ],
+          id: `outfit-${Date.now()}`,
+          items: outfitData.items,
+          totalPrice: outfitData.totalPrice,
+          explanation: outfitData.explanation,
         },
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-      setIsLoading(false);
       showToast.success('Outfit recommendations ready!');
-
-      if (!currentChatId) {
-        console.log('New conversation started - will be saved to backend');
-      }
-
       onSuccess?.();
-    }, 2000);
+
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      showToast.error('Failed to get outfit recommendations. Please try again.');
+      
+      // Remove the temporary user message on error
+      setMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const explainOutfit = async (messageId: string, _outfitId: string) => {
+    // The backend already returns explanation with the outfit
+    // This function now just reveals the existing explanation
     setLoadingExplanationId(messageId);
 
-    const loadingToastId = showToast.loading('Generating explanation...');
+    const loadingToastId = showToast.loading('Loading explanation...');
 
+    // Simulate brief loading for UX
     setTimeout(() => {
       const messageIndex = messages.findIndex((m) => m.id === messageId);
-      if (messageIndex === -1 || !messages[messageIndex].outfit) return;
-
-      if (messages[messageIndex].outfit?.explanation) {
-        console.log('Explanation already generated');
+      if (messageIndex === -1 || !messages[messageIndex].outfit) {
+        showToast.dismiss(loadingToastId);
+        setLoadingExplanationId(null);
         return;
       }
 
-      console.log('Requesting explanation for outfit:', _outfitId);
-
-      const mockExplanation = "This outfit combination works perfectly because the Navy Blazer adds a professional touch while remaining versatile. The Oxford Shirt provides a clean, classic foundation that pairs well with almost any blazer. The Chino Pants strike the perfect balance between formal and casual, making them ideal for a smart casual setting. Together, these pieces create a cohesive look that's both polished and comfortable.";
-
-      setMessages((prev) => {
-        const updated = [...prev];
-        if (updated[messageIndex].outfit) {
-          updated[messageIndex] = {
-            ...updated[messageIndex],
-            outfit: {
-              ...updated[messageIndex].outfit!,
-              explanation: mockExplanation,
-            },
-          };
-        }
-        return updated;
-      });
-
-      // Clear loading state
+      // Explanation is already in the outfit from backend
       setLoadingExplanationId(null);
       showToast.dismiss(loadingToastId);
-      showToast.success('Explanation generated!');
-      console.log('Explanation generated and saved to backend');
-    }, 2000); // Increased to 1.5s to show the loading animation
+      showToast.success('Explanation loaded!');
+    }, 500);
   };
 
   const clearMessages = () => {
     setMessages([]);
     setCurrentChatId(undefined);
+    setCurrentChatTitle(undefined);
   };
 
   return {
     messages,
     isLoading,
     currentChatId,
+    currentChatTitle,
     loadingExplanationId,
     loadChatMessages,
     sendMessage,
     explainOutfit,
     clearMessages,
+    setCurrentChatId,
   };
 };

@@ -1,36 +1,26 @@
 import axios from 'axios';
 
 // Create axios instance with base configuration
+// Backend uses Flask-Login with cookie-based sessions
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
+  timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Important: send cookies with requests for Flask-Login sessions
 });
-
-// Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 // Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Handle unauthorized - redirect to login
-      localStorage.removeItem('authToken');
-      window.location.href = '/login';
+      // Handle unauthorized - redirect to login (but not if already on login/signup page)
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && currentPath !== '/signup' && currentPath !== '/') {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

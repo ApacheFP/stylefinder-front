@@ -9,7 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,36 +18,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check if user is already logged in on mount
+  // Check if user has an active session on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          const userData = await authService.getCurrentUser();
-          setUser(userData);
-        } catch (error) {
-          console.error('Auth check failed:', error);
-          localStorage.removeItem('authToken');
-        }
-      } else {
-        // TODO: Remove this mock auto-login before production
-        // For development: Auto-login with mock user
-        const mockUser: User = {
-          id: 'mock-user-1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          preferences: {
-            gender: 'man',
-            favoriteStyles: ['Smart Casual', 'Business'],
-            favoriteColors: ['Navy', 'Black', 'White'],
-            favoriteBrands: ['J.Crew', 'Brooks Brothers'],
-          },
-        };
-        setUser(mockUser);
-        localStorage.setItem('authToken', 'mock-token-for-development');
+      try {
+        // Try to get current user from session
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      } catch (error) {
+        // No active session or session expired - user is not logged in
+        console.log('No active session');
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkAuth();
@@ -63,8 +47,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(response.user);
   };
 
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    await authService.logout();
     setUser(null);
   };
 

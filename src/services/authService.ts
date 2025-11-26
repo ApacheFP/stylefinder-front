@@ -1,43 +1,92 @@
 import api from './api';
-import type { LoginCredentials, SignUpData, AuthResponse } from '../types';
+import type { LoginCredentials, SignUpData, User } from '../types';
 
 /**
  * Authentication Service
  * 
- * NOTE FOR BACKEND TEAM:
- * These functions are ready to connect to your API endpoints.
- * The base URL is set in .env (VITE_API_BASE_URL)
- * See BACKEND_INTEGRATION.md for detailed API specifications.
+ * Backend uses Flask-Login with cookie-based sessions (not JWT).
+ * Endpoints:
+ *   POST /user/login - Login
+ *   POST /user/ - Signup
+ *   GET /user/session - Check session
+ *   GET /user/logout - Logout
  */
+
+interface LoginResponse {
+  success: boolean;
+  user: {
+    id: number;
+    email: string;
+    preferences: Record<string, unknown>;
+  };
+}
+
+interface SignupResponse {
+  success: boolean;
+}
+
+interface SessionResponse {
+  success: boolean;
+  user: {
+    id: number;
+    email: string;
+    preferences: Record<string, unknown>;
+  };
+}
+
+// Helper to transform backend user to frontend User type
+const transformUser = (backendUser: LoginResponse['user']): User => ({
+  id: String(backendUser.id),
+  name: backendUser.email.split('@')[0], // Use email prefix as name (backend doesn't have name field)
+  email: backendUser.email,
+  preferences: backendUser.preferences as unknown as User['preferences'],
+});
 
 export const authService = {
   // Login user
-  // Backend endpoint: POST /auth/login
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/login', credentials);
-    // Save token to localStorage
-    localStorage.setItem('authToken', response.data.token);
-    return response.data;
+  // Backend endpoint: POST /user/login
+  login: async (credentials: LoginCredentials) => {
+    const response = await api.post<LoginResponse>('/user/login', credentials);
+    return {
+      user: transformUser(response.data.user),
+    };
   },
 
   // Sign up new user
-  // Backend endpoint: POST /auth/signup
-  signUp: async (data: SignUpData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>('/auth/signup', data);
-    // Save token to localStorage
-    localStorage.setItem('authToken', response.data.token);
-    return response.data;
+  // Backend endpoint: POST /user/
+  signUp: async (data: SignUpData) => {
+    // Backend only accepts email and password
+    await api.post<SignupResponse>('/user/', {
+      email: data.email,
+      password: data.password,
+    });
+    
+    // After signup, automatically login to get session
+    const loginResponse = await api.post<LoginResponse>('/user/login', {
+      email: data.email,
+      password: data.password,
+    });
+    
+    return {
+      user: transformUser(loginResponse.data.user),
+    };
   },
 
   // Logout user
-  logout: () => {
-    localStorage.removeItem('authToken');
+  // Backend endpoint: GET /user/logout
+  logout: async () => {
+    try {
+      await api.get('/user/logout');
+    } catch (error) {
+      // Ignore errors on logout (user might already be logged out)
+      console.warn('Logout request failed:', error);
+    }
   },
 
-  // Get current user
-  // Backend endpoint: GET /auth/me
-  getCurrentUser: async () => {
-    const response = await api.get('/auth/me');
-    return response.data;
+  // Get current user / Check session
+  // Backend endpoint: GET /user/session
+  getCurrentUser: async (): Promise<User> => {
+    const response = await api.get<SessionResponse>('/user/session');
+    return transformUser(response.data.user);
   },
 };

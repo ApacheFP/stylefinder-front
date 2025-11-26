@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
 import { useImageUpload } from '../hooks/useImageUpload';
@@ -9,136 +9,16 @@ import Header from '../components/layout/Header';
 import HamburgerMenu from '../components/ui/HamburgerMenu';
 import ChatEmptyState from '../components/chat/ChatEmptyState';
 import ChatMessage from '../components/chat/ChatMessage';
-import ChatMessageSkeleton from '../components/chat/ChatMessageSkeleton';
 import ChatInput from '../components/chat/ChatInput';
 import DragDropOverlay from '../components/chat/DragDropOverlay';
 import TypingIndicator from '../components/ui/TypingIndicator';
-import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
+import { chatService } from '../services/chatService';
 import type { ChatHistory, OutfitFilters } from '../types';
-
-// Mock data
-const MOCK_CHAT_HISTORY: ChatHistory[] = [
-  { id: '1', title: 'Interview outfit 200€', lastMessage: new Date() },
-  { id: '2', title: 'Summer wedding look', lastMessage: new Date() },
-];
-
-const MOCK_CHAT_FILTERS: Record<string, OutfitFilters> = {
-  '1': {
-    budgetMax: 200,
-    outfitType: 'partial',
-    selectedItems: ['jacket', 'blazer', 'shirt', 'pants'],
-  },
-  '2': {
-    budgetMax: 300,
-    outfitType: 'full',
-    selectedItems: [],
-  },
-};
-
-const MOCK_CHAT_MESSAGES: Record<string, any[]> = {
-  '1': [
-    {
-      id: 'm1',
-      role: 'user',
-      content: 'I need a professional outfit for a job interview, budget max 200€',
-      timestamp: new Date('2024-01-15T10:00:00'),
-    },
-    {
-      id: 'm2',
-      role: 'assistant',
-      content:
-        'Absolutely! Given the filters (budget $200, smart casual style, partial), here is an excellent proposal for the requested items:',
-      timestamp: new Date('2024-01-15T10:00:30'),
-      outfit: {
-        id: 'outfit1',
-        totalPrice: 199.97,
-        items: [
-          {
-            id: 'item1',
-            name: 'Navy Blue Blazer',
-            price: 89.99,
-            category: 'blazer',
-            brand: 'J.Crew',
-            imageUrl: 'https://via.placeholder.com/300x400?text=Navy+Blazer',
-            link: '#',
-          },
-          {
-            id: 'item2',
-            name: 'Oxford Shirt',
-            price: 49.99,
-            category: 'shirt',
-            brand: 'Brooks Brothers',
-            imageUrl: 'https://via.placeholder.com/300x400?text=Oxford+Shirt',
-            link: '#',
-          },
-          {
-            id: 'item3',
-            name: 'Chino Pants',
-            price: 59.99,
-            category: 'pants',
-            brand: 'Banana Republic',
-            imageUrl: 'https://via.placeholder.com/300x400?text=Chino+Pants',
-            link: '#',
-          },
-        ],
-      },
-    },
-  ],
-  '2': [
-    {
-      id: 'm3',
-      role: 'user',
-      content: 'I need an elegant outfit for a summer wedding',
-      timestamp: new Date('2024-01-10T14:30:00'),
-    },
-    {
-      id: 'm4',
-      role: 'assistant',
-      content:
-        "Perfect! Here's a stylish summer wedding outfit that will make you look elegant and feel comfortable:",
-      timestamp: new Date('2024-01-10T14:30:45'),
-      outfit: {
-        id: 'outfit2',
-        totalPrice: 245.97,
-        items: [
-          {
-            id: 'item4',
-            name: 'Light Linen Suit',
-            price: 149.99,
-            category: 'blazer',
-            brand: 'Hugo Boss',
-            imageUrl: 'https://via.placeholder.com/300x400?text=Linen+Suit',
-            link: '#',
-          },
-          {
-            id: 'item5',
-            name: 'White Dress Shirt',
-            price: 45.99,
-            category: 'shirt',
-            brand: 'Ralph Lauren',
-            imageUrl: 'https://via.placeholder.com/300x400?text=White+Shirt',
-            link: '#',
-          },
-          {
-            id: 'item6',
-            name: 'Brown Leather Loafers',
-            price: 49.99,
-            category: 'shoes',
-            brand: 'Cole Haan',
-            imageUrl: 'https://via.placeholder.com/300x400?text=Loafers',
-            link: '#',
-          },
-        ],
-        explanation:
-          "This light linen suit is perfect for a summer wedding - breathable and elegant. The white dress shirt adds a classic touch, and the brown leather loafers complete the sophisticated look while keeping you comfortable throughout the event.",
-      },
-    },
-  ],
-};
 
 const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
-  const [chatHistory] = useState<ChatHistory[]>(MOCK_CHAT_HISTORY);
+  const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
+  const [_isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [filters, setFilters] = useState<OutfitFilters>({
     budgetMax: undefined,
     outfitType: 'full',
@@ -151,7 +31,17 @@ const ChatPage = () => {
   const userName = user?.name || 'Guest';
 
   // Custom hooks
-  const { messages, isLoading, currentChatId, loadingExplanationId, loadChatMessages, sendMessage, explainOutfit, clearMessages } = useChatMessages();
+  const { 
+    messages, 
+    isLoading, 
+    currentChatId, 
+    currentChatTitle,
+    loadingExplanationId, 
+    loadChatMessages, 
+    sendMessage, 
+    explainOutfit, 
+    clearMessages 
+  } = useChatMessages();
   
   const {
     selectedImage,
@@ -174,6 +64,44 @@ const ChatPage = () => {
   // Sidebar state for mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Load chat history on mount (only if authenticated)
+  const loadChatHistory = useCallback(async () => {
+    if (!isAuthenticated) {
+      setChatHistory([]);
+      setIsLoadingHistory(false);
+      return;
+    }
+
+    try {
+      setIsLoadingHistory(true);
+      const history = await chatService.getChatHistory();
+      setChatHistory(history);
+    } catch (error) {
+      console.error('Failed to load chat history:', error);
+      setChatHistory([]);
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    loadChatHistory();
+  }, [loadChatHistory]);
+
+  // Add new conversation to history when created
+  useEffect(() => {
+    if (currentChatId && currentChatTitle) {
+      // Check if this conversation is already in history
+      const exists = chatHistory.some((chat) => chat.id === currentChatId);
+      if (!exists) {
+        setChatHistory((prev) => [
+          { id: currentChatId, title: currentChatTitle, lastMessage: new Date() },
+          ...prev,
+        ]);
+      }
+    }
+  }, [currentChatId, currentChatTitle, chatHistory]);
+
   // Close sidebar on mobile when screen resizes to desktop
   useEffect(() => {
     const handleResize = () => {
@@ -188,7 +116,7 @@ const ChatPage = () => {
   }, []);
 
   // 🔧 FEATURE DISABLED: Keyboard shortcuts (uncomment to enable)
-  const inputRef = useRef<HTMLInputElement>(null);
+  const _inputRef = useRef<HTMLInputElement>(null);
   // useKeyboardShortcuts([...]);
 
   const handleNewChat = () => {
@@ -202,23 +130,47 @@ const ChatPage = () => {
     });
   };
 
-  const handleSelectChat = (chatId: string) => {
-    const chatMessages = MOCK_CHAT_MESSAGES[chatId] || [];
-    loadChatMessages(chatId, chatMessages);
-
-    const chatFilters = MOCK_CHAT_FILTERS[chatId];
-    if (chatFilters) {
-      setFilters(chatFilters);
+  const handleSelectChat = async (chatId: string) => {
+    try {
+      await loadChatMessages(chatId);
+      console.log('Loaded chat:', chatId);
+    } catch (error) {
+      console.error('Failed to load chat:', error);
     }
-
-    console.log('Loaded chat:', chatId, 'with', chatMessages.length, 'messages');
   };
 
   const handleSendMessage = () => {
-    sendMessage(inputMessage, imagePreview || undefined, filters, () => {
+    sendMessage(inputMessage, selectedImage || undefined, filters, () => {
       setInputMessage('');
       clearImage();
     });
+  };
+
+  const handleDeleteChat = async (chatId: string) => {
+    try {
+      await chatService.deleteConversation(chatId);
+      setChatHistory((prev) => prev.filter((chat) => chat.id !== chatId));
+      
+      // If we deleted the current chat, clear messages
+      if (chatId === currentChatId) {
+        clearMessages();
+      }
+    } catch (error) {
+      console.error('Failed to delete chat:', error);
+    }
+  };
+
+  const handleRenameChat = async (chatId: string, newTitle: string) => {
+    try {
+      await chatService.renameConversation(chatId, newTitle);
+      setChatHistory((prev) =>
+        prev.map((chat) =>
+          chat.id === chatId ? { ...chat, title: newTitle } : chat
+        )
+      );
+    } catch (error) {
+      console.error('Failed to rename chat:', error);
+    }
   };
 
   const showEmptyState = messages.length === 0;
