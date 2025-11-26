@@ -19,6 +19,8 @@ interface BackendOutfitItem {
   url: string;
   image_link: string;
   price: number;
+  brand?: string;
+  material?: string;
   similarity?: number;
 }
 
@@ -64,6 +66,7 @@ const transformOutfitItems = (backendItems: BackendOutfitItem[]): OutfitItem[] =
     price: item.price,
     imageUrl: item.image_link,
     category: 'accessories' as const, // Backend doesn't provide category, use default
+    brand: item.brand,
     link: item.url,
   }));
 };

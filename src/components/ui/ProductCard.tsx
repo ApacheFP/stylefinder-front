@@ -1,97 +1,88 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import type { OutfitItem } from '../../types';
-import { tapScale } from '../../utils/animations';
 
 interface ProductCardProps {
   item: OutfitItem;
+  onImageClick?: () => void;
 }
 
-const ProductCard = ({ item }: ProductCardProps) => {
+const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const handleCardClick = () => {
+  const handleShopClick = () => {
     if (item.link) {
       window.open(item.link, '_blank', 'noopener,noreferrer');
     }
   };
 
+  const hasLink = !!item.link;
+
   return (
     <motion.div
-      className="bg-white rounded-xl border border-border overflow-hidden transition-all duration-500 ease-out w-full sm:max-w-[200px] cursor-pointer group hover:shadow-2xl hover:border-primary/30"
-      whileHover={{ scale: 1.03, y: -6 }}
-      whileTap={tapScale}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-      onClick={handleCardClick}
+      className="group bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 w-[160px] flex-shrink-0 card-lift"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
     >
-      {/* Product Image */}
-      <div className="w-full h-[200px] bg-gray-100 flex items-center justify-center relative overflow-hidden">
+      {/* Brand */}
+      {item.brand && (
+        <div className="px-3 py-1 bg-gray-50 border-b border-gray-100 text-center">
+          <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">
+            {item.brand}
+          </span>
+        </div>
+      )}
+
+      {/* Image */}
+      <div
+        className={`w-full h-[130px] bg-white flex items-center justify-center overflow-hidden relative ${onImageClick ? 'cursor-pointer' : ''}`}
+        onClick={onImageClick}
+      >
         {item.imageUrl && !imageError ? (
           <>
-            {/* Blur Placeholder - shown while loading */}
             {!imageLoaded && (
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 animate-pulse" />
+              <div className="absolute inset-0 bg-gray-50 animate-pulse" />
             )}
-            
-            {/* Actual Image */}
-            <img 
-              src={item.imageUrl} 
+            <img
+              src={item.imageUrl}
               alt={item.name}
-              className={`w-full h-full object-cover transition-all duration-700 ease-out ${
-                imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-              } group-hover:scale-110`}
+              className={`max-w-[85%] max-h-[85%] object-contain transition-all duration-300 ease-out group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
-              style={{ transition: 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.7s ease-out' }}
             />
-
-            {/* View on Store Overlay - shown only on hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out flex flex-col items-center justify-end pb-6 gap-2">
-              <ExternalLink className="w-6 h-6 text-white transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out" />
-              <span className="text-white text-sm font-inter font-medium transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-out delay-75">
-                View on store
-              </span>
-            </div>
           </>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex flex-col items-center justify-center gap-2 group-hover:from-primary/10 group-hover:to-primary/5 transition-colors">
-            <ExternalLink className="w-6 h-6 text-gray-400 group-hover:text-primary transition-colors" />
-            <span className="text-gray-400 text-xs font-inter group-hover:text-primary transition-colors">No image</span>
-          </div>
+          <ShoppingBag className="w-8 h-8 text-gray-200" />
         )}
       </div>
-      
-      {/* Product Info */}
-      <div className="p-4 bg-white">
-        {/* Brand Badge */}
-        {item.brand && (
-          <div className="mb-2">
-            <span className="inline-block px-2.5 py-1 bg-primary/10 text-primary text-[11px] font-inter font-semibold rounded-md uppercase tracking-wider">
-              {item.brand}
-            </span>
-          </div>
-        )}
-        
-        {/* Product Name */}
-        <h3 className="font-roboto font-bold text-[15px] text-text-dark mb-2 line-clamp-2 leading-tight group-hover:text-primary transition-colors duration-300">
+
+      {/* Info */}
+      <div className="p-3 pt-1">
+        <h3 className="font-medium text-[13px] text-gray-800 line-clamp-2 leading-snug mb-2 h-[2.4em]">
           {item.name}
         </h3>
-        
-        {/* Price */}
-        <div className="flex items-baseline gap-1">
-          <span className="text-primary font-roboto font-bold text-lg">
-            €{item.price.toFixed(0)}
-          </span>
-          {item.price % 1 !== 0 && (
-            <span className="text-primary font-roboto font-bold text-sm">
-              .{item.price.toFixed(2).split('.')[1]}
-            </span>
-          )}
-        </div>
+
+        <p className="text-primary font-bold text-base mb-3">
+          ${item.price.toFixed(2)}
+        </p>
+
+        {/* Button */}
+        {hasLink ? (
+          <button
+            onClick={handleShopClick}
+            className="w-full py-2 bg-primary text-white text-xs font-semibold rounded-md flex items-center justify-center gap-1.5 hover:bg-primary-hover active:scale-95 transition-all shadow-sm hover:shadow"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            Shop this item
+          </button>
+        ) : (
+          <div className="w-full py-2 bg-gray-100 text-gray-400 text-xs font-medium rounded-md text-center">
+            Out of stock
+          </div>
+        )}
       </div>
     </motion.div>
   );

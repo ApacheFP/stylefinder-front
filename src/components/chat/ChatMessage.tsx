@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { ChatMessage as ChatMessageType } from '../../types';
 import ProductCard from '../ui/ProductCard';
+import ProductCarousel from '../ui/ProductCarousel';
 import Button from '../ui/Button';
 import { fadeInUp } from '../../utils/animations';
 
@@ -11,6 +13,8 @@ interface ChatMessageProps {
 }
 
 const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMessageProps) => {
+  const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+
   if (message.role === 'user') {
     return (
       <motion.div
@@ -48,12 +52,24 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
 
           {message.outfit && (
             <>
-              {/* Product Cards - Responsive Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 justify-items-center sm:justify-items-start">
-                {message.outfit.items.map((item) => (
-                  <ProductCard key={item.id} item={item} />
+              {/* Product Cards - Responsive Flex */}
+              <div className="flex flex-wrap gap-1.5 mb-4 justify-start">
+                {message.outfit.items.map((item, index) => (
+                  <ProductCard
+                    key={item.id}
+                    item={item}
+                    onImageClick={() => setSelectedProductIndex(index)}
+                  />
                 ))}
               </div>
+
+              {/* Product Carousel Modal */}
+              <ProductCarousel
+                isOpen={selectedProductIndex !== null}
+                onClose={() => setSelectedProductIndex(null)}
+                items={message.outfit.items}
+                initialIndex={selectedProductIndex || 0}
+              />
 
               {/* Explain Button - Only show if explanation doesn't exist */}
               {!message.outfit.explanation ? (
