@@ -84,16 +84,21 @@ export const useChatMessages = () => {
         role: 'assistant',
         content: outfitData.message,
         timestamp: new Date(),
-        outfit: {
+        // Only include outfit if it's an outfit response (type 0) with items
+        outfit: outfitData.type === 0 && outfitData.items.length > 0 ? {
           id: `outfit-${Date.now()}`,
           items: outfitData.items,
           totalPrice: outfitData.totalPrice,
           explanation: outfitData.explanation,
-        },
+        } : undefined,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-      showToast.success('Outfit recommendations ready!');
+      
+      // Show appropriate toast based on response type
+      if (outfitData.type === 0 && outfitData.items.length > 0) {
+        showToast.success('Outfit recommendations ready!');
+      }
       onSuccess?.();
 
     } catch (error) {

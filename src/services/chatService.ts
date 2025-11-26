@@ -23,6 +23,7 @@ interface BackendOutfitItem {
 }
 
 interface BackendOutfitResponse {
+  type?: number;  // 0 = outfit, 1 = normal message (default: 0)
   outfit: BackendOutfitItem[];
   message: string;
   explanation: string;
@@ -37,13 +38,14 @@ interface SendMessageResponse {
 }
 
 interface BackendMessage {
-  id?: string;
+  message_id?: number;
   role: 'user' | 'ai';
-  content: string;
+  text: string;  // Backend uses 'text', not 'content'
+  type?: number;  // 0 = outfit, 1 = normal message (default: 0)
   image_id?: string | null;
   explanation?: string;
   outfits?: BackendOutfitItem[];
-  timestamp?: string;
+  created_at?: string;  // Backend uses 'created_at', not 'timestamp'
 }
 
 interface BackendConversation {
@@ -118,24 +120,28 @@ export const chatService = {
 
   // Get specific chat conversation messages
   getChatConversation: async (convId: string) => {
-    // Note: Backend uses GET with body (unusual), might need adjustment
-    const response = await api.get<BackendMessage[]>('/chat', {
-      data: { conv_id: convId },
-    });
+    // Use POST with JSON body since GET with body is not standard
+    // Backend expects conv_id in JSON body
+    const response = await api.post<BackendMessage[]>('/chat', { conv_id: convId });
     
-    return response.data.map((msg, index) => ({
-      id: msg.id || String(index),
-      role: msg.role === 'ai' ? 'assistant' as const : 'user' as const,
-      content: msg.content,
-      timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date(),
-      imageUrl: msg.image_id || undefined,
-      outfit: msg.outfits && msg.outfits.length > 0 ? {
-        id: String(index),
-        items: transformOutfitItems(msg.outfits),
-        totalPrice: calculateTotalPrice(msg.outfits),
-        explanation: msg.explanation,
-      } : undefined,
-    }));
+    return response.data.map((msg, index) => {
+      const messageType = msg.type ?? 0; // Default to 0 (outfit) if not provided
+      const hasOutfit = messageType === 0 && msg.outfits && msg.outfits.length > 0;
+      
+      return {
+        id: msg.message_id?.toString() || String(index),
+        role: msg.role === 'ai' ? 'assistant' as const : 'user' as const,
+        content: msg.text,  // Backend uses 'text'
+        timestamp: msg.created_at ? new Date(msg.created_at) : new Date(),  // Backend uses 'created_at'
+        imageUrl: msg.image_id || undefined,
+        outfit: hasOutfit ? {
+          id: String(index),
+          items: transformOutfitItems(msg.outfits!),
+          totalPrice: calculateTotalPrice(msg.outfits!),
+          explanation: msg.explanation,
+        } : undefined,
+      };
+    });
   },
 
   // Rename a conversation
@@ -156,10 +162,26 @@ export const chatService = {
   },
 
   // Transform backend response to frontend ChatMessage format
+  // type: 0 = outfit response, 1 = normal text message
   transformOutfitResponse: (backendResponse: BackendOutfitResponse) => {
+    const responseType = backendResponse.type ?? 0; // Default to 0 (outfit) if not provided
+    
+    // Type 1: Normal message (no outfit)
+    if (responseType === 1) {
+      return {
+        type: 1 as const,
+        message: backendResponse.message,
+        items: [],
+        totalPrice: 0,
+        explanation: '',
+      };
+    }
+    
+    // Type 0: Outfit response (default)
     return {
-      items: transformOutfitItems(backendResponse.outfit),
-      totalPrice: calculateTotalPrice(backendResponse.outfit),
+      type: 0 as const,
+      items: transformOutfitItems(backendResponse.outfit || []),
+      totalPrice: calculateTotalPrice(backendResponse.outfit || []),
       explanation: backendResponse.explanation,
       message: backendResponse.message,
     };
