@@ -11,7 +11,10 @@ export const useChatMessages = () => {
   const [loadingExplanationId, setLoadingExplanationId] = useState<string | null>(null);
 
   const loadChatMessages = async (chatId: string, preloadedMessages?: ChatMessage[]) => {
+    // Clear existing messages first
+    setMessages([]);
     setCurrentChatId(chatId);
+    setCurrentChatTitle(undefined);
     
     if (preloadedMessages) {
       setMessages(preloadedMessages);
@@ -61,7 +64,8 @@ export const useChatMessages = () => {
 
       // Update chat ID if this was a new conversation
       if (response.conv_id && !currentChatId) {
-        setCurrentChatId(response.conv_id);
+        // Ensure conv_id is a string (backend may return a number)
+        setCurrentChatId(String(response.conv_id));
         setCurrentChatTitle(response.conv_title);
       }
 

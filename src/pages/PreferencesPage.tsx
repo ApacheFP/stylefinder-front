@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { UserPreferences } from '../types';
 import Button from '../components/ui/Button';
+import { preferencesService } from '../services/preferencesService';
+import { showToast } from '../utils/toast';
 
 const STYLES = ['Casual', 'Elegant', 'Sporty', 'Streetwear', 'Minimalist', 'Vintage', 'Boho'];
 const COLORS = ['Black', 'Blue', 'White', 'Gray', 'Beige', 'Green'];
@@ -9,12 +11,35 @@ const COLORS = ['Black', 'Blue', 'White', 'Gray', 'Beige', 'Green'];
 const PreferencesPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingPrefs, setIsLoadingPrefs] = useState(true);
   
   const [preferences, setPreferences] = useState<UserPreferences>({
     gender: 'man',
     favoriteStyles: [],
     favoriteColors: [],
   });
+
+  // Load existing preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        setIsLoadingPrefs(true);
+        const existingPrefs = await preferencesService.getPreferences();
+        if (existingPrefs) {
+          setPreferences({
+            gender: existingPrefs.gender || 'man',
+            favoriteStyles: existingPrefs.favoriteStyles || [],
+            favoriteColors: existingPrefs.favoriteColors || [],
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load preferences:', error);
+      } finally {
+        setIsLoadingPrefs(false);
+      }
+    };
+    loadPreferences();
+  }, []);
 
   const handleGenderChange = (gender: 'man' | 'woman' | 'non-binary') => {
     setPreferences({ ...preferences, gender });
@@ -37,11 +62,16 @@ const PreferencesPage = () => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      // TODO: Save preferences to backend
-      console.log('Saving preferences:', preferences);
-      navigate('/chat');
+      const success = await preferencesService.updatePreferences(preferences);
+      if (success) {
+        showToast.success('Preferences saved!');
+        navigate('/chat');
+      } else {
+        showToast.error('Failed to save preferences');
+      }
     } catch (error) {
       console.error('Error saving preferences:', error);
+      showToast.error('Failed to save preferences');
     } finally {
       setIsLoading(false);
     }
@@ -50,6 +80,18 @@ const PreferencesPage = () => {
   const handleClose = () => {
     navigate('/chat');
   };
+
+  // Show loading while fetching existing preferences
+  if (isLoadingPrefs) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading preferences...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">

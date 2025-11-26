@@ -16,6 +16,7 @@ interface LoginResponse {
   success: boolean;
   user: {
     id: number;
+    name: string;
     email: string;
     preferences: Record<string, unknown>;
   };
@@ -29,6 +30,7 @@ interface SessionResponse {
   success: boolean;
   user: {
     id: number;
+    name: string;
     email: string;
     preferences: Record<string, unknown>;
   };
@@ -37,7 +39,7 @@ interface SessionResponse {
 // Helper to transform backend user to frontend User type
 const transformUser = (backendUser: LoginResponse['user']): User => ({
   id: String(backendUser.id),
-  name: backendUser.email.split('@')[0], // Use email prefix as name (backend doesn't have name field)
+  name: backendUser.name || backendUser.email.split('@')[0], // Use name from backend, fallback to email prefix
   email: backendUser.email,
   preferences: backendUser.preferences as unknown as User['preferences'],
 });
@@ -55,8 +57,9 @@ export const authService = {
   // Sign up new user
   // Backend endpoint: POST /user/
   signUp: async (data: SignUpData) => {
-    // Backend only accepts email and password
+    // Send name, email and password to backend
     await api.post<SignupResponse>('/user/', {
+      name: data.name,
       email: data.email,
       password: data.password,
     });

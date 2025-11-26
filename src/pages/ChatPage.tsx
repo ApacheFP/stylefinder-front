@@ -13,17 +13,12 @@ import ChatInput from '../components/chat/ChatInput';
 import DragDropOverlay from '../components/chat/DragDropOverlay';
 import TypingIndicator from '../components/ui/TypingIndicator';
 import { chatService } from '../services/chatService';
-import type { ChatHistory, OutfitFilters } from '../types';
+import type { ChatHistory } from '../types';
 
 const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const [_isLoadingHistory, setIsLoadingHistory] = useState(true);
-  const [filters, setFilters] = useState<OutfitFilters>({
-    budgetMax: undefined,
-    outfitType: 'full',
-    selectedItems: [],
-  });
 
   // Auth context
   const { isAuthenticated, user } = useAuth();
@@ -123,14 +118,15 @@ const ChatPage = () => {
     clearMessages();
     setInputMessage('');
     clearImage();
-    setFilters({
-      budgetMax: undefined,
-      outfitType: 'full',
-      selectedItems: [],
-    });
   };
 
   const handleSelectChat = async (chatId: string) => {
+    // Don't reload if already on this chat
+    if (chatId === currentChatId) return;
+    
+    setInputMessage('');
+    clearImage();
+    
     try {
       await loadChatMessages(chatId);
       console.log('Loaded chat:', chatId);
@@ -140,7 +136,7 @@ const ChatPage = () => {
   };
 
   const handleSendMessage = () => {
-    sendMessage(inputMessage, selectedImage || undefined, filters, () => {
+    sendMessage(inputMessage, selectedImage || undefined, undefined, () => {
       setInputMessage('');
       clearImage();
     });
@@ -262,15 +258,12 @@ const ChatPage = () => {
           // ref={inputRef} // 🔧 DISABLED - uncomment when enabling keyboard shortcuts
           inputMessage={inputMessage}
           setInputMessage={setInputMessage}
-          filters={filters}
-          setFilters={setFilters}
           imagePreview={imagePreview}
           selectedImage={selectedImage}
           onImageSelect={handleImageSelect}
           onRemoveImage={handleRemoveImage}
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
-          hasMessages={messages.length > 0}
         />
       </div>
     </div>
