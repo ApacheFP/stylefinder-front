@@ -4,6 +4,7 @@ import { LogOut, Settings, User as UserIcon, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import Button from '../ui/Button';
+import Tooltip from '../ui/Tooltip';
 
 function beutifyUsername(name: string) {
   return name.trim().toLowerCase().charAt(0).toUpperCase() + name.slice(1)
@@ -50,17 +51,19 @@ const Header = () => {
       </Link>
 
       <div className="flex items-center gap-2 md:gap-4">
-        <button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          aria-label="Toggle theme"
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-5 h-5 text-yellow-500" />
-          ) : (
-            <Moon className="w-5 h-5 text-gray-600" />
-          )}
-        </button>
+        <Tooltip content={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'} position="bottom">
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label={`Toggle theme (currently ${theme})`}
+          >
+            {theme === 'dark' ? (
+              <Sun className="w-5 h-5 text-yellow-500" />
+            ) : (
+              <Moon className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
+        </Tooltip>
 
         {isAuthenticated ? (
           <div className="relative" ref={menuRef}>
@@ -117,7 +120,7 @@ const Header = () => {
         ) : (
           <div className="flex items-center gap-2 md:gap-3">
             <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-xs md:text-sm px-3 md:px-4">Log In</Button>
+              <Button variant="ghost" size="sm" className="text-xs md:text-sm px-3 md:px-4 border border-gray-200 dark:border-gray-700">Log In</Button>
             </Link>
             <Link to="/signup">
               <Button variant="primary" size="sm" className="text-xs md:text-sm px-3 md:px-4">Sign Up</Button>

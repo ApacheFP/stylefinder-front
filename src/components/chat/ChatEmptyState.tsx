@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Shirt, Briefcase, PartyPopper, Search, Layers } from 'lucide-react';
+import { Shirt, Briefcase, PartyPopper, Search, Layers } from 'lucide-react';
+import ParticleBackground from '../ui/ParticleBackground';
 import { staggerContainer, staggerItem } from '../../utils/animations';
 
 interface ChatEmptyStateProps {
@@ -31,111 +32,132 @@ const ChatEmptyState = ({ isLoggedIn, userName, onSuggestionClick }: ChatEmptySt
   const showSuggestions = !!onSuggestionClick;
 
   return (
-    <motion.div
-      className="h-full flex flex-col items-center justify-center text-center px-4"
-      initial="hidden"
-      animate="visible"
-      variants={staggerContainer}
-    >
-      {/* Title */}
-      <motion.div variants={staggerItem} className="mb-8">
-        {isLoggedIn ? (
-          <>
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <div className="p-3 bg-primary/10 rounded-2xl">
-                <Sparkles className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-            <h2 className="text-[32px] font-roboto font-bold text-text-dark dark:text-white mb-2">
-              Hi {userName}!
-            </h2>
-            <p className="font-inter text-[16px] text-text-light dark:text-gray-400 max-w-md mx-auto">
-              {showSuggestions ? 'Ready to find your perfect look? Choose a style below or type your own.' : 'How can I help you today?'}
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <div className="p-3 bg-primary/10 rounded-2xl">
-                <Sparkles className="w-8 h-8 text-primary" />
-              </div>
-            </div>
-            <h2 className="text-[32px] font-roboto font-bold text-text-medium mb-2">
-              StyleFinder AI
-            </h2>
-            <p className="font-inter text-[16px] text-text-light">
-              Ask me for a style tip to get started
-            </p>
-          </>
-        )}
-      </motion.div>
+    <div className="h-full relative overflow-hidden">
+      {/* Particle Background */}
+      <ParticleBackground />
 
-      {/* Suggestions - Only show if enabled */}
-      {showSuggestions && (
-        <motion.div
-          variants={staggerItem}
-          className="max-w-2xl w-full"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <motion.div
+        className="h-full flex flex-col items-center justify-center text-center px-4 relative z-10"
+        initial="hidden"
+        animate="visible"
+        variants={staggerContainer}
+      >
+        {/* Title */}
+        <motion.div variants={staggerItem} className="mb-8">
+          {isLoggedIn ? (
+            <>
+              <h2 className="text-[32px] font-roboto font-bold text-text-dark dark:text-white mb-2">
+                Hi {userName}!
+              </h2>
+              <p className="font-inter text-[16px] text-text-light dark:text-gray-400 max-w-md mx-auto">
+                {showSuggestions ? 'Ready to find your perfect look? Choose a style below or type your own.' : 'How can I help you today?'}
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-[32px] font-roboto font-bold text-text-medium dark:text-white mb-2">
+                StyleFinder AI
+              </h2>
+              <p className="text-sm md:text-base font-inter text-text-medium dark:text-gray-300 mb-3">
+                What would you like to find today?
+              </p>
+            </>
+          )}
+        </motion.div>
+
+        {/* Suggestions */}
+        {showSuggestions && (
+          <motion.div
+            variants={staggerItem}
+            className="w-full max-w-2xl grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4"
+          >
             {SUGGESTIONS.map((suggestion, index) => {
               const Icon = suggestion.icon;
               return (
                 <motion.button
                   key={index}
                   onClick={() => onSuggestionClick?.(suggestion.prompt)}
-                  className="flex flex-col items-center gap-3 p-5 bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-2xl hover:border-primary dark:hover:border-primary hover:shadow-lg hover:shadow-primary/5 transition-all text-center group h-full"
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-100 dark:border-gray-700 rounded-xl p-4 md:p-5 text-center transition-all duration-300 hover:border-primary dark:hover:border-primary-light hover:shadow-xl dark:hover:shadow-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/30 overflow-hidden"
+                  whileHover={{
+                    scale: 1.05,
+                    y: -5,
+                    transition: { duration: 0.2, type: "spring", stiffness: 300 }
+                  }}
                   whileTap={{ scale: 0.98 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  aria-label={suggestion.text}
                 >
-                  <div className="w-12 h-12 bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center group-hover:bg-primary/10 dark:group-hover:bg-primary/20 transition-colors">
-                    <Icon className="w-6 h-6 text-gray-400 dark:text-gray-400 group-hover:text-primary dark:group-hover:text-primary-light transition-colors" />
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:animate-shimmer" />
+
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent dark:from-primary/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  <div className="relative z-10 flex flex-col items-center gap-3">
+                    <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
+                      <Icon className="w-5 h-5 text-primary dark:text-primary-light group-hover:text-white transition-colors duration-300" />
+                    </div>
+                    <p className="font-inter text-sm font-medium text-text-dark dark:text-gray-100 group-hover:text-primary dark:group-hover:text-primary-light transition-colors duration-300">
+                      {suggestion.text}
+                    </p>
                   </div>
-                  <span className="font-inter text-[14px] font-medium text-text-dark dark:text-gray-200 group-hover:text-primary dark:group-hover:text-primary-light transition-colors">
-                    {suggestion.text}
-                  </span>
+
+                  {/* Arrow indicator */}
+                  <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-x-2 group-hover:translate-x-0">
+                    <Search className="w-4 h-4 text-primary dark:text-primary-light" />
+                  </div>
                 </motion.button>
               );
             })}
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
 
-      {/* Feature Cards - Only show if suggestions are enabled */}
-      {showSuggestions && (
-        <motion.div
-          variants={staggerItem}
-          className="mt-12 max-w-lg w-full mx-auto"
-        >
-          <div className="flex items-center gap-2 mb-3 justify-center opacity-60">
-            <span className="h-px w-12 bg-gray-300 dark:bg-gray-700"></span>
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">Or upload a photo to</span>
-            <span className="h-px w-12 bg-gray-300 dark:bg-gray-700"></span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all">
-              <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-500 dark:text-blue-400">
-                <Search className="w-5 h-5" />
-              </div>
-              <div className="text-center">
-                <h4 className="text-sm font-bold text-gray-900 dark:text-white">Find Similar</h4>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">Discover items matching your photo</p>
-              </div>
+        {/* Feature Cards - Only show if suggestions are enabled */}
+        {showSuggestions && (
+          <motion.div
+            variants={staggerItem}
+            className="mt-12 max-w-lg w-full mx-auto"
+          >
+            {/* Divider with "or" */}
+            <div className="flex items-center gap-3 mb-6 justify-center">
+              <span className="h-px flex-1 bg-gray-300 dark:bg-gray-700"></span>
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">OR UPLOAD A PHOTO TO</span>
+              <span className="h-px flex-1 bg-gray-300 dark:bg-gray-700"></span>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all">
-              <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-500 dark:text-purple-400">
-                <Layers className="w-5 h-5" />
-              </div>
-              <div className="text-center">
-                <h4 className="text-sm font-bold text-gray-900 dark:text-white">Complete Outfit</h4>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">Get matching pieces for your item</p>
-              </div>
+            <div className="grid grid-cols-2 gap-4">
+              <motion.div
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-default"
+                whileHover={{ scale: 1.03 }}
+              >
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-500 dark:text-blue-400">
+                  <Search className="w-5 h-5" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">Find Similar</h4>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">Discover items matching your photo</p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-default"
+                whileHover={{ scale: 1.03 }}
+              >
+                <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-500 dark:text-purple-400">
+                  <Layers className="w-5 h-5" />
+                </div>
+                <div className="text-center">
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">Complete Outfit</h4>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">Get matching pieces for your item</p>
+                </div>
+              </motion.div>
             </div>
-          </div>
-        </motion.div>
-      )}
-    </motion.div>
+          </motion.div>
+        )}
+      </motion.div>
+    </div>
   );
 };
 

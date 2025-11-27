@@ -4,7 +4,7 @@ export const useScrollToBottom = (dependency: any) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
-  const scrollTimeoutRef = useRef<number>();
+  const scrollTimeoutRef = useRef<number | null>(null);
 
   // Scroll to bottom smoothly
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {

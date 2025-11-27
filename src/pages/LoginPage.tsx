@@ -3,13 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import { showToast } from '../utils/toast';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -20,9 +21,12 @@ const LoginPage = () => {
 
     try {
       await login(email, password);
+      showToast.success('Welcome back!');
       navigate('/chat');
     } catch (err) {
-      setError('Invalid email or password');
+      const errorMessage = 'Invalid email or password';
+      setError(errorMessage);
+      showToast.error(errorMessage);
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);

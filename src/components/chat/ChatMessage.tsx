@@ -5,6 +5,7 @@ import type { ChatMessage as ChatMessageType } from '../../types';
 import ProductCard from '../ui/ProductCard';
 import ProductCarousel from '../ui/ProductCarousel';
 import Button from '../ui/Button';
+import ImageAttachment from './ImageAttachment';
 import { fadeInUp } from '../../utils/animations';
 
 interface ChatMessageProps {
@@ -23,14 +24,14 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
         initial="hidden"
         animate="visible"
         variants={fadeInUp}
+        role="article"
+        aria-label="User message"
       >
-        <div className="bg-primary text-white font-inter px-6 py-3 rounded-2xl max-w-3xl">
+        <div className="bg-primary text-white font-inter px-6 py-3 rounded-xl max-w-3xl">
           {message.imageUrl && (
-            <img
-              src={message.imageUrl}
-              alt="User uploaded"
-              className="rounded-lg mb-2 max-w-xs max-h-64 object-cover"
-            />
+            <div className="mb-3">
+              <ImageAttachment imageUrl={message.imageUrl} altText="User uploaded" />
+            </div>
           )}
           {message.content}
         </div>
@@ -44,12 +45,14 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
       initial="hidden"
       animate="visible"
       variants={fadeInUp}
+      role="article"
+      aria-label="Assistant message"
     >
       <div className="max-w-full">
         {/* Unified white background container */}
-        <div className="bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-2xl p-6">
+        <div className="bg-white dark:bg-gray-800 border border-border dark:border-gray-600 rounded-xl p-6">
           {/* Message content */}
-          <div className="font-inter text-text-dark dark:text-white mb-4">{message.content}</div>
+          <div className="font-inter text-text-dark dark:text-gray-100 mb-4">{message.content}</div>
 
           {message.outfit && (
             <>
@@ -60,7 +63,8 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
                 </h3>
                 <button
                   onClick={() => setSelectedProductIndex(0)}
-                  className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover transition-colors bg-primary/5 hover:bg-primary/10 px-2 py-1 rounded-md"
+                  className="flex items-center gap-1.5 text-xs font-medium text-primary dark:text-primary-light hover:text-primary-hover dark:hover:text-primary transition-colors bg-primary/5 hover:bg-primary/10 dark:bg-primary/10 dark:hover:bg-primary/20 px-2 py-1 rounded-md"
+                  aria-label="View product gallery"
                 >
                   <Maximize2 className="w-3 h-3" />
                   View Gallery
@@ -94,14 +98,15 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
                   onClick={() => onExplainOutfit(message.id, message.outfit!.id)}
                   disabled={isLoadingExplanation}
                   className="mb-4 rounded-lg"
+                  aria-label="Explain this outfit"
                 >
                   {isLoadingExplanation ? (
                     <div className="flex items-center gap-2">
                       <span>Generating explanation</span>
                       <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 bg-text-medium rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-1.5 h-1.5 bg-text-medium rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-1.5 h-1.5 bg-text-medium rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
                     </div>
                   ) : (
@@ -114,6 +119,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
                   size="sm"
                   disabled
                   className="mb-4 rounded-lg opacity-50 cursor-not-allowed"
+                  aria-label="Explanation already shown below"
                 >
                   Explanation shown below
                 </Button>
@@ -121,8 +127,8 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
 
               {/* Explanation - Show if it exists */}
               {message.outfit.explanation && (
-                <div className="bg-gray-50 dark:bg-gray-700/50 border border-border dark:border-gray-700 rounded-xl p-6 mt-4">
-                  <h4 className="font-roboto font-bold text-text-dark dark:text-white mb-3">
+                <div className="bg-gray-50 dark:bg-gray-700/50 border border-border dark:border-gray-600 rounded-xl p-6 mt-4">
+                  <h4 className="font-roboto font-bold text-text-dark dark:text-gray-100 mb-3">
                     Why this outfit works:
                   </h4>
                   <p className="font-inter text-text-dark dark:text-gray-200 leading-relaxed">

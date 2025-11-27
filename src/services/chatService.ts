@@ -113,7 +113,7 @@ export const chatService = {
   // Get chat history (list of conversations)
   getChatHistory: async (): Promise<ChatHistory[]> => {
     const response = await api.get<{ success: boolean; conversations: BackendConversation[] }>('/conversations');
-    
+
     return response.data.conversations.map((conv) => ({
       id: String(conv.id),
       title: conv.title,
@@ -126,11 +126,11 @@ export const chatService = {
     // Use POST with JSON body since GET with body is not standard
     // Backend expects conv_id in JSON body
     const response = await api.post<BackendMessage[]>('/chat', { conv_id: convId });
-    
+
     return response.data.map((msg, index) => {
       const messageType = msg.type ?? 0; // Default to 0 (outfit) if not provided
       const hasOutfit = messageType === 0 && msg.outfits && msg.outfits.length > 0;
-      
+
       return {
         id: msg.message_id?.toString() || String(index),
         role: msg.role === 'ai' ? 'assistant' as const : 'user' as const,
@@ -168,7 +168,7 @@ export const chatService = {
   // type: 0 = outfit response, 1 = normal text message
   transformOutfitResponse: (backendResponse: BackendOutfitResponse) => {
     const responseType = backendResponse.type ?? 0; // Default to 0 (outfit) if not provided
-    
+
     // Type 1: Normal message (no outfit)
     if (responseType === 1) {
       return {
@@ -179,7 +179,7 @@ export const chatService = {
         explanation: '',
       };
     }
-    
+
     // Type 0: Outfit response (default)
     return {
       type: 0 as const,

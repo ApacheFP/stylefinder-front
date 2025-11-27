@@ -13,7 +13,7 @@ export const useImageUpload = () => {
       showToast.error('Please select an image file (JPEG, PNG, WebP)');
       return false;
     }
-    
+
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       showToast.error('Image size must be less than 5MB');
@@ -21,7 +21,7 @@ export const useImageUpload = () => {
     }
 
     setSelectedImage(file);
-    
+
     // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -29,7 +29,7 @@ export const useImageUpload = () => {
       showToast.success('Image attached successfully');
     };
     reader.readAsDataURL(file);
-    
+
     return true;
   };
 

@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useRef } from 'react';
-import { Paperclip, Send, X } from 'lucide-react';
+import { Plus, Send, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ChatInputProps {
@@ -73,29 +73,29 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                     </button>
                   </div>
                 </div>
-                <div className="absolute -bottom-6 left-0 text-xs text-text-light truncate max-w-[200px]">
-                  {selectedImage?.name}
-                </div>
+
               </motion.div>
             )}
           </AnimatePresence>
 
           {/* Input Box */}
-          <div className="flex gap-3 items-end bg-white dark:bg-gray-800 border border-[#CED4DA] dark:border-gray-700 rounded-[24px] shadow-sm hover:shadow-md transition-shadow p-2 pl-4 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary">
+          <div className="flex gap-3 items-end bg-white dark:bg-gray-800 border border-[#CED4DA] dark:border-gray-600 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-2 pl-4 focus-within:ring-4 focus-within:ring-primary/20 focus-within:border-primary">
             <input
               type="file"
               ref={fileInputRef}
               accept="image/*"
               onChange={onImageSelect}
               className="hidden"
+              aria-label="Upload image file"
             />
             <button
               onClick={() => fileInputRef.current?.click()}
               className="mb-2 text-text-medium hover:text-primary transition-colors cursor-pointer p-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full"
               title="Upload image"
               type="button"
+              aria-label="Upload image"
             >
-              <Paperclip className="w-5 h-5" />
+              <Plus className="w-5 h-5" />
             </button>
 
             <textarea
@@ -109,8 +109,9 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
               onKeyDown={handleKeyDown}
               placeholder="Ask me for a style tip..."
               rows={1}
-              className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-gray-400 focus:outline-none bg-transparent resize-none max-h-[200px] overflow-y-auto"
-              style={{ minHeight: '44px' }}
+              className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-gray-400 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus:border-transparent bg-transparent resize-none max-h-[200px] overflow-y-auto placeholder-shimmer"
+              style={{ minHeight: '44px', outline: 'none', border: 'none', boxShadow: 'none' }}
+              aria-label="Message input"
             />
 
             <motion.button

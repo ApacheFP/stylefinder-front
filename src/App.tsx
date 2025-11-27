@@ -9,6 +9,8 @@ import SignUpPage from './pages/SignUpPage';
 import PreferencesPage from './pages/PreferencesPage';
 import ChatPage from './pages/ChatPage';
 import ProfilePage from './pages/ProfilePage';
+import HowToUsePage from './pages/HowToUsePage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Wrapper for page transitions
 const PageTransition = ({ children }: { children: React.ReactNode }) => (
@@ -32,10 +34,19 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<PageTransition><LandingPage /></PageTransition>} />
         <Route path="/login" element={<PageTransition><LoginPage /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><SignUpPage /></PageTransition>} />
-        <Route path="/preferences" element={<PageTransition><PreferencesPage /></PageTransition>} />
+        <Route path="/preferences" element={
+          <ProtectedRoute>
+            <PageTransition><PreferencesPage /></PageTransition>
+          </ProtectedRoute>
+        } />
         <Route path="/chat" element={<PageTransition><ChatPage /></PageTransition>} />
         <Route path="/chat/:chatId" element={<PageTransition><ChatPage /></PageTransition>} />
-        <Route path="/profile" element={<PageTransition><ProfilePage /></PageTransition>} />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <PageTransition><ProfilePage /></PageTransition>
+          </ProtectedRoute>
+        } />
+        <Route path="/how-to-use" element={<PageTransition><HowToUsePage /></PageTransition>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AnimatePresence>

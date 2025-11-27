@@ -5,18 +5,50 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-background text-text-dark antialiased dark:bg-gray-900 dark:text-white;
-    font-family: 'Roboto', sans-serif;
+  :root {
+    /* Design System - Spacing Scale */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-2xl: 32px;
+
+    /* Design System - Border Radius Scale */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
 
     /* Skeleton variables */
     --skeleton-base: #e5e7eb;
     --skeleton-highlight: #f3f4f6;
   }
 
-  .dark body {
+  .dark {
     --skeleton-base: #374151;
     --skeleton-highlight: #4b5563;
+  }
+
+  body {
+    @apply bg-background text-text-dark antialiased dark:bg-gray-900 dark:text-gray-100;
+    font-family: 'Roboto', sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Smooth theme transition for all elements */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, border-color, color, fill, stroke, shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+
+  /* Improved accessibility - focus-visible for keyboard navigation */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-white dark:ring-offset-gray-900;
   }
 }
 
@@ -60,6 +92,60 @@
     animation: fadeIn 0.3s ease-out;
   }
 
+  /* Pulse animation for micro-interactions */
+  @keyframes pulse-once {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-pulse-once {
+    animation: pulse-once 0.3s ease-out;
+  }
+
+  /* Ripple effect for buttons */
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .ripple-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ripple-effect::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+    margin-left: -50px;
+    top: 50%;
+    left: 50%;
+    animation: ripple 0.6s;
+    opacity: 0;
+  }
+
+  .ripple-effect:active::after {
+    animation: ripple 0.6s;
+  }
+
   /* Smooth scale on hover */
   .hover-scale {
     @apply transition-transform duration-200 ease-out;
@@ -69,34 +155,67 @@
     transform: scale(1.02);
   }
 
-  /* Custom Scrollbar - Refined */
+  /* Custom Scrollbar - Enhanced visibility */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-transparent;
+    @apply bg-gray-100 dark:bg-gray-800 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-700 rounded-full transition-colors duration-200;
+    @apply bg-gray-400 dark:bg-gray-600 rounded-full transition-colors duration-200;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-600;
+    @apply bg-gray-500 dark:bg-gray-500;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
 
 @layer utilities {
 
-  /* Subtle Focus Ring */
+  /* Enhanced Focus Ring for accessibility */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200;
+  }
+
+  .focus-ring-thick {
+    @apply focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all duration-200;
   }
 
   /* Glass Panel */
   .glass-panel {
     @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-white/20 shadow-sm;
+  }
+
+  /* Placeholder animation */
+  @keyframes shimmer {
+    0% {
+      opacity: 0.6;
+    }
+
+    50% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0.6;
+    }
+  }
+
+  .placeholder-shimmer::placeholder {
+    animation: shimmer 2s ease-in-out infinite;
   }
 }

@@ -9,9 +9,9 @@ interface SkeletonProps {
 const Skeleton = ({
   className = '',
   variant = 'text',
-  animation = 'pulse'
+  animation = 'wave'
 }: SkeletonProps) => {
-  const baseStyles = 'bg-gray-200';
+  const baseStyles = 'bg-gray-200 dark:bg-gray-700';
 
   const variants = {
     text: 'h-4 rounded',
@@ -21,26 +21,32 @@ const Skeleton = ({
 
   return (
     <motion.div
-      className={`${baseStyles} ${variants[variant]} ${className} dark:bg-gray-700`}
+      className={`${baseStyles} ${variants[variant]} ${className} overflow-hidden relative`}
       animate={
         animation === 'pulse'
-          ? { opacity: [0.6, 1, 0.6] }
-          : { backgroundPosition: ['200% 0', '-200% 0'] }
+          ? { opacity: [0.5, 1, 0.5] }
+          : {}
       }
       transition={{
         duration: 1.5,
         repeat: Infinity,
-        ease: animation === 'pulse' ? 'easeInOut' : 'linear',
+        ease: 'easeInOut',
       }}
-      style={
-        animation === 'wave'
-          ? {
-            background: 'linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%)',
-            backgroundSize: '200% 100%',
-          }
-          : undefined
-      }
-    />
+    >
+      {animation === 'wave' && (
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-gray-600/30 to-transparent"
+          animate={{
+            x: ['-100%', '100%'],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+        />
+      )}
+    </motion.div>
   );
 };
 

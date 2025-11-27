@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import { showToast } from '../utils/toast';
 
 const SignUpPage = () => {
   const [name, setName] = useState('');
@@ -10,7 +11,7 @@ const SignUpPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -21,9 +22,12 @@ const SignUpPage = () => {
 
     try {
       await signUp(name, email, password);
+      showToast.success('Account created successfully!');
       navigate('/preferences');
     } catch (err) {
-      setError('Failed to create account. Please try again.');
+      const errorMessage = 'Failed to create account. Please try again.';
+      setError(errorMessage);
+      showToast.error(errorMessage);
       console.error('SignUp error:', err);
     } finally {
       setIsLoading(false);

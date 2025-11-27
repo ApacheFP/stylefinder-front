@@ -1,23 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import Button from '../components/ui/Button';
+import Skeleton from '../components/ui/Skeleton';
 import { preferencesService } from '../services/preferencesService';
 import { showToast } from '../utils/toast';
+import { triggerSuccessConfetti } from '../utils/confetti';
 
 const PreferencesPage = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingPrefs, setIsLoadingPrefs] = useState(true);
 
-  // Nuove opzioni dinamiche
-  const [availableStyles, setAvailableStyles] = useState<string[]>([]);
-  const [availableColors, setAvailableColors] = useState<string[]>([]);
-
   // Usa Record<string, any> per gestire preferenze dinamiche
   const [preferences, setPreferences] = useState<Record<string, any>>({});
 
   // Lista preferenze dinamiche
   const [allPreferences, setAllPreferences] = useState<Array<{ id: number; name: string }>>([]);
+
+  // Calculate selected preferences count
+  const selectedCount = useMemo(() => {
+    return Object.values(preferences).filter(v => v === 'true' || v === true).length + (preferences.gender ? 1 : 0);
+  }, [preferences]);
 
   // Load existing preferences and available options on mount
   useEffect(() => {
@@ -46,10 +50,6 @@ const PreferencesPage = () => {
     setPreferences((prev) => ({ ...prev, [prefName]: value }));
   };
 
-  const handleGenderChange = (gender: 'man' | 'woman' | 'non-binary') => {
-    setPreferences({ ...preferences, gender });
-  };
-
 
 
   const handleSave = async () => {
@@ -57,8 +57,11 @@ const PreferencesPage = () => {
     try {
       const success = await preferencesService.updatePreferences(preferences);
       if (success) {
+        triggerSuccessConfetti();
         showToast.success('Preferences saved!');
-        navigate('/chat');
+        setTimeout(() => {
+          navigate('/chat');
+        }, 500);
       } else {
         showToast.error('Failed to save preferences');
       }
@@ -77,10 +80,37 @@ const PreferencesPage = () => {
   // Show loading while fetching existing preferences
   if (isLoadingPrefs) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading preferences...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+        <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+          <div className="text-center mb-8">
+            <Skeleton className="w-48 h-8 mx-auto mb-4" />
+          </div>
+
+          {/* Gender skeleton */}
+          <div className="mb-8">
+            <Skeleton className="w-24 h-6 mb-4" />
+            <div className="flex gap-4">
+              <Skeleton className="flex-1 h-12" />
+              <Skeleton className="flex-1 h-12" />
+              <Skeleton className="flex-1 h-12" />
+            </div>
+          </div>
+
+          {/* Styles skeleton */}
+          <div className="mb-8">
+            <Skeleton className="w-32 h-6 mb-4" />
+            <div className="flex flex-wrap gap-2">
+              {[1, 2, 3, 4, 5, 6].map(i => (
+                <Skeleton key={i} className="w-24 h-10 rounded-full" />
+              ))}
+            </div>
+          </div>
+
+          {/* Buttons skeleton */}
+          <div className="flex gap-4">
+            <Skeleton className="flex-1 h-12" />
+            <Skeleton className="flex-1 h-12" />
+          </div>
         </div>
       </div>
     );
@@ -89,9 +119,39 @@ const PreferencesPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">
       <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
-        <h1 className="text-xl md:text-2xl font-bold text-center text-gray-900 dark:text-white mb-6 md:mb-8">
+        <h1 className="text-xl md:text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
           Your Preferences
         </h1>
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+          Personalize your StyleFinder experience
+        </p>
+
+        {!isLoadingPrefs && allPreferences.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400">
+              Unable to load preferences options. Please try again later.
+            </p>
+            <Button
+              variant="outline"
+              className="mt-4"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </Button>
+          </div>
+        )}
+
+        {/* Preferences Summary Card */}
+        {selectedCount > 0 && (
+          <div className="mb-6 p-4 bg-primary/5 dark:bg-primary/10 border border-primary/20 rounded-xl">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary dark:text-primary-light" />
+              <p className="text-sm font-medium text-primary dark:text-primary-light">
+                {selectedCount} preference{selectedCount !== 1 ? 's' : ''} selected
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Gender Section */}
         {allPreferences.find(p => p.name === 'gender') && (

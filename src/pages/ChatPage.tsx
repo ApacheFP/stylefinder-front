@@ -2,8 +2,8 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
 import { useImageUpload } from '../hooks/useImageUpload';
-// import { useScrollToBottom } from '../hooks/useScrollToBottom'; // 🔧 DISABLED
-// import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'; // 🔧 DISABLED
+import { useScrollToBottom } from '../hooks/useScrollToBottom';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import HamburgerMenu from '../components/ui/HamburgerMenu';
@@ -13,6 +13,7 @@ import ChatMessage from '../components/chat/ChatMessage';
 import ChatInput from '../components/chat/ChatInput';
 import DragDropOverlay from '../components/chat/DragDropOverlay';
 import TypingIndicator from '../components/ui/TypingIndicator';
+import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
 import { chatService } from '../services/chatService';
 import type { ChatHistory } from '../types';
 
@@ -57,10 +58,8 @@ const ChatPage = () => {
     clearImage,
   } = useImageUpload();
 
-  // 🔧 FEATURE DISABLED: Scroll behavior (uncomment to enable)
-  // const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const handleScroll = () => { };
+  // Auto-scroll behavior
+  const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
 
   // Sidebar state for mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -116,9 +115,43 @@ const ChatPage = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // 🔧 FEATURE DISABLED: Keyboard shortcuts (uncomment to enable)
-  const _inputRef = useRef<HTMLInputElement>(null);
-  // useKeyboardShortcuts([...]);
+  // Keyboard shortcuts
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useKeyboardShortcuts([
+    {
+      key: 'k',
+      metaKey: true,
+      action: () => {
+        handleNewChat();
+      },
+      description: 'New chat',
+    },
+    {
+      key: 'k',
+      ctrlKey: true,
+      action: () => {
+        handleNewChat();
+      },
+      description: 'New chat (Windows/Linux)',
+    },
+    {
+      key: '/',
+      metaKey: true,
+      action: () => {
+        inputRef.current?.focus();
+      },
+      description: 'Focus input',
+    },
+    {
+      key: '/',
+      ctrlKey: true,
+      action: () => {
+        inputRef.current?.focus();
+      },
+      description: 'Focus input (Windows/Linux)',
+    },
+  ]);
 
   const handleNewChat = () => {
     clearMessages();
@@ -146,33 +179,6 @@ const ChatPage = () => {
       setInputMessage('');
       clearImage();
     });
-  };
-
-  const handleDeleteChat = async (chatId: string) => {
-    try {
-      await chatService.deleteConversation(chatId);
-      setChatHistory((prev) => prev.filter((chat) => chat.id !== chatId));
-
-      // If we deleted the current chat, clear messages
-      if (chatId === currentChatId) {
-        clearMessages();
-      }
-    } catch (error) {
-      console.error('Failed to delete chat:', error);
-    }
-  };
-
-  const handleRenameChat = async (chatId: string, newTitle: string) => {
-    try {
-      await chatService.renameConversation(chatId, newTitle);
-      setChatHistory((prev) =>
-        prev.map((chat) =>
-          chat.id === chatId ? { ...chat, title: newTitle } : chat
-        )
-      );
-    } catch (error) {
-      console.error('Failed to rename chat:', error);
-    }
   };
 
   const showEmptyState = messages.length === 0;
@@ -261,12 +267,12 @@ const ChatPage = () => {
           )}
         </div>
 
-        {/* 🔧 FEATURE DISABLED: Scroll to Bottom Button (uncomment to enable) */}
-        {/* <ScrollToBottomButton show={showScrollButton} onClick={() => scrollToBottom()} /> */}
+        {/* Scroll to Bottom Button */}
+        <ScrollToBottomButton show={showScrollButton} onClick={() => scrollToBottom()} />
 
         {/* Input Area */}
         <ChatInput
-          // ref={inputRef} // 🔧 DISABLED - uncomment when enabling keyboard shortcuts
+          ref={inputRef}
           inputMessage={inputMessage}
           setInputMessage={setInputMessage}
           imagePreview={imagePreview}
@@ -276,6 +282,11 @@ const ChatPage = () => {
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
         />
+
+        {/* Accessibility: Announce new messages to screen readers */}
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          {messages.length > 0 && `${messages.length} messages in conversation`}
+        </div>
       </div>
     </div>
   );

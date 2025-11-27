@@ -23,19 +23,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseStyles = 'inline-flex items-center justify-center font-inter font-bold rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation';
+    const baseStyles = 'inline-flex items-center justify-center font-inter font-bold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation ripple-effect';
 
     const variants = {
-      primary: 'bg-primary text-white hover:bg-primary-hover hover:brightness-110 focus:ring-primary active:brightness-90',
-      secondary: 'bg-gray-200 dark:bg-gray-700 text-text-dark dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 hover:brightness-95 focus:ring-gray-500 active:brightness-90',
-      outline: 'border border-border-input dark:border-gray-600 text-text-dark dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-gray-500 active:bg-gray-100 dark:active:bg-gray-600',
-      ghost: 'text-text-medium dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-text-dark dark:hover:text-white focus:ring-gray-500 active:bg-gray-100 dark:active:bg-gray-700',
+      primary: 'bg-primary text-white hover:bg-primary-hover hover:brightness-110 focus:ring-primary/30 active:brightness-90 shadow-sm hover:shadow-md',
+      secondary: 'bg-gray-200 dark:bg-gray-700 text-text-dark dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 hover:brightness-95 focus:ring-gray-500/30 active:brightness-90',
+      outline: 'border-2 border-border-input dark:border-gray-600 text-text-dark dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-gray-500/30 active:bg-gray-100 dark:active:bg-gray-600',
+      ghost: 'text-text-medium dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-text-dark dark:hover:text-white focus:ring-gray-500/30 active:bg-gray-100 dark:active:bg-gray-700',
     };
 
     const sizes = {
-      sm: 'px-4 py-2 min-h-[44px] text-[13px]',
-      md: 'px-5 py-2.5 min-h-[44px] text-[14px]',
-      lg: 'px-6 py-3 min-h-[48px] text-[14px]',
+      sm: 'px-4 py-2 min-h-[44px] text-[13px] rounded-lg',
+      md: 'px-5 py-2.5 min-h-[44px] text-[14px] rounded-xl',
+      lg: 'px-6 py-3 min-h-[48px] text-[15px] rounded-xl',
     };
 
     return (
@@ -47,6 +47,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         whileHover={!disabled && !isLoading ? { scale: 1.02 } : undefined}
         type={props.type}
         onClick={props.onClick}
+        onSubmit={props.onSubmit}
+        form={props.form}
+        name={props.name}
+        value={props.value}
+        aria-label={props['aria-label']}
+        aria-describedby={props['aria-describedby']}
+        aria-disabled={disabled || isLoading}
       >
         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {children}

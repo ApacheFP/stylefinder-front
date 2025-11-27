@@ -1,12 +1,18 @@
 import { Link } from 'react-router-dom';
 import { Sparkles, MessageSquare, TrendingUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Button from '../components/ui/Button';
+import ParticleBackground from '../components/ui/ParticleBackground';
+import { staggerContainer, fadeInUp, staggerItem } from '../utils/animations';
 
 const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Particle Background */}
+      <ParticleBackground />
+
       {/* Header */}
-      <header className="bg-white border-b border-border">
+      <header className="bg-white/80 backdrop-blur-md border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
           <h1 className="text-xl md:text-2xl font-roboto font-bold text-text-dark">
             StyleFinder AI
@@ -20,58 +26,90 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <main className="container mx-auto px-4 md:px-6 py-12 md:py-16 lg:py-20 text-center">
-        <div className="max-w-3xl mx-auto">
+      <main className="container mx-auto px-4 md:px-6 py-12 md:py-16 lg:py-20 text-center relative z-10">
+        <motion.div
+          className="max-w-3xl mx-auto"
+          initial="hidden"
+          animate="visible"
+          variants={staggerContainer}
+        >
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-roboto font-bold text-text-dark mb-4 md:mb-6 leading-tight">
+          <motion.h2
+            variants={fadeInUp}
+            className="text-3xl md:text-4xl lg:text-5xl font-roboto font-bold text-text-dark mb-4 md:mb-6 leading-tight"
+          >
             Find Your Perfect Outfit <br className="hidden sm:block" />
             <span className="text-primary">in Seconds</span>
-          </h2>
-          
-          <p className="text-base md:text-lg font-inter text-text-medium mb-6 md:mb-8 leading-relaxed max-w-2xl mx-auto">
+          </motion.h2>
+
+          <motion.p
+            variants={fadeInUp}
+            className="text-base md:text-lg font-inter text-text-medium mb-6 md:mb-8 leading-relaxed max-w-2xl mx-auto"
+          >
             Tell us what you need in natural language and get AI-powered outfit recommendations
             curated from top e-commerce platforms. Smart, fast, and personalized.
-          </p>
-          
-          <Link to="/chat">
-            <Button variant="primary" size="lg" className="text-base md:text-lg px-6 md:px-8 py-3 shadow-lg hover:shadow-xl transition-shadow">
-              Get Started
-            </Button>
-          </Link>
-        </div>
+          </motion.p>
+
+          <motion.div variants={fadeInUp}>
+            <Link to="/chat">
+              <Button variant="primary" size="lg" className="text-base md:text-lg px-6 md:px-8 py-3 shadow-lg hover:shadow-xl transition-shadow relative overflow-hidden group">
+                <span className="relative z-10">Get Started</span>
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 skew-x-12" />
+              </Button>
+            </Link>
+          </motion.div>
+        </motion.div>
 
         {/* Features */}
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 md:mt-16 max-w-5xl mx-auto">
-          <div className="group bg-white p-6 rounded-xl shadow-sm border border-border hover:shadow-lg hover:border-primary/20 transition-all">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+        <motion.div
+          className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12 md:mt-16 max-w-5xl mx-auto"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+        >
+          <motion.div
+            variants={staggerItem}
+            className="group bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-border hover:shadow-lg hover:border-primary/20 transition-all"
+            whileHover={{ y: -5 }}
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto">
               <MessageSquare className="w-6 h-6 text-primary" />
             </div>
             <h3 className="text-lg md:text-xl font-roboto font-semibold text-text-dark mb-2">Natural Language</h3>
             <p className="font-inter text-sm md:text-base text-text-medium leading-relaxed">
               Just describe what you're looking for - "a casual summer outfit for a picnic, budget under €100"
             </p>
-          </div>
+          </motion.div>
 
-          <div className="group bg-white p-6 rounded-xl shadow-sm border border-border hover:shadow-lg hover:border-primary/20 transition-all">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <motion.div
+            variants={staggerItem}
+            className="group bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-border hover:shadow-lg hover:border-primary/20 transition-all"
+            whileHover={{ y: -5 }}
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto">
               <Sparkles className="w-6 h-6 text-purple-600" />
             </div>
             <h3 className="text-lg md:text-xl font-roboto font-semibold text-text-dark mb-2">AI-Powered</h3>
             <p className="font-inter text-sm md:text-base text-text-medium leading-relaxed">
               Advanced NLP and embeddings understand your style, budget, and occasion perfectly
             </p>
-          </div>
+          </motion.div>
 
-          <div className="group bg-white p-6 rounded-xl shadow-sm border border-border hover:shadow-lg hover:border-primary/20 transition-all sm:col-span-2 md:col-span-1">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <motion.div
+            variants={staggerItem}
+            className="group bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-border hover:shadow-lg hover:border-primary/20 transition-all sm:col-span-2 md:col-span-1"
+            whileHover={{ y: -5 }}
+          >
+            <div className="w-12 h-12 bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto">
               <TrendingUp className="w-6 h-6 text-pink-600" />
             </div>
             <h3 className="text-lg md:text-xl font-roboto font-semibold text-text-dark mb-2">Personalized</h3>
             <p className="font-inter text-sm md:text-base text-text-medium leading-relaxed">
               Save your preferences and get increasingly accurate recommendations over time
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </main>
     </div>
   );
