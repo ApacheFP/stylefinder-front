@@ -122,25 +122,26 @@ export const mockAuth = {
     throw new Error('Invalid credentials');
   },
 
-  signUp: async (name: string, email: string, password: string) => {
+  signUp: async (name: string, email: string, _password: string) => {
     await delay(1000);
     return {
-      user: { ...mockUser, name, email },
-      token: 'mock-jwt-token-' + Date.now(),
+      id: '1',
+      name,
+      email,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D6EFD&color=fff`
     };
   },
 };
 
 export const mockChatAPI = {
-  sendMessage: async (message: string) => {
-    await delay(1500);
+  sendMessage: async (_message: string) => {
+    await delay(1000);
     // Return a mock outfit response
     return {
       id: Date.now().toString(),
-      role: 'assistant' as const,
-      content: 'Great choice! Here are some outfit recommendations based on your request:',
+      text: "I've found some items that match your description. Would you like to see them?",
+      sender: 'ai' as const,
       timestamp: new Date(),
-      outfit: mockOutfit1,
     };
   },
 };
