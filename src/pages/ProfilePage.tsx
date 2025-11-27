@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Lock, Save, ArrowLeft } from 'lucide-react';
+import { User, Lock, Save, ArrowLeft, Trash2 } from 'lucide-react';
+import Modal from '../components/ui/Modal';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
@@ -13,6 +14,9 @@ const ProfilePage = () => {
     const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteConfirmation, setDeleteConfirmation] = useState('');
     const [name, setName] = useState(user?.name || '');
 
     // Update local state when user data loads
@@ -97,6 +101,30 @@ const ProfilePage = () => {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        setIsDeleting(true);
+        try {
+            const response = await fetch('/api/user/delete', {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                showToast.success('Account deleted. Bye bye! 👋');
+                // Small delay to let the user see the toast
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1500);
+            } else {
+                const data = await response.json();
+                showToast.error(data.error || 'Failed to delete account');
+                setIsDeleting(false);
+            }
+        } catch (error) {
+            showToast.error('An error occurred while deleting account');
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-background dark:bg-gray-900 p-6 md:p-12">
             <div className="max-w-2xl mx-auto">
@@ -121,7 +149,7 @@ const ProfilePage = () => {
                 <div className="space-y-6">
                     {/* User Info Card */}
                     <motion.div
-                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-border dark:border-gray-700 shadow-sm"
+                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
@@ -173,7 +201,7 @@ const ProfilePage = () => {
 
                     {/* Password Change Card */}
                     <motion.div
-                        className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-border dark:border-gray-700 shadow-sm"
+                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
@@ -235,8 +263,102 @@ const ProfilePage = () => {
                             </div>
                         </form>
                     </motion.div>
+
+                    {/* Delete Account Section - Modern & Minimalist */}
+                    <motion.div
+                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        <div className="group flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-red-50/50 dark:hover:bg-red-900/10 border border-transparent hover:border-red-100 dark:hover:border-red-900/30">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors">
+                                    Delete Account
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Permanently remove your account and all of its contents.
+                                </p>
+                            </div>
+                            <Button
+                                onClick={() => setIsDeleteModalOpen(true)}
+                                variant="ghost"
+                                className="text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-300"
+                            >
+                                Delete Account
+                            </Button>
+                        </div>
+                    </motion.div>
                 </div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={() => {
+                    if (!isDeleting) {
+                        setIsDeleteModalOpen(false);
+                        setDeleteConfirmation('');
+                    }
+                }}
+                className="max-w-md w-full p-6"
+            >
+                <div className="text-center">
+                    <motion.div
+                        className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6"
+                        animate={{
+                            rotate: [0, -10, 10, -10, 10, 0],
+                            scale: [1, 1.1, 1]
+                        }}
+                        transition={{
+                            duration: 0.5,
+                            delay: 0.2,
+                            ease: "easeInOut"
+                        }}
+                    >
+                        <Trash2 className="w-8 h-8 text-red-500" />
+                    </motion.div>
+
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        Are you sure?
+                    </h3>
+
+                    <p className="text-gray-500 dark:text-gray-400 mb-6">
+                        This action is irreversible. To confirm, please type <span className="font-mono font-bold text-red-500 dark:text-red-400">DELETE</span> below.
+                    </p>
+
+                    <div className="mb-6">
+                        <Input
+                            value={deleteConfirmation}
+                            onChange={(e) => setDeleteConfirmation(e.target.value)}
+                            placeholder="Type DELETE to confirm"
+                            className="text-center uppercase tracking-widest border-red-200 dark:border-red-900/50 focus:border-red-500 dark:focus:border-red-500 focus:ring-red-500/20"
+                        />
+                    </div>
+
+                    <div className="flex gap-3 justify-center">
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setIsDeleteModalOpen(false);
+                                setDeleteConfirmation('');
+                            }}
+                            disabled={isDeleting}
+                            className="flex-1"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={handleDeleteAccount}
+                            disabled={isDeleting || deleteConfirmation !== 'DELETE'}
+                            className="flex-1 bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 border-transparent transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            {isDeleting ? 'Deleting...' : 'Delete Account'}
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 };
