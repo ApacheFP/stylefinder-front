@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, MessageSquare, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
+import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import type { ChatHistory } from '../../types';
 import { staggerContainer } from '../../utils/animations';
@@ -74,16 +75,15 @@ const Sidebar = ({
           </button>
           {/* New Chat Button */}
           <div className="p-4">
-            <motion.button
+            <Button
               onClick={onNewChat}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-border dark:border-gray-600 rounded-lg transition-all duration-200 text-sm font-inter font-medium text-text-dark dark:text-white shadow-sm hover:shadow-md"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
+              variant="outline"
+              className="w-full justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
               aria-label="Start new chat"
             >
               <Plus className="w-4 h-4" />
               New Chat
-            </motion.button>
+            </Button>
           </div>
 
           {/* History Section */}
@@ -180,16 +180,15 @@ const Sidebar = ({
         </button>
         {/* New Chat Button */}
         <div className="p-4">
-          <motion.button
+          <Button
             onClick={onNewChat}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-border dark:border-gray-600 rounded-lg transition-all duration-200 text-sm font-inter font-medium text-text-dark dark:text-white shadow-sm hover:shadow-md"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
+            variant="outline"
+            className="w-full justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
             aria-label="Start new chat"
           >
             <Plus className="w-4 h-4" />
             New Chat
-          </motion.button>
+          </Button>
         </div>
 
         {/* Centered content container */}

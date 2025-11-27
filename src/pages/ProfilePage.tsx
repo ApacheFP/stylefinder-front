@@ -282,8 +282,8 @@ const ProfilePage = () => {
                             </div>
                             <Button
                                 onClick={() => setIsDeleteModalOpen(true)}
-                                variant="ghost"
-                                className="text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-300"
+                                variant="outline"
+                                className="text-red-600 border-red-200 bg-red-50 hover:bg-red-100 hover:text-red-700 hover:border-red-300 dark:bg-red-900/20 dark:border-red-900/50 dark:text-red-400 dark:hover:bg-red-900/30 transition-all duration-300"
                             >
                                 Delete Account
                             </Button>
