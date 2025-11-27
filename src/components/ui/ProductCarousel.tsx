@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ShoppingBag, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { PanInfo } from 'framer-motion';
+import { ChevronLeft, ChevronRight, ShoppingBag, X, ZoomIn, ZoomOut } from 'lucide-react';
 import type { OutfitItem } from '../../types';
 import Modal from './Modal';
 
@@ -13,6 +14,11 @@ interface ProductCarouselProps {
 
 const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarouselProps) => {
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
+    const [zoomLevel, setZoomLevel] = useState(1);
+
+    const handleZoomToggle = () => {
+        setZoomLevel(prev => prev === 1 ? 2 : 1);
+    };
 
     useEffect(() => {
         if (isOpen) {
@@ -43,7 +49,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
     }, [isOpen, handlePrevious, handleNext, onClose]);
 
     // Swipe Gesture
-    const onDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const onDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         if (info.offset.x > 100) {
             handlePrevious();
         } else if (info.offset.x < -100) {
@@ -56,63 +62,84 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
     if (!currentItem) return null;
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] bg-white rounded-2xl shadow-2xl">
+        <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
             {/* Image Section */}
-            <div className="w-full md:w-[55%] bg-gray-50/80 relative flex flex-col items-center justify-center p-6 md:p-8 overflow-hidden">
+            {/* Image Section */}
+            <div className="w-full md:w-[55%] bg-gray-50/80 dark:bg-gray-700/50 relative flex flex-col items-center justify-center p-0 overflow-hidden group">
 
                 {/* Counter */}
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-gray-500 shadow-sm z-10">
+                <div className="absolute top-6 left-6 bg-white/80 dark:bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20">
                     {currentIndex + 1} / {items.length}
                 </div>
 
-                {/* Main Image with Swipe */}
-                <div className="flex-1 w-full flex items-center justify-center min-h-[250px] relative z-0">
+                {/* Zoom Toggle */}
+                <button
+                    onClick={handleZoomToggle}
+                    className="absolute top-6 right-6 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20 hover:bg-white dark:hover:bg-black/70 transition-all"
+                >
+                    {zoomLevel > 1 ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
+                </button>
+
+                {/* Main Image Area */}
+                <div className="w-full h-full flex items-center justify-center relative z-0 p-8 md:p-12">
                     <AnimatePresence mode="wait">
-                        <motion.img
+                        <motion.div
                             key={currentItem.id}
-                            src={currentItem.imageUrl}
-                            alt={currentItem.name}
-                            initial={{ opacity: 0, scale: 0.9, x: 20 }}
-                            animate={{ opacity: 1, scale: 1, x: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, x: -20 }}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{
+                                opacity: 1,
+                                scale: zoomLevel,
+                                x: 0,
+                                y: 0
+                            }}
+                            exit={{ opacity: 0, scale: 0.95 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            drag="x"
-                            dragConstraints={{ left: 0, right: 0 }}
+                            drag={zoomLevel === 1 ? "x" : false}
+                            dragConstraints={zoomLevel === 1 ? { left: 0, right: 0 } : undefined}
                             dragElastic={0.2}
-                            onDragEnd={onDragEnd}
-                            className="max-w-full max-h-[350px] object-contain mix-blend-multiply drop-shadow-md cursor-grab active:cursor-grabbing"
-                        />
+                            onDragEnd={zoomLevel === 1 ? onDragEnd : undefined}
+                            className={`relative w-full h-full flex items-center justify-center ${zoomLevel > 1 ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
+                            onTap={handleZoomToggle}
+                        >
+                            <img
+                                src={currentItem.imageUrl}
+                                alt={currentItem.name}
+                                draggable="false"
+                                onDragStart={(e) => e.preventDefault()}
+                                className="max-w-full max-h-full object-contain drop-shadow-xl transition-transform duration-500 select-none"
+                            />
+                        </motion.div>
                     </AnimatePresence>
                 </div>
 
-                {/* Navigation Buttons (Desktop) */}
-                {items.length > 1 && (
+                {/* Navigation Buttons (Desktop) - Minimal & Glass */}
+                {items.length > 1 && zoomLevel === 1 && (
                     <>
                         <button
                             onClick={(e) => { e.stopPropagation(); handlePrevious(); }}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg text-gray-700 transition-all hover:scale-110 backdrop-blur-sm hidden md:flex"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20 hover:bg-white dark:hover:bg-black/70 transition-all hidden md:flex"
                         >
                             <ChevronLeft className="w-5 h-5" />
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg text-gray-700 transition-all hover:scale-110 backdrop-blur-sm hidden md:flex"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20 hover:bg-white dark:hover:bg-black/70 transition-all hidden md:flex"
                         >
                             <ChevronRight className="w-5 h-5" />
                         </button>
                     </>
                 )}
 
-                {/* Thumbnails */}
-                {items.length > 1 && (
-                    <div className="mt-6 flex gap-2 overflow-x-auto max-w-full pb-2 px-2 scrollbar-hide snap-x">
+                {/* Glass Thumbnails - Floating at bottom */}
+                {items.length > 1 && zoomLevel === 1 && (
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/30 dark:bg-black/30 backdrop-blur-md border border-white/20 dark:border-white/10 p-1.5 rounded-2xl flex gap-2 shadow-lg z-20 max-w-[90%] overflow-x-auto scrollbar-hide">
                         {items.map((item, index) => (
                             <button
                                 key={item.id}
-                                onClick={() => setCurrentIndex(index)}
-                                className={`relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all snap-center ${index === currentIndex
-                                        ? 'border-primary shadow-md scale-105'
-                                        : 'border-transparent opacity-60 hover:opacity-100'
+                                onClick={(e) => { e.stopPropagation(); setCurrentIndex(index); }}
+                                className={`relative w-10 h-10 flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 ${index === currentIndex
+                                    ? 'ring-2 ring-primary scale-110 z-10'
+                                    : 'opacity-70 hover:opacity-100 hover:scale-105'
                                     }`}
                             >
                                 <img
@@ -127,7 +154,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
             </div>
 
             {/* Details Section */}
-            <div className="w-full md:w-[45%] p-6 md:p-8 flex flex-col bg-white justify-center relative">
+            <div className="w-full md:w-[45%] p-6 md:p-8 flex flex-col bg-white dark:bg-gray-800 justify-center relative">
                 {/* Close Button (Mobile) - Desktop handled by Modal */}
                 <button
                     onClick={onClose}
@@ -150,7 +177,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         key={`title-${currentIndex}`}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-2xl font-bold text-gray-900 mb-2 leading-tight"
+                        className="text-2xl font-bold text-gray-900 dark:text-white mb-2 leading-tight"
                     >
                         {currentItem.name}
                     </motion.h2>
@@ -159,7 +186,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-3xl font-bold text-primary mb-6"
+                        className="text-3xl font-bold text-primary dark:text-primary-light mb-6"
                     >
                         ${currentItem.price.toFixed(2)}
                     </motion.p>
@@ -170,13 +197,13 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         transition={{ delay: 0.2 }}
                         className="space-y-3"
                     >
-                        <p className="text-gray-500 text-sm leading-relaxed">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
                             Elevate your style with this premium piece from {currentItem.brand || 'our collection'}. Designed for comfort and versatility, it's the perfect addition to your modern wardrobe.
                         </p>
                     </motion.div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-50">
+                <div className="mt-8 pt-6 border-t border-gray-50 dark:border-gray-700">
                     {currentItem.link ? (
                         <button
                             onClick={() => window.open(currentItem.link, '_blank', 'noopener,noreferrer')}
@@ -186,7 +213,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                             Shop Now
                         </button>
                     ) : (
-                        <div className="w-full py-3.5 bg-gray-50 text-gray-400 text-sm font-medium rounded-xl text-center border border-gray-100">
+                        <div className="w-full py-3.5 bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-sm font-medium rounded-xl text-center border border-gray-100 dark:border-gray-600">
                             Out of Stock
                         </div>
                     )}

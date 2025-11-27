@@ -6,18 +6,10 @@ export const showToast = {
     toast.success(message, {
       duration: 3000,
       position: 'top-right',
-      style: {
-        background: '#10B981',
-        color: '#fff',
-        padding: '16px',
-        borderRadius: '12px',
-        fontFamily: 'Inter, sans-serif',
-        fontSize: '14px',
-        fontWeight: '500',
-      },
+      className: '!bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-white !shadow-lg !rounded-xl border border-gray-100 dark:border-gray-700',
       iconTheme: {
-        primary: '#fff',
-        secondary: '#10B981',
+        primary: '#10B981',
+        secondary: '#fff',
       },
     });
   },
@@ -26,18 +18,10 @@ export const showToast = {
     toast.error(message, {
       duration: 4000,
       position: 'top-right',
-      style: {
-        background: '#EF4444',
-        color: '#fff',
-        padding: '16px',
-        borderRadius: '12px',
-        fontFamily: 'Inter, sans-serif',
-        fontSize: '14px',
-        fontWeight: '500',
-      },
+      className: '!bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-white !shadow-lg !rounded-xl border border-gray-100 dark:border-gray-700',
       iconTheme: {
-        primary: '#fff',
-        secondary: '#EF4444',
+        primary: '#EF4444',
+        secondary: '#fff',
       },
     });
   },
@@ -47,31 +31,14 @@ export const showToast = {
       duration: 3000,
       position: 'top-right',
       icon: 'ℹ️',
-      style: {
-        background: '#0D6EFD',
-        color: '#fff',
-        padding: '16px',
-        borderRadius: '12px',
-        fontFamily: 'Inter, sans-serif',
-        fontSize: '14px',
-        fontWeight: '500',
-      },
+      className: '!bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-white !shadow-lg !rounded-xl border border-gray-100 dark:border-gray-700',
     });
   },
 
   loading: (message: string) => {
     return toast.loading(message, {
       position: 'top-right',
-      style: {
-        background: '#fff',
-        color: '#212529',
-        padding: '16px',
-        borderRadius: '12px',
-        fontFamily: 'Inter, sans-serif',
-        fontSize: '14px',
-        fontWeight: '500',
-        border: '1px solid #E5E7EB',
-      },
+      className: '!bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-white !shadow-lg !rounded-xl border border-gray-100 dark:border-gray-700',
     });
   },
 
@@ -95,12 +62,7 @@ export const showToast = {
         error: messages.error,
       },
       {
-        style: {
-          borderRadius: '12px',
-          fontFamily: 'Inter, sans-serif',
-          fontSize: '14px',
-          fontWeight: '500',
-        },
+        className: '!bg-white dark:!bg-gray-800 !text-gray-900 dark:!text-white !shadow-lg !rounded-xl border border-gray-100 dark:border-gray-700',
       }
     );
   },

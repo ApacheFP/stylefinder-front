@@ -8,6 +8,7 @@ import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import HamburgerMenu from '../components/ui/HamburgerMenu';
 import ChatEmptyState from '../components/chat/ChatEmptyState';
+import ChatMessageSkeleton from '../components/chat/ChatMessageSkeleton';
 import ChatMessage from '../components/chat/ChatMessage';
 import ChatInput from '../components/chat/ChatInput';
 import DragDropOverlay from '../components/chat/DragDropOverlay';
@@ -30,18 +31,19 @@ const ChatPage = () => {
   userName = beutifyUsername(userName)
 
   // Custom hooks
-  const { 
-    messages, 
-    isLoading, 
-    currentChatId, 
+  const {
+    messages,
+    isLoading,
+    isFetching,
+    currentChatId,
     currentChatTitle,
-    loadingExplanationId, 
-    loadChatMessages, 
-    sendMessage, 
-    explainOutfit, 
-    clearMessages 
+    loadingExplanationId,
+    loadChatMessages,
+    sendMessage,
+    explainOutfit,
+    clearMessages
   } = useChatMessages();
-  
+
   const {
     selectedImage,
     imagePreview,
@@ -58,8 +60,8 @@ const ChatPage = () => {
   // 🔧 FEATURE DISABLED: Scroll behavior (uncomment to enable)
   // const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const handleScroll = () => {};
-  
+  const handleScroll = () => { };
+
   // Sidebar state for mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -127,10 +129,10 @@ const ChatPage = () => {
   const handleSelectChat = async (chatId: string) => {
     // Don't reload if already on this chat
     if (chatId === currentChatId) return;
-    
+
     setInputMessage('');
     clearImage();
-    
+
     try {
       await loadChatMessages(chatId);
       console.log('Loaded chat:', chatId);
@@ -150,7 +152,7 @@ const ChatPage = () => {
     try {
       await chatService.deleteConversation(chatId);
       setChatHistory((prev) => prev.filter((chat) => chat.id !== chatId));
-      
+
       // If we deleted the current chat, clear messages
       if (chatId === currentChatId) {
         clearMessages();
@@ -176,7 +178,7 @@ const ChatPage = () => {
   const showEmptyState = messages.length === 0;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-background dark:bg-gray-900">
       {/* Hamburger Menu - Mobile Only */}
       <HamburgerMenu
         isOpen={isSidebarOpen}
@@ -224,28 +226,33 @@ const ChatPage = () => {
           onScroll={handleScroll}
           className="flex-1 overflow-y-auto p-8"
         >
-          {showEmptyState ? (
+          {showEmptyState && !isFetching ? (
             <ChatEmptyState
               isLoggedIn={isLoggedIn}
               userName={userName}
-              // 🔧 FEATURE DISABLED: Suggestion clicks (uncomment to enable)
-              // onSuggestionClick={(suggestion) => setInputMessage(suggestion)}
+              onSuggestionClick={(suggestion) => setInputMessage(suggestion)}
             />
           ) : (
             <div className="max-w-4xl mx-auto space-y-6">
-              {messages.map((message) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  onExplainOutfit={explainOutfit}
-                  isLoadingExplanation={loadingExplanationId === message.id}
-                />
-              ))}
+              {isFetching ? (
+                // Show skeletons while fetching history
+                <ChatMessageSkeleton />
+              ) : (
+                // Show actual messages
+                messages.map((message) => (
+                  <ChatMessage
+                    key={message.id}
+                    message={message}
+                    onExplainOutfit={explainOutfit}
+                    isLoadingExplanation={loadingExplanationId === message.id}
+                  />
+                ))
+              )}
 
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-50 border border-border px-6 py-4 rounded-2xl flex items-center gap-3">
-                    <span className="text-sm font-inter text-text-medium">AI is thinking</span>
+                  <div className="bg-gray-50 dark:bg-gray-800 border border-border dark:border-gray-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+                    <span className="text-sm font-inter text-text-medium dark:text-gray-300">AI is thinking</span>
                     <TypingIndicator />
                   </div>
                 </div>

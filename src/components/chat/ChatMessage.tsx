@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Maximize2 } from 'lucide-react';
 import type { ChatMessage as ChatMessageType } from '../../types';
 import ProductCard from '../ui/ProductCard';
 import ProductCarousel from '../ui/ProductCarousel';
@@ -46,14 +47,28 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
     >
       <div className="max-w-full">
         {/* Unified white background container */}
-        <div className="bg-white border border-border rounded-2xl p-6">
+        <div className="bg-white dark:bg-gray-800 border border-border dark:border-gray-700 rounded-2xl p-6">
           {/* Message content */}
-          <div className="font-inter text-text-dark mb-4">{message.content}</div>
+          <div className="font-inter text-text-dark dark:text-white mb-4">{message.content}</div>
 
           {message.outfit && (
             <>
+              {/* Outfit Header & Gallery Toggle */}
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Recommended Outfit
+                </h3>
+                <button
+                  onClick={() => setSelectedProductIndex(0)}
+                  className="flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover transition-colors bg-primary/5 hover:bg-primary/10 px-2 py-1 rounded-md"
+                >
+                  <Maximize2 className="w-3 h-3" />
+                  View Gallery
+                </button>
+              </div>
+
               {/* Product Cards - Responsive Flex */}
-              <div className="flex flex-wrap gap-1.5 mb-4 justify-start">
+              <div className="flex flex-wrap gap-2 mb-4 justify-start">
                 {message.outfit.items.map((item, index) => (
                   <ProductCard
                     key={item.id}
@@ -106,11 +121,11 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
 
               {/* Explanation - Show if it exists */}
               {message.outfit.explanation && (
-                <div className="bg-gray-50 border border-border rounded-xl p-6 mt-4">
-                  <h4 className="font-roboto font-bold text-text-dark mb-3">
+                <div className="bg-gray-50 dark:bg-gray-700/50 border border-border dark:border-gray-700 rounded-xl p-6 mt-4">
+                  <h4 className="font-roboto font-bold text-text-dark dark:text-white mb-3">
                     Why this outfit works:
                   </h4>
-                  <p className="font-inter text-text-dark leading-relaxed">
+                  <p className="font-inter text-text-dark dark:text-gray-200 leading-relaxed">
                     {message.outfit.explanation}
                   </p>
                 </div>

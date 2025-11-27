@@ -77,40 +77,42 @@ const PreferencesPage = () => {
   // Show loading while fetching existing preferences
   if (isLoadingPrefs) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading preferences...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading preferences...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 md:p-8">
-        <h1 className="text-xl md:text-2xl font-bold text-center text-gray-900 mb-6 md:mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">
+      <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+        <h1 className="text-xl md:text-2xl font-bold text-center text-gray-900 dark:text-white mb-6 md:mb-8">
           Your Preferences
         </h1>
 
         {/* Gender Section */}
         {allPreferences.find(p => p.name === 'gender') && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Gender</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Gender</h2>
             <div className="flex flex-wrap gap-3 md:gap-4">
-              {(['man', 'woman', 'non-binary'] as const).map((gender) => (
-                <label key={gender} className="flex items-center cursor-pointer min-h-[44px] min-w-[44px]">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value={gender}
-                    checked={preferences['gender'] === gender}
-                    onChange={() => handlePrefChange('gender', gender)}
-                    className="mr-2 w-4 h-4 text-primary focus:ring-primary"
-                  />
-                  <span className="capitalize text-sm md:text-base">{gender}</span>
-                </label>
-              ))}
+              {(['man', 'woman', 'non-binary'] as const).map((gender) => {
+                const isSelected = preferences['gender'] === gender;
+                return (
+                  <button
+                    key={gender}
+                    onClick={() => handlePrefChange('gender', gender)}
+                    className={`px-6 py-3 rounded-xl text-sm md:text-base font-medium transition-all duration-200 border-2 ${isSelected
+                      ? 'bg-primary/10 border-primary text-primary dark:text-primary-light'
+                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                  >
+                    <span className="capitalize">{gender}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -118,7 +120,7 @@ const PreferencesPage = () => {
         {/* Styles Section */}
         {allPreferences.some(p => p.name && typeof p.name === 'string' && p.name.startsWith('style_')) && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Favorite Styles</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Favorite Styles</h2>
             <div className="flex flex-wrap gap-2">
               {allPreferences
                 .filter(p => p.name && typeof p.name === 'string' && p.name.startsWith('style_'))
@@ -130,8 +132,8 @@ const PreferencesPage = () => {
                       key={pref.id}
                       onClick={() => handlePrefChange(pref.name, isSelected ? 'false' : 'true')}
                       className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-colors active:scale-95 ${isSelected
-                        ? 'bg-blue-100 text-primary border-2 border-primary'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-blue-100 dark:bg-primary/20 text-primary dark:text-primary-light border-2 border-primary'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                     >
                       {style.charAt(0).toUpperCase() + style.slice(1)}
@@ -145,7 +147,7 @@ const PreferencesPage = () => {
         {/* Colors Section */}
         {allPreferences.some(p => p.name && typeof p.name === 'string' && p.name.startsWith('color_')) && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Favorite Colors</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Favorite Colors</h2>
             <div className="flex flex-wrap gap-2">
               {allPreferences
                 .filter(p => p.name && typeof p.name === 'string' && p.name.startsWith('color_'))
@@ -157,8 +159,8 @@ const PreferencesPage = () => {
                       key={pref.id}
                       onClick={() => handlePrefChange(pref.name, isSelected ? 'false' : 'true')}
                       className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-colors active:scale-95 ${isSelected
-                        ? 'bg-blue-100 text-primary border-2 border-primary'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-blue-100 dark:bg-primary/20 text-primary dark:text-primary-light border-2 border-primary'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                     >
                       {color.charAt(0).toUpperCase() + color.slice(1)}
@@ -172,7 +174,7 @@ const PreferencesPage = () => {
         {/* Brands Section */}
         {allPreferences.some(p => p.name && typeof p.name === 'string' && p.name.startsWith('brand_')) && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Favorite Brands</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Favorite Brands</h2>
             <div className="flex flex-wrap gap-2">
               {allPreferences
                 .filter(p => p.name && typeof p.name === 'string' && p.name.startsWith('brand_'))
@@ -184,8 +186,8 @@ const PreferencesPage = () => {
                       key={pref.id}
                       onClick={() => handlePrefChange(pref.name, isSelected ? 'false' : 'true')}
                       className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-colors active:scale-95 ${isSelected
-                        ? 'bg-blue-100 text-primary border-2 border-primary'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-blue-100 dark:bg-primary/20 text-primary dark:text-primary-light border-2 border-primary'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                         }`}
                     >
                       {brand.charAt(0).toUpperCase() + brand.slice(1)}
@@ -203,7 +205,7 @@ const PreferencesPage = () => {
           !p.name.startsWith('brand_') &&
           p.name !== 'gender') && (
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Other Preferences</h2>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Other Preferences</h2>
               {allPreferences
                 .filter(p => p.name && typeof p.name === 'string' &&
                   !p.name.startsWith('style_') &&
@@ -212,12 +214,12 @@ const PreferencesPage = () => {
                   p.name !== 'gender')
                 .map(pref => (
                   <div key={pref.id} className="mb-4">
-                    <label className="block text-sm md:text-base font-medium text-gray-700 mb-2">{pref.name}</label>
+                    <label className="block text-sm md:text-base font-medium text-gray-700 dark:text-gray-300 mb-2">{pref.name}</label>
                     <input
                       type="text"
                       value={typeof preferences[pref.name] === 'string' ? preferences[pref.name] : ''}
                       onChange={e => handlePrefChange(pref.name, e.target.value)}
-                      className="border border-gray-300 rounded px-3 py-2 w-full"
+                      className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none"
                     />
                   </div>
                 ))}

@@ -6,13 +6,13 @@ interface SkeletonProps {
   animation?: 'pulse' | 'wave';
 }
 
-const Skeleton = ({ 
-  className = '', 
+const Skeleton = ({
+  className = '',
   variant = 'text',
-  animation = 'pulse' 
+  animation = 'pulse'
 }: SkeletonProps) => {
   const baseStyles = 'bg-gray-200';
-  
+
   const variants = {
     text: 'h-4 rounded',
     circular: 'rounded-full',
@@ -21,7 +21,7 @@ const Skeleton = ({
 
   return (
     <motion.div
-      className={`${baseStyles} ${variants[variant]} ${className}`}
+      className={`${baseStyles} ${variants[variant]} ${className} dark:bg-gray-700`}
       animate={
         animation === 'pulse'
           ? { opacity: [0.6, 1, 0.6] }
@@ -35,9 +35,9 @@ const Skeleton = ({
       style={
         animation === 'wave'
           ? {
-              background: 'linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%)',
-              backgroundSize: '200% 100%',
-            }
+            background: 'linear-gradient(90deg, var(--skeleton-base) 25%, var(--skeleton-highlight) 50%, var(--skeleton-base) 75%)',
+            backgroundSize: '200% 100%',
+          }
           : undefined
       }
     />

@@ -1,7 +1,6 @@
-import { forwardRef } from 'react';
-import { Paperclip } from 'lucide-react';
-import Button from '../ui/Button';
-import { Send } from "lucide-react";
+import { forwardRef, useEffect, useRef } from 'react';
+import { Paperclip, Send, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ChatInputProps {
   inputMessage: string;
@@ -14,7 +13,7 @@ interface ChatInputProps {
   isLoading: boolean;
 }
 
-const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
+const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
   (
     {
       inputMessage,
@@ -28,77 +27,126 @@ const ChatInput = forwardRef<HTMLInputElement, ChatInputProps>(
     },
     ref
   ) => {
-  return (
-    <div className="px-4 sm:px-8 py-4 sm:py-5 bg-background border-t border-border">
-      <div className="max-w-[900px] mx-auto">
-        {/* Image Preview */}
-        {imagePreview && (
-          <div className="mb-4 bg-white border border-border rounded-xl p-4">
-            <div className="flex items-start gap-3">
-              <div className="relative">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="rounded-lg max-h-32 object-cover"
-                />
-                <button
-                  onClick={onRemoveImage}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
-                >
-                  ×
-                </button>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-inter text-text-dark">Image ready to send</p>
-                <p className="text-xs font-inter text-text-light mt-1">
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    // Auto-resize textarea
+    useEffect(() => {
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      }
+    }, [inputMessage]);
+
+    // Handle Enter key
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        onSendMessage();
+      }
+    };
+
+    return (
+      <div className="px-4 sm:px-8 py-4 sm:py-6 bg-background dark:bg-gray-900 border-t border-border dark:border-gray-800">
+        <div className="max-w-[900px] mx-auto">
+          {/* Image Preview */}
+          <AnimatePresence>
+            {imagePreview && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                className="mb-4 relative inline-block group"
+              >
+                <div className="relative rounded-xl overflow-hidden border border-border shadow-sm">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="h-24 w-auto object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <button
+                      onClick={onRemoveImage}
+                      className="p-1.5 bg-white/20 hover:bg-red-500 text-white rounded-full backdrop-blur-sm transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+                <div className="absolute -bottom-6 left-0 text-xs text-text-light truncate max-w-[200px]">
                   {selectedImage?.name}
-                </p>
-              </div>
-            </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Input Box */}
+          <div className="flex gap-3 items-end bg-white dark:bg-gray-800 border border-[#CED4DA] dark:border-gray-700 rounded-[24px] shadow-sm hover:shadow-md transition-shadow p-2 pl-4 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary">
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={onImageSelect}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="mb-2 text-text-medium hover:text-primary transition-colors cursor-pointer p-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full"
+              title="Upload image"
+              type="button"
+            >
+              <Paperclip className="w-5 h-5" />
+            </button>
+
+            <textarea
+              ref={(node) => {
+                textareaRef.current = node;
+                if (typeof ref === 'function') ref(node);
+                else if (ref) ref.current = node;
+              }}
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask me for a style tip..."
+              rows={1}
+              className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-gray-400 focus:outline-none bg-transparent resize-none max-h-[200px] overflow-y-auto"
+              style={{ minHeight: '44px' }}
+            />
+
+            <motion.button
+              onClick={onSendMessage}
+              disabled={(!inputMessage.trim() && !selectedImage) || isLoading}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{
+                scale: (!inputMessage.trim() && !selectedImage) ? 0.8 : 1,
+                opacity: (!inputMessage.trim() && !selectedImage) ? 0.5 : 1
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`rounded-full w-10 h-10 p-0 flex items-center justify-center mb-1 transition-colors shadow-sm ${(!inputMessage.trim() && !selectedImage) || isLoading
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-primary text-white shadow-md hover:shadow-lg hover:bg-primary-hover'
+                }`}
+              aria-label="Send message"
+            >
+              {isLoading ? (
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </motion.button>
           </div>
-        )}
 
-        {/* Input Box */}
-        <div className="flex gap-3 items-center bg-white border border-[#CED4DA] rounded-xl shadow-lg p-2 pl-5">
-          <input
-            type="file"
-            id="image-upload"
-            accept="image/*"
-            onChange={onImageSelect}
-            className="hidden"
-          />
-          <label
-            htmlFor="image-upload"
-            className="text-text-medium hover:text-text-dark transition-colors cursor-pointer"
-          >
-            <Paperclip className="w-5 h-5" />
-          </label>
-
-          <input
-            ref={ref}
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && onSendMessage()}
-            placeholder="Ask me for a style tip or upload an outfit photo..."
-            className="flex-1 py-3 font-inter text-[15px] text-text-dark placeholder:text-text-light focus:outline-none bg-transparent"
-          />
-
-          <Button
-            onClick={onSendMessage}
-            disabled={(!inputMessage.trim() && !selectedImage) || isLoading}
-            variant="primary"
-            size="md"
-            className="rounded-full"
-            aria-label="Invia messaggio"
-          >
-            <Send className="h-5 w-5" />
-          </Button>
+          <div className="text-center mt-2">
+            <p className="text-[11px] text-text-light">
+              AI can make mistakes. Check important info.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 ChatInput.displayName = 'ChatInput';
 

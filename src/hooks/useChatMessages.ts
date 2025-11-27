@@ -10,24 +10,31 @@ export const useChatMessages = () => {
   const [currentChatTitle, setCurrentChatTitle] = useState<string | undefined>();
   const [loadingExplanationId, setLoadingExplanationId] = useState<string | null>(null);
 
+  const [isFetching, setIsFetching] = useState(false);
+
   const loadChatMessages = async (chatId: string, preloadedMessages?: ChatMessage[]) => {
-    // Clear existing messages first
-    setMessages([]);
+    setIsFetching(true);
     setCurrentChatId(chatId);
     setCurrentChatTitle(undefined);
-    
+
     if (preloadedMessages) {
       setMessages(preloadedMessages);
+      setIsFetching(false);
       return;
     }
 
     // Load from API if not preloaded
     try {
+      // Clear messages only if we don't have preloaded ones, but do it AFTER setting isFetching
+      // so the UI knows we are loading.
+      setMessages([]);
       const fetchedMessages = await chatService.getChatConversation(chatId);
       setMessages(fetchedMessages);
     } catch (error) {
       console.error('Failed to load chat messages:', error);
       showToast.error('Failed to load conversation');
+    } finally {
+      setIsFetching(false);
     }
   };
 
@@ -71,9 +78,9 @@ export const useChatMessages = () => {
 
       // Update user message image URL if backend returned one
       if (response.img_url) {
-        setMessages((prev) => 
-          prev.map((msg) => 
-            msg.id === userMessage.id 
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === userMessage.id
               ? { ...msg, imageUrl: response.img_url! }
               : msg
           )
@@ -82,7 +89,7 @@ export const useChatMessages = () => {
 
       // Transform and add assistant message
       const outfitData = chatService.transformOutfitResponse(response.content);
-      
+
       const assistantMessage: ChatMessage = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
@@ -98,7 +105,7 @@ export const useChatMessages = () => {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
-      
+
       // Show appropriate toast based on response type
       if (outfitData.type === 0 && outfitData.items.length > 0) {
         showToast.success('Outfit recommendations ready!');
@@ -108,7 +115,7 @@ export const useChatMessages = () => {
     } catch (error) {
       console.error('Failed to send message:', error);
       showToast.error('Failed to get outfit recommendations. Please try again.');
-      
+
       // Remove the temporary user message on error
       setMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
     } finally {
@@ -155,6 +162,7 @@ export const useChatMessages = () => {
     sendMessage,
     explainOutfit,
     clearMessages,
+    isFetching,
     setCurrentChatId,
   };
 };
