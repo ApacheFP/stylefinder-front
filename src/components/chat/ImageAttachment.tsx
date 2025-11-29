@@ -40,6 +40,7 @@ const ImageAttachment = ({ imageUrl, altText = 'Attached image' }: ImageAttachme
                 <img
                     src={imageUrl}
                     alt={altText}
+                    referrerPolicy="no-referrer"
                     className={`w-full h-auto max-h-64 object-cover transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'
                         }`}
                     onLoad={() => setIsLoading(false)}

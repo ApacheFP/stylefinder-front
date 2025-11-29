@@ -1,16 +1,28 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
+import { lazy, Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
-import PreferencesPage from './pages/PreferencesPage';
-import ChatPage from './pages/ChatPage';
-import ProfilePage from './pages/ProfilePage';
-import HowToUsePage from './pages/HowToUsePage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+
+// Lazy load pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignUpPage = lazy(() => import('./pages/SignUpPage'));
+const PreferencesPage = lazy(() => import('./pages/PreferencesPage'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const HowToUsePage = lazy(() => import('./pages/HowToUsePage'));
+
+// Loading Fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center w-full h-full min-h-[50vh]">
+    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+  </div>
+);
 
 // Wrapper for page transitions
 const PageTransition = ({ children }: { children: React.ReactNode }) => (
@@ -21,7 +33,9 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => (
     transition={{ duration: 0.3, ease: "easeOut" }}
     className="w-full h-full"
   >
-    {children}
+    <Suspense fallback={<LoadingFallback />}>
+      {children}
+    </Suspense>
   </motion.div>
 );
 
@@ -55,14 +69,16 @@ const AnimatedRoutes = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <Toaster position="top-right" reverseOrder={false} />
-          <AnimatedRoutes />
-        </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Toaster position="top-right" reverseOrder={false} />
+            <AnimatedRoutes />
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

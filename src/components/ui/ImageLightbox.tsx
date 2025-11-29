@@ -109,6 +109,7 @@ const ImageLightbox = ({ isOpen, imageUrl, altText = 'Image', onClose }: ImageLi
                         <motion.img
                             src={imageUrl}
                             alt={altText}
+                            referrerPolicy="no-referrer"
                             className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
                             animate={{ scale }}
                             transition={{ type: 'spring', stiffness: 300, damping: 30 }}

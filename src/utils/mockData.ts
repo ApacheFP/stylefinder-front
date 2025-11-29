@@ -122,7 +122,7 @@ export const mockAuth = {
     throw new Error('Invalid credentials');
   },
 
-  signUp: async (name: string, email: string, _password: string) => {
+  signUp: async (name: string, email: string) => {
     await delay(1000);
     return {
       id: '1',
@@ -134,7 +134,7 @@ export const mockAuth = {
 };
 
 export const mockChatAPI = {
-  sendMessage: async (_message: string) => {
+  sendMessage: async () => {
     await delay(1000);
     // Return a mock outfit response
     return {

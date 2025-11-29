@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { showToast } from '../utils/toast';
 
-export const useImageUpload = () => {
+export const useImageUpload = (fileReaderFactory = () => new FileReader()) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -23,7 +23,7 @@ export const useImageUpload = () => {
     setSelectedImage(file);
 
     // Create preview
-    const reader = new FileReader();
+    const reader = fileReaderFactory();
     reader.onloadend = () => {
       setImagePreview(reader.result as string);
       showToast.success('Image attached successfully');

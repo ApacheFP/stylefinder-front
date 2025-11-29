@@ -14,7 +14,8 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
   const [imageError, setImageError] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
 
-  const handleShopClick = () => {
+  const handleShopClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click from triggering
     if (item.link) {
       setIsClicked(true);
       setTimeout(() => setIsClicked(false), 300);
@@ -26,16 +27,17 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 overflow-hidden hover:shadow-xl dark:hover:shadow-primary/5 transition-all duration-300 w-[160px] flex-shrink-0 group cursor-pointer relative"
-      whileHover={{ y: -5 }}
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 overflow-hidden hover:shadow-xl hover:shadow-primary/10 dark:hover:shadow-primary/10 hover:ring-2 hover:ring-primary/20 dark:hover:ring-primary/30 transition-all duration-300 w-[160px] flex-shrink-0 group cursor-pointer relative"
+      whileHover={{ y: -5, scale: 1.02 }}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      onClick={onImageClick}
     >
       {/* Brand bar at top */}
       {item.brand && (
-        <div className="px-2 py-0.5 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-600 text-center">
-          <span className="text-[10px] font-bold text-gray-600 dark:text-gray-200 uppercase tracking-wider truncate block">
+        <div className="px-2 py-0.5 bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 dark:from-gray-700/50 dark:via-gray-700/70 dark:to-gray-700/50 border-b border-gray-200 dark:border-gray-600 text-center">
+          <span className="text-[10px] font-bold text-gray-700 dark:text-gray-100 uppercase tracking-wider truncate block">
             {item.brand}
           </span>
         </div>
@@ -43,22 +45,21 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
 
       {/* Image */}
       <div
-        className={`w-full h-[120px] bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden relative ${onImageClick ? 'cursor-pointer' : ''}`}
-        onClick={onImageClick}
+        className={`w-full h-[120px] bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden relative`}
       >
         {item.imageUrl && !imageError ? (
           <>
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent"
                   animate={{
                     x: ['-100%', '100%'],
                   }}
                   transition={{
-                    duration: 1.5,
+                    duration: 1.2,
                     repeat: Infinity,
-                    ease: 'linear',
+                    ease: 'easeInOut',
                   }}
                 />
               </div>
@@ -67,6 +68,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               src={item.imageUrl}
               alt={item.name}
               loading="lazy"
+              referrerPolicy="no-referrer"
               className="max-w-[85%] max-h-[85%] object-contain group-hover:scale-110"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{
@@ -105,7 +107,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
           {hasLink ? (
             <button
               onClick={handleShopClick}
-              className={`px-2 py-1.5 bg-primary text-white text-[10px] font-semibold rounded-lg flex items-center gap-1 hover:bg-primary-hover active:scale-95 transition-all shadow-sm hover:shadow ${isClicked ? 'animate-pulse-once' : ''
+              className={`px-2 py-1.5 bg-primary text-white text-[10px] font-semibold rounded-lg flex items-center gap-1 hover:bg-primary-hover hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all duration-200 shadow-md ${isClicked ? 'animate-pulse-once' : ''
                 }`}
               aria-label={`Shop ${item.name}`}
               title="Shop"

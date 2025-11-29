@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Maximize2 } from 'lucide-react';
+import { Maximize2, ShoppingBag } from 'lucide-react';
 import type { ChatMessage as ChatMessageType } from '../../types';
 import ProductCard from '../ui/ProductCard';
 import ProductCarousel from '../ui/ProductCarousel';
@@ -20,14 +20,14 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
   if (message.role === 'user') {
     return (
       <motion.div
-        className="flex justify-end"
+        className="flex justify-end mb-2"
         initial="hidden"
         animate="visible"
         variants={fadeInUp}
         role="article"
         aria-label="User message"
       >
-        <div className="bg-primary text-white font-inter px-6 py-3 rounded-xl max-w-3xl">
+        <div className="bg-primary text-white font-inter px-5 py-3 rounded-2xl rounded-br-md max-w-lg shadow-md">
           {message.imageUrl && (
             <div className="mb-3">
               <ImageAttachment imageUrl={message.imageUrl} altText="User uploaded" />
@@ -39,23 +39,42 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
     );
   }
 
+  // Calculate total price for outfit
+  const totalPrice = message.outfit?.items.reduce((sum, item) => sum + item.price, 0) || 0;
+
+  const handleShopAll = () => {
+    const itemsWithLinks = message.outfit?.items.filter(item => item.link) || [];
+
+    // Open all links simultaneously
+    itemsWithLinks.forEach((item) => {
+      window.open(item.link, '_blank', 'noopener,noreferrer');
+    });
+  };
+
   return (
     <motion.div
-      className="flex justify-start"
+      className="flex justify-start mb-2"
       initial="hidden"
       animate="visible"
       variants={fadeInUp}
       role="article"
       aria-label="Assistant message"
     >
-      <div className="max-w-full">
-        {/* Unified white background container */}
-        <div className="bg-white dark:bg-gray-800 border border-border dark:border-gray-600 rounded-xl p-6">
-          {/* Message content */}
-          <div className="font-inter text-text-dark dark:text-gray-100 mb-4">{message.content}</div>
+      <div className="max-w-4xl">
+        {/* Text content in bubble style */}
+        {!message.outfit ? (
+          <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-md px-5 py-3 shadow-md max-w-lg">
+            <div className="font-inter text-text-dark dark:text-gray-100">{message.content}</div>
+          </div>
+        ) : (
+          <>
+            {/* Text bubble for messages with outfit */}
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-md px-5 py-3 shadow-md mb-3 max-w-lg">
+              <div className="font-inter text-text-dark dark:text-gray-100">{message.content}</div>
+            </div>
 
-          {message.outfit && (
-            <>
+            {/* Outfit card with products */}
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-5 shadow-md">
               {/* Outfit Header & Gallery Toggle */}
               <div className="flex items-center justify-between mb-3 px-1">
                 <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -63,10 +82,10 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
                 </h3>
                 <button
                   onClick={() => setSelectedProductIndex(0)}
-                  className="flex items-center gap-1.5 text-xs font-medium text-primary dark:text-primary-light hover:text-primary-hover dark:hover:text-primary transition-colors bg-primary/5 hover:bg-primary/10 dark:bg-primary/10 dark:hover:bg-primary/20 px-2 py-1 rounded-md"
+                  className="flex items-center gap-1.5 text-xs font-medium text-primary dark:text-primary-light hover:text-primary-hover dark:hover:text-primary transition-all bg-primary/5 hover:bg-primary/10 dark:bg-primary/10 dark:hover:bg-primary/20 px-2.5 py-1.5 rounded-lg group"
                   aria-label="View product gallery"
                 >
-                  <Maximize2 className="w-3 h-3" />
+                  <Maximize2 className="w-3 h-3 group-hover:scale-110 transition-transform" />
                   View Gallery
                 </button>
               </div>
@@ -80,6 +99,23 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
                     onImageClick={() => setSelectedProductIndex(index)}
                   />
                 ))}
+              </div>
+
+              {/* Outfit Summary Box */}
+              <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-br from-gray-50 to-gray-100/50 dark:from-gray-700/30 dark:to-gray-700/10 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Estimated Total</span>
+                  <span className="text-xl font-bold text-primary dark:text-primary-light">${totalPrice.toFixed(2)}</span>
+                </div>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleShopAll}
+                  className="gap-2 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  Shop All Items
+                </Button>
               </div>
 
               {/* Product Carousel Modal */}
@@ -136,9 +172,9 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
                   </p>
                 </div>
               )}
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </motion.div>
   );

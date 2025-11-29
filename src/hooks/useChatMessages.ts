@@ -9,6 +9,7 @@ export const useChatMessages = () => {
   const [currentChatId, setCurrentChatId] = useState<string | undefined>();
   const [currentChatTitle, setCurrentChatTitle] = useState<string | undefined>();
   const [loadingExplanationId, setLoadingExplanationId] = useState<string | null>(null);
+  const [messageCache, setMessageCache] = useState<Record<string, ChatMessage[]>>({});
 
   const [isFetching, setIsFetching] = useState(false);
 
@@ -19,17 +20,27 @@ export const useChatMessages = () => {
 
     if (preloadedMessages) {
       setMessages(preloadedMessages);
+      // Update cache with preloaded messages
+      setMessageCache(prev => ({ ...prev, [chatId]: preloadedMessages }));
       setIsFetching(false);
       return;
     }
 
-    // Load from API if not preloaded
+    // Check cache first
+    if (messageCache[chatId]) {
+      setMessages(messageCache[chatId]);
+      setIsFetching(false);
+      // Optional: Background refresh could go here if needed
+      return;
+    }
+
+    // Load from API if not cached
     try {
-      // Clear messages only if we don't have preloaded ones, but do it AFTER setting isFetching
-      // so the UI knows we are loading.
       setMessages([]);
       const fetchedMessages = await chatService.getChatConversation(chatId);
       setMessages(fetchedMessages);
+      // Update cache
+      setMessageCache(prev => ({ ...prev, [chatId]: fetchedMessages }));
     } catch (error) {
       console.error('Failed to load chat messages:', error);
       showToast.error('Failed to load conversation');
@@ -58,7 +69,18 @@ export const useChatMessages = () => {
       imageUrl: imageFile ? URL.createObjectURL(imageFile) : undefined,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Update messages and cache immediately (optimistic)
+    const updateMessagesAndCache = (newMsg: ChatMessage) => {
+      setMessages((prev) => {
+        const updated = [...prev, newMsg];
+        if (currentChatId) {
+          setMessageCache(cache => ({ ...cache, [currentChatId]: updated }));
+        }
+        return updated;
+      });
+    };
+
+    updateMessagesAndCache(userMessage);
     setIsLoading(true);
 
     try {
@@ -70,21 +92,27 @@ export const useChatMessages = () => {
       );
 
       // Update chat ID if this was a new conversation
+      let activeChatId = currentChatId;
       if (response.conv_id && !currentChatId) {
         // Ensure conv_id is a string (backend may return a number)
-        setCurrentChatId(String(response.conv_id));
+        activeChatId = String(response.conv_id);
+        setCurrentChatId(activeChatId);
         setCurrentChatTitle(response.conv_title);
       }
 
       // Update user message image URL if backend returned one
       if (response.img_url) {
-        setMessages((prev) =>
-          prev.map((msg) =>
+        setMessages((prev) => {
+          const updated = prev.map((msg) =>
             msg.id === userMessage.id
               ? { ...msg, imageUrl: response.img_url! }
               : msg
-          )
-        );
+          );
+          if (activeChatId) {
+            setMessageCache(cache => ({ ...cache, [activeChatId!]: updated }));
+          }
+          return updated;
+        });
       }
 
       // Transform and add assistant message
@@ -104,7 +132,14 @@ export const useChatMessages = () => {
         } : undefined,
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      // Add assistant message to state and cache
+      setMessages((prev) => {
+        const updated = [...prev, assistantMessage];
+        if (activeChatId) {
+          setMessageCache(cache => ({ ...cache, [activeChatId!]: updated }));
+        }
+        return updated;
+      });
 
       // Show appropriate toast based on response type
       if (outfitData.type === 0 && outfitData.items.length > 0) {
@@ -117,13 +152,19 @@ export const useChatMessages = () => {
       showToast.error('Failed to get outfit recommendations. Please try again.');
 
       // Remove the temporary user message on error
-      setMessages((prev) => prev.filter((msg) => msg.id !== userMessage.id));
+      setMessages((prev) => {
+        const updated = prev.filter((msg) => msg.id !== userMessage.id);
+        if (currentChatId) {
+          setMessageCache(cache => ({ ...cache, [currentChatId]: updated }));
+        }
+        return updated;
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const explainOutfit = async (messageId: string, _outfitId: string) => {
+  const explainOutfit = async (messageId: string) => {
     // The backend already returns explanation with the outfit
     // This function now just reveals the existing explanation
     setLoadingExplanationId(messageId);

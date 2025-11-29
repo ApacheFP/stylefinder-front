@@ -63,13 +63,13 @@ export const authService = {
       email: data.email,
       password: data.password,
     });
-    
+
     // After signup, automatically login to get session
     const loginResponse = await api.post<LoginResponse>('/user/login', {
       email: data.email,
       password: data.password,
     });
-    
+
     return {
       user: transformUser(loginResponse.data.user),
     };
@@ -91,5 +91,26 @@ export const authService = {
   getCurrentUser: async (): Promise<User> => {
     const response = await api.get<SessionResponse>('/user/session');
     return transformUser(response.data.user);
+  },
+
+  // Update user profile
+  // Backend endpoint: PUT /user/profile
+  updateProfile: async (data: { name: string }): Promise<User> => {
+    const response = await api.put<{ success: boolean; user: LoginResponse['user'] }>('/user/profile', data);
+    return transformUser(response.data.user);
+  },
+
+  // Change password
+  // Backend endpoint: PUT /user/password
+  changePassword: async (data: { current: string; new: string }): Promise<boolean> => {
+    const response = await api.put<{ success: boolean }>('/user/password', data);
+    return response.data.success;
+  },
+
+  // Delete account
+  // Backend endpoint: DELETE /user/delete
+  deleteAccount: async (): Promise<boolean> => {
+    const response = await api.delete<{ success: boolean }>('/user/delete');
+    return response.data.success;
   },
 };

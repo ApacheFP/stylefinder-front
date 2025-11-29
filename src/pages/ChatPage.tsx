@@ -23,7 +23,7 @@ function beutifyUsername(name: string) {
 const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
-  const [_isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [, setIsLoadingHistory] = useState(true);
 
   // Auth context
   const { isAuthenticated, user } = useAuth();
@@ -230,7 +230,7 @@ const ChatPage = () => {
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto p-8"
+          className="flex-1 overflow-y-auto px-4 py-6"
         >
           {showEmptyState && !isFetching ? (
             <ChatEmptyState
@@ -239,7 +239,7 @@ const ChatPage = () => {
               onSuggestionClick={(suggestion) => setInputMessage(suggestion)}
             />
           ) : (
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-[992px] mx-auto space-y-6">
               {isFetching ? (
                 // Show skeletons while fetching history
                 <ChatMessageSkeleton />

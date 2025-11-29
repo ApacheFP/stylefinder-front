@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // Try to get current user from session
         const userData = await authService.getCurrentUser();
         setUser(userData);
-      } catch (error) {
+      } catch {
         // No active session or session expired - user is not logged in
         console.log('No active session');
         setUser(null);
@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

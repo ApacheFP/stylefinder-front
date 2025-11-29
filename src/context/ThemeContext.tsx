@@ -13,12 +13,7 @@ interface ThemeProviderState {
     setTheme: (theme: Theme) => void;
 }
 
-const initialState: ThemeProviderState = {
-    theme: 'light',
-    setTheme: () => null,
-};
-
-const ThemeContext = createContext<ThemeProviderState>(initialState);
+const ThemeContext = createContext<ThemeProviderState | undefined>(undefined);
 
 export function ThemeProvider({
     children,
@@ -56,6 +51,7 @@ export function ThemeProvider({
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTheme = () => {
     const context = useContext(ThemeContext);
 

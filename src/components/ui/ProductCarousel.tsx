@@ -12,9 +12,30 @@ interface ProductCarouselProps {
     initialIndex: number;
 }
 
+const variants = {
+    enter: (direction: number) => ({
+        x: direction > 0 ? 1000 : -1000,
+        opacity: 0,
+        scale: 0.95,
+    }),
+    center: {
+        zIndex: 1,
+        x: 0,
+        opacity: 1,
+        scale: 1,
+    },
+    exit: (direction: number) => ({
+        zIndex: 0,
+        x: direction < 0 ? 1000 : -1000,
+        opacity: 0,
+        scale: 0.95,
+    })
+};
+
 const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarouselProps) => {
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const [zoomLevel, setZoomLevel] = useState(1);
+    const [direction, setDirection] = useState(0);
 
     const handleZoomToggle = () => {
         setZoomLevel(prev => prev === 1 ? 2 : 1);
@@ -23,14 +44,17 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
     useEffect(() => {
         if (isOpen) {
             setCurrentIndex(initialIndex);
+            setDirection(0);
         }
     }, [isOpen, initialIndex]);
 
     const handlePrevious = useCallback(() => {
+        setDirection(-1);
         setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
     }, [items.length]);
 
     const handleNext = useCallback(() => {
+        setDirection(1);
         setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
     }, [items.length]);
 
@@ -62,90 +86,95 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
     if (!currentItem) return null;
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
+        <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-5xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700">
             {/* Image Section */}
-            {/* Image Section */}
-            <div className="w-full md:w-[55%] bg-gray-50/80 dark:bg-gray-700/50 relative flex flex-col items-center justify-center p-0 overflow-hidden group">
+            <div className="w-full md:w-[60%] bg-gradient-to-br from-gray-50 to-gray-200 dark:from-gray-800 dark:to-gray-900 relative flex flex-col items-center justify-center p-0 overflow-hidden group">
 
-                {/* Counter */}
-                <div className="absolute top-6 left-6 bg-white/80 dark:bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20">
+                {/* Counter - Glassmorphism */}
+                <div className="absolute top-6 left-6 bg-white/40 dark:bg-black/40 backdrop-blur-lg px-3 py-1.5 rounded-full text-xs font-bold text-gray-700 dark:text-white/90 shadow-sm z-20 border border-white/20">
                     {currentIndex + 1} / {items.length}
                 </div>
 
-                {/* Zoom Toggle */}
+                {/* Zoom Toggle - Glassmorphism */}
                 <button
                     onClick={handleZoomToggle}
-                    className="absolute top-6 right-6 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20 hover:bg-white dark:hover:bg-black/70 transition-all"
+                    className="absolute top-6 right-6 p-2.5 bg-white/40 dark:bg-black/40 backdrop-blur-lg rounded-full text-gray-700 dark:text-white/90 shadow-sm z-20 border border-white/20 hover:bg-white/60 dark:hover:bg-black/60 transition-all active:scale-95"
                 >
                     {zoomLevel > 1 ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
                 </button>
 
                 {/* Main Image Area */}
                 <div className="w-full h-full flex items-center justify-center relative z-0 p-8 md:p-12">
-                    <AnimatePresence mode="wait">
+                    <AnimatePresence initial={false} custom={direction} mode="popLayout">
                         <motion.div
-                            key={currentItem.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{
-                                opacity: 1,
-                                scale: zoomLevel,
-                                x: 0,
-                                y: 0
+                            key={currentIndex}
+                            custom={direction}
+                            variants={variants}
+                            initial="enter"
+                            animate="center"
+                            exit="exit"
+                            transition={{
+                                x: { type: "spring", stiffness: 280, damping: 28 },
+                                opacity: { duration: 0.25 }
                             }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
                             drag={zoomLevel === 1 ? "x" : false}
                             dragConstraints={zoomLevel === 1 ? { left: 0, right: 0 } : undefined}
-                            dragElastic={0.2}
+                            dragElastic={1}
                             onDragEnd={zoomLevel === 1 ? onDragEnd : undefined}
                             className={`relative w-full h-full flex items-center justify-center ${zoomLevel > 1 ? 'cursor-zoom-out' : 'cursor-zoom-in'}`}
                             onTap={handleZoomToggle}
                         >
-                            <img
+                            <motion.img
                                 src={currentItem.imageUrl}
                                 alt={currentItem.name}
                                 draggable="false"
+                                animate={{ scale: zoomLevel }}
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                 onDragStart={(e) => e.preventDefault()}
-                                className="max-w-full max-h-full object-contain drop-shadow-xl transition-transform duration-500 select-none"
+                                className="max-w-full max-h-full object-contain drop-shadow-2xl select-none"
                             />
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
-                {/* Navigation Buttons (Desktop) - Minimal & Glass */}
+                {/* Navigation Buttons (Desktop) - Fade in on hover */}
                 {items.length > 1 && zoomLevel === 1 && (
                     <>
                         <button
                             onClick={(e) => { e.stopPropagation(); handlePrevious(); }}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20 hover:bg-white dark:hover:bg-black/70 transition-all hidden md:flex"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 p-3.5 bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-full text-gray-800 dark:text-white shadow-lg z-20 border border-white/40 hover:bg-white/50 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 hidden md:flex hover:scale-110 active:scale-95"
                         >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-6 h-6" />
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-600 dark:text-white/90 shadow-sm z-20 border border-white/20 hover:bg-white dark:hover:bg-black/70 transition-all hidden md:flex"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 p-3.5 bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-full text-gray-800 dark:text-white shadow-lg z-20 border border-white/40 hover:bg-white/50 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 hidden md:flex hover:scale-110 active:scale-95"
                         >
-                            <ChevronRight className="w-5 h-5" />
+                            <ChevronRight className="w-6 h-6" />
                         </button>
                     </>
                 )}
 
                 {/* Glass Thumbnails - Floating at bottom */}
                 {items.length > 1 && zoomLevel === 1 && (
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/30 dark:bg-black/30 backdrop-blur-md border border-white/20 dark:border-white/10 p-1.5 rounded-2xl flex gap-2 shadow-lg z-20 max-w-[90%] overflow-x-auto scrollbar-hide">
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 p-2 rounded-2xl flex gap-3 shadow-2xl z-20 max-w-[90%] overflow-x-auto scrollbar-hide">
                         {items.map((item, index) => (
                             <button
                                 key={item.id}
-                                onClick={(e) => { e.stopPropagation(); setCurrentIndex(index); }}
-                                className={`relative w-10 h-10 flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 ${index === currentIndex
-                                    ? 'ring-2 ring-primary scale-110 z-10'
-                                    : 'opacity-70 hover:opacity-100 hover:scale-105'
-                                    }`}
+                                onClick={(e) => { e.stopPropagation(); setDirection(index > currentIndex ? 1 : -1); setCurrentIndex(index); }}
+                                className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden group/thumb"
                             >
+                                {index === currentIndex && (
+                                    <motion.div
+                                        layoutId="active-thumb"
+                                        className="absolute inset-0 border-2 border-primary rounded-xl z-10"
+                                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                    />
+                                )}
                                 <img
                                     src={item.imageUrl}
                                     alt={item.name}
-                                    className="w-full h-full object-cover bg-white"
+                                    className={`w-full h-full object-cover bg-white transition-opacity duration-300 ${index === currentIndex ? 'opacity-100' : 'opacity-60 group-hover/thumb:opacity-100'}`}
                                 />
                             </button>
                         ))}
@@ -154,8 +183,8 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
             </div>
 
             {/* Details Section */}
-            <div className="w-full md:w-[45%] p-6 md:p-8 flex flex-col bg-white dark:bg-gray-800 justify-center relative">
-                {/* Close Button (Mobile) - Desktop handled by Modal */}
+            <div className="w-full md:w-[40%] p-8 md:p-10 flex flex-col bg-white dark:bg-gray-900 justify-center relative border-l border-gray-100 dark:border-gray-800">
+                {/* Close Button (Mobile) */}
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 md:hidden"
@@ -168,7 +197,8 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="text-xs font-bold text-primary/80 uppercase tracking-widest mb-2"
+                            key={`brand-${currentIndex}`}
+                            className="text-[10px] font-bold text-primary/80 uppercase tracking-[0.2em] mb-3"
                         >
                             {currentItem.brand}
                         </motion.div>
@@ -177,43 +207,47 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         key={`title-${currentIndex}`}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-2xl font-bold text-gray-900 dark:text-white mb-2 leading-tight"
+                        className="text-3xl font-bold text-gray-900 dark:text-white mb-3 leading-tight font-display"
                     >
                         {currentItem.name}
                     </motion.h2>
-                    <motion.p
+                    <motion.div
                         key={`price-${currentIndex}`}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-3xl font-bold text-primary dark:text-primary-light mb-6"
+                        className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-hover mb-6"
                     >
                         ${currentItem.price.toFixed(2)}
-                    </motion.p>
+                    </motion.div>
 
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="space-y-3"
+                        className="space-y-4"
                     >
-                        <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                            Elevate your style with this premium piece from {currentItem.brand || 'our collection'}. Designed for comfort and versatility, it's the perfect addition to your modern wardrobe.
+                        <p className="text-gray-500 dark:text-gray-400 text-base leading-relaxed font-light">
+                            Elevate your style with this premium piece from <span className="font-medium text-gray-700 dark:text-gray-300">{currentItem.brand || 'our collection'}</span>. Designed for comfort and versatility, it's the perfect addition to your modern wardrobe.
                         </p>
                     </motion.div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-50 dark:border-gray-700">
+                <div className="mt-10 pt-8 border-t border-gray-50 dark:border-gray-800">
                     {currentItem.link ? (
-                        <button
-                            onClick={() => window.open(currentItem.link, '_blank', 'noopener,noreferrer')}
-                            className="w-full py-3.5 bg-primary text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary-hover active:scale-95 transition-all shadow-lg shadow-primary/20 hover:shadow-primary/30"
+                        <a
+                            href={currentItem.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="group relative w-full py-4 bg-primary text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 overflow-hidden shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 active:scale-[0.98] hover:bg-primary-hover"
                         >
-                            <ShoppingBag className="w-4 h-4" />
-                            Shop Now
-                        </button>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 ease-out" />
+                            <ShoppingBag className="w-4 h-4 relative z-10" />
+                            <span className="relative z-10">Shop Now</span>
+                        </a>
                     ) : (
-                        <div className="w-full py-3.5 bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-sm font-medium rounded-xl text-center border border-gray-100 dark:border-gray-600">
+                        <div className="w-full py-4 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 text-sm font-medium rounded-xl text-center border border-gray-100 dark:border-gray-700 cursor-not-allowed">
                             Out of Stock
                         </div>
                     )}

@@ -60,15 +60,24 @@ interface BackendConversation {
 
 // Transform backend outfit items to frontend format
 const transformOutfitItems = (backendItems: BackendOutfitItem[]): OutfitItem[] => {
-  return backendItems.map((item, index) => ({
-    id: item.id || String(index),
-    name: item.title,
-    price: item.price,
-    imageUrl: item.image_link,
-    category: 'accessories' as const, // Backend doesn't provide category, use default
-    brand: item.brand,
-    link: item.url,
-  }));
+  const seenIds = new Set<string>();
+  return backendItems.map((item, index) => {
+    let id = item.id || `item-${index}-${Date.now()}`;
+    if (seenIds.has(id)) {
+      id = `${id}-dup-${index}`;
+    }
+    seenIds.add(id);
+
+    return {
+      id,
+      name: item.title,
+      price: item.price,
+      imageUrl: item.image_link,
+      category: 'accessories' as const, // Backend doesn't provide category, use default
+      brand: item.brand,
+      link: item.url,
+    };
+  });
 };
 
 // Calculate total price from items
@@ -127,18 +136,25 @@ export const chatService = {
     // Backend expects conv_id in JSON body
     const response = await api.post<BackendMessage[]>('/chat', { conv_id: convId });
 
+    const seenIds = new Set<string>();
     return response.data.map((msg, index) => {
       const messageType = msg.type ?? 0; // Default to 0 (outfit) if not provided
       const hasOutfit = messageType === 0 && msg.outfits && msg.outfits.length > 0;
 
+      let id = msg.message_id?.toString() || `msg-${index}-${Date.now()}`;
+      if (seenIds.has(id)) {
+        id = `${id}-dup-${index}`;
+      }
+      seenIds.add(id);
+
       return {
-        id: msg.message_id?.toString() || String(index),
+        id,
         role: msg.role === 'ai' ? 'assistant' as const : 'user' as const,
         content: msg.text,  // Backend uses 'text'
         timestamp: msg.created_at ? new Date(msg.created_at) : new Date(),  // Backend uses 'created_at'
         imageUrl: msg.image_id || undefined,
         outfit: hasOutfit ? {
-          id: String(index),
+          id: `outfit-${id}`, // Use message ID to ensure outfit ID is also unique and related
           items: transformOutfitItems(msg.outfits!),
           totalPrice: calculateTotalPrice(msg.outfits!),
           explanation: msg.explanation,

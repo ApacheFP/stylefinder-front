@@ -48,7 +48,7 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
 
     return (
       <div className="px-4 sm:px-8 py-4 sm:py-6 bg-background dark:bg-gray-900 border-t border-border dark:border-gray-800">
-        <div className="max-w-[900px] mx-auto">
+        <div className="max-w-[992px] mx-auto">
           {/* Image Preview */}
           <AnimatePresence>
             {imagePreview && (
