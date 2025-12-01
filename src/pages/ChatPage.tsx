@@ -17,19 +17,20 @@ import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
 import { chatService } from '../services/chatService';
 import type { ChatHistory } from '../types';
 
-function beutifyUsername(name: string) {
-  return name.trim().toLowerCase().charAt(0).toUpperCase() + name.slice(1)
+function beautifyUsername(name: string) {
+  const lower = name.trim().toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
-  const [, setIsLoadingHistory] = useState(true);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
   // Auth context
   const { isAuthenticated, user } = useAuth();
   const isLoggedIn = isAuthenticated;
   let userName = user?.name || 'Guest';
-  userName = beutifyUsername(userName)
+  userName = beautifyUsername(userName)
 
   // Custom hooks
   const {
@@ -91,16 +92,19 @@ const ChatPage = () => {
   // Add new conversation to history when created
   useEffect(() => {
     if (currentChatId && currentChatTitle) {
-      // Check if this conversation is already in history
-      const exists = chatHistory.some((chat) => chat.id === currentChatId);
-      if (!exists) {
-        setChatHistory((prev) => [
-          { id: currentChatId, title: currentChatTitle, lastMessage: new Date() },
-          ...prev,
-        ]);
-      }
+      // Check if this conversation is already in history using functional update
+      setChatHistory((prev) => {
+        const exists = prev.some((chat) => chat.id === currentChatId);
+        if (!exists) {
+          return [
+            { id: currentChatId, title: currentChatTitle, lastMessage: new Date() },
+            ...prev,
+          ];
+        }
+        return prev;
+      });
     }
-  }, [currentChatId, currentChatTitle, chatHistory]);
+  }, [currentChatId, currentChatTitle]);
 
   // Close sidebar on mobile when screen resizes to desktop
   useEffect(() => {
@@ -195,6 +199,7 @@ const ChatPage = () => {
       <Sidebar
         chatHistory={chatHistory}
         currentChatId={currentChatId}
+        isLoadingHistory={isLoadingHistory}
         onSelectChat={(chatId) => {
           handleSelectChat(chatId);
           // Close sidebar on mobile after selection

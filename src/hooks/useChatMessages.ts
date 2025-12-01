@@ -103,11 +103,16 @@ export const useChatMessages = () => {
       // Update user message image URL if backend returned one
       if (response.img_url) {
         setMessages((prev) => {
-          const updated = prev.map((msg) =>
-            msg.id === userMessage.id
-              ? { ...msg, imageUrl: response.img_url! }
-              : msg
-          );
+          const updated = prev.map((msg) => {
+            if (msg.id === userMessage.id) {
+              // Revoke the temporary object URL to prevent memory leak
+              if (msg.imageUrl && msg.imageUrl.startsWith('blob:')) {
+                URL.revokeObjectURL(msg.imageUrl);
+              }
+              return { ...msg, imageUrl: response.img_url! };
+            }
+            return msg;
+          });
           if (activeChatId) {
             setMessageCache(cache => ({ ...cache, [activeChatId!]: updated }));
           }

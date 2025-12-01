@@ -1,23 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Settings, User as UserIcon, Sun, Moon } from 'lucide-react';
+import { LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
 import Button from '../ui/Button';
-import Tooltip from '../ui/Tooltip';
+import ThemeToggle from '../ui/ThemeToggle';
 
-function beutifyUsername(name: string) {
-  return name.trim().toLowerCase().charAt(0).toUpperCase() + name.slice(1)
+function beautifyUsername(name: string) {
+  const lower = name.trim().toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
   let userName = user?.name || ""
-  userName = beutifyUsername(userName)
+  userName = beautifyUsername(userName)
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -51,19 +50,7 @@ const Header = () => {
       </Link>
 
       <div className="flex items-center gap-2 md:gap-4">
-        <Tooltip content={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'} position="bottom">
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            aria-label={`Toggle theme (currently ${theme})`}
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-5 h-5 text-yellow-500" />
-            ) : (
-              <Moon className="w-5 h-5 text-gray-600" />
-            )}
-          </button>
-        </Tooltip>
+        <ThemeToggle size="sm" />
 
         {isAuthenticated ? (
           <div className="relative" ref={menuRef}>

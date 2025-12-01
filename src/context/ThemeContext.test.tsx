@@ -4,12 +4,13 @@ import userEvent from '@testing-library/user-event';
 import { ThemeProvider, useTheme } from './ThemeContext';
 
 const TestComponent = () => {
-    const { theme, setTheme } = useTheme();
+    const { theme, setTheme, toggleTheme } = useTheme();
     return (
         <div>
             <span data-testid="theme-value">{theme}</span>
             <button onClick={() => setTheme('dark')}>Set Dark</button>
             <button onClick={() => setTheme('light')}>Set Light</button>
+            <button onClick={toggleTheme}>Toggle Theme</button>
         </div>
     );
 };
@@ -81,6 +82,24 @@ describe('ThemeContext', () => {
 
         expect(screen.getByTestId('theme-value')).toHaveTextContent('dark');
     });
+
+    it('toggles theme with toggleTheme function', async () => {
+        const user = userEvent.setup();
+        render(
+            <ThemeProvider defaultTheme="light">
+                <TestComponent />
+            </ThemeProvider>
+        );
+
+        expect(screen.getByTestId('theme-value')).toHaveTextContent('light');
+
+        await user.click(screen.getByText('Toggle Theme'));
+        expect(screen.getByTestId('theme-value')).toHaveTextContent('dark');
+
+        await user.click(screen.getByText('Toggle Theme'));
+        expect(screen.getByTestId('theme-value')).toHaveTextContent('light');
+    });
+
     it('throws error when used outside provider', () => {
         // Suppress console.error as React logs errors when boundary catches or render fails
         const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });

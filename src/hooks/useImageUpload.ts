@@ -81,6 +81,10 @@ export const useImageUpload = (fileReaderFactory = () => new FileReader()) => {
   };
 
   const clearImage = () => {
+    // Revoke object URL to prevent memory leak
+    if (imagePreview && imagePreview.startsWith('data:')) {
+      // data URLs don't need to be revoked
+    }
     setSelectedImage(null);
     setImagePreview(null);
   };

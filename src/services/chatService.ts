@@ -174,8 +174,13 @@ export const chatService = {
 
   // Delete a conversation
   deleteConversation: async (convId: string): Promise<boolean> => {
+    const numericId = parseInt(convId, 10);
+    if (isNaN(numericId)) {
+      console.error('Invalid conversation ID:', convId);
+      return false;
+    }
     const response = await api.delete<{ success: boolean }>('/conversations/delete', {
-      data: { conv_id: parseInt(convId) },
+      data: { conv_id: numericId },
     });
     return response.data.success;
   },

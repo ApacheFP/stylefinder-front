@@ -88,7 +88,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-5xl overflow-hidden flex flex-col md:flex-row h-[85vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700">
             {/* Image Section */}
-            <div className="w-full md:w-[60%] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-50 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-900 dark:to-black relative flex flex-col items-center justify-center p-0 overflow-hidden group">
+            <div className="w-full md:w-[60%] bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 relative flex flex-col items-center justify-center p-0 overflow-hidden group">
 
                 {/* Counter - Glassmorphism */}
                 <div className="absolute top-6 left-6 bg-white/60 dark:bg-black/60 backdrop-blur-xl px-4 py-2 rounded-full text-xs font-bold text-gray-800 dark:text-white/90 shadow-sm z-20 border border-white/40 dark:border-white/10 tracking-wider">
@@ -198,9 +198,11 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             key={`brand-${currentIndex}`}
-                            className="text-[11px] font-extrabold text-primary/90 uppercase tracking-[0.25em] mb-4"
+                            className="inline-flex mb-4"
                         >
-                            {currentItem.brand}
+                            <span className="text-[10px] font-bold text-primary dark:text-primary-light uppercase tracking-[0.15em] px-3 py-1.5 bg-primary/10 dark:bg-primary/20 backdrop-blur-sm rounded-lg border border-primary/20 dark:border-primary/30">
+                                {currentItem.brand}
+                            </span>
                         </motion.div>
                     )}
                     <motion.h2
@@ -216,7 +218,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-3xl font-bold text-gray-900 dark:text-white mb-8 flex items-baseline gap-2"
+                        className="text-3xl font-bold text-primary dark:text-primary-light mb-8"
                     >
                         ${currentItem.price.toFixed(2)}
                     </motion.div>

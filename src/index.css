@@ -24,6 +24,13 @@
     /* Skeleton variables */
     --skeleton-base: #e5e7eb;
     --skeleton-highlight: #f3f4f6;
+    
+    /* Scroll behavior */
+    scroll-behavior: smooth;
+
+    /* Premium theme transition timing */
+    --theme-transition-duration: 400ms;
+    --theme-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
@@ -34,16 +41,20 @@
   body {
     @apply bg-background text-text-dark antialiased dark:bg-gray-900 dark:text-gray-100;
     font-family: 'Roboto', sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Smooth theme transition for all elements */
-  *,
-  *::before,
-  *::after {
-    transition-property: background-color, border-color, color, fill, stroke, shadow;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
+  /* 
+   * Premium theme transition: all elements transition together smoothly.
+   * Elements inside [data-theme-toggle] keep their own transitions.
+   */
+  .theme-transitioning *:not([data-theme-toggle] *):not([data-theme-toggle]) {
+    transition: 
+      background-color var(--theme-transition-duration) var(--theme-transition-easing),
+      border-color var(--theme-transition-duration) var(--theme-transition-easing),
+      color var(--theme-transition-duration) var(--theme-transition-easing),
+      box-shadow var(--theme-transition-duration) var(--theme-transition-easing),
+      fill var(--theme-transition-duration) var(--theme-transition-easing),
+      stroke var(--theme-transition-duration) var(--theme-transition-easing) !important;
   }
 
   /* Improved accessibility - focus-visible for keyboard navigation */
@@ -156,5 +167,24 @@
 
   .placeholder-shimmer::placeholder {
     animation: shimmer 2s ease-in-out infinite;
+  }
+
+  /* Marquee animation for long file names */
+  @keyframes marquee {
+    0%, 20% {
+      transform: translateX(0);
+    }
+    80%, 100% {
+      transform: translateX(calc(-100% + 120px));
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 4s ease-in-out infinite;
+  }
+
+  .animate-marquee:hover,
+  .hover\:animation-paused:hover {
+    animation-play-state: paused;
   }
 }

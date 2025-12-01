@@ -30,11 +30,21 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    // Auto-resize textarea
+    const MAX_HEIGHT = 200;
+
+    // Auto-resize textarea with max height limit
     useEffect(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
-        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      const textarea = textareaRef.current;
+      if (textarea) {
+        // Reset height to auto to get the correct scrollHeight
+        textarea.style.height = 'auto';
+        
+        // Calculate new height, capped at MAX_HEIGHT
+        const newHeight = Math.min(textarea.scrollHeight, MAX_HEIGHT);
+        textarea.style.height = `${newHeight}px`;
+        
+        // Enable/disable scroll based on content
+        textarea.style.overflowY = textarea.scrollHeight > MAX_HEIGHT ? 'auto' : 'hidden';
       }
     }, [inputMessage]);
 
@@ -50,30 +60,40 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
       <div className="px-4 sm:px-8 py-4 sm:py-6 bg-background dark:bg-gray-900 border-t border-border dark:border-gray-800">
         <div className="max-w-[992px] mx-auto">
           {/* Image Preview */}
-          <AnimatePresence>
-            {imagePreview && (
+          <AnimatePresence mode="wait">
+            {imagePreview && selectedImage && (
               <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="mb-4 relative inline-block group"
+                key="image-preview"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.15 }}
+                className="mb-3 overflow-hidden"
               >
-                <div className="relative rounded-xl overflow-hidden border border-border shadow-sm">
+                <div className="inline-flex items-center gap-2 px-2 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg max-w-[200px]">
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="h-24 w-auto object-cover"
+                    className="h-10 w-10 object-cover rounded-md flex-shrink-0"
                   />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button
-                      onClick={onRemoveImage}
-                      className="p-1.5 bg-white/20 hover:bg-red-500 text-white rounded-full backdrop-blur-sm transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+                  <div className="flex flex-col min-w-0 overflow-hidden">
+                    <div className="overflow-hidden">
+                      <span className="text-sm font-medium text-text-dark dark:text-white whitespace-nowrap inline-block animate-marquee hover:animation-paused">
+                        {selectedImage.name}
+                      </span>
+                    </div>
+                    <span className="text-xs text-text-light dark:text-gray-400">
+                      {(selectedImage.size / 1024).toFixed(0)} KB
+                    </span>
                   </div>
+                  <button
+                    onClick={onRemoveImage}
+                    className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors flex-shrink-0"
+                    type="button"
+                  >
+                    <X className="w-4 h-4 text-text-medium dark:text-gray-400" />
+                  </button>
                 </div>
-
               </motion.div>
             )}
           </AnimatePresence>
@@ -105,12 +125,24 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                 else if (ref) ref.current = node;
               }}
               value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
+              onChange={(e) => {
+                // Limit to 1000 characters
+                if (e.target.value.length <= 1000) {
+                  setInputMessage(e.target.value);
+                }
+              }}
               onKeyDown={handleKeyDown}
               placeholder="Ask me for a style tip..."
               rows={1}
-              className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-gray-400 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus:border-transparent bg-transparent resize-none max-h-[200px] overflow-y-auto placeholder-shimmer"
-              style={{ minHeight: '44px', outline: 'none', border: 'none', boxShadow: 'none' }}
+              className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-gray-400 bg-transparent resize-none scrollbar-hide placeholder-shimmer"
+              style={{ 
+                minHeight: '44px', 
+                maxHeight: `${MAX_HEIGHT}px`,
+                outline: 'none',
+                border: 'none',
+                boxShadow: 'none',
+                WebkitAppearance: 'none',
+              }}
               aria-label="Message input"
             />
 
@@ -138,10 +170,15 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
             </motion.button>
           </div>
 
-          <div className="text-center mt-2">
-            <p className="text-[11px] text-text-light">
+          <div className="text-center mt-2 flex items-center justify-center gap-2">
+            <p className="text-[11px] text-text-light dark:text-gray-500">
               AI can make mistakes. Check important info.
             </p>
+            {inputMessage.length > 0 && (
+              <span className={`text-[10px] font-medium ${inputMessage.length > 500 ? 'text-amber-500' : 'text-text-light dark:text-gray-500'}`}>
+                {inputMessage.length}/1000
+              </span>
+            )}
           </div>
         </div>
       </div>

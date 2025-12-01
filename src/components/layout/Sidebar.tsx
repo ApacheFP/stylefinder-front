@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, MessageSquare, HelpCircle } from 'lucide-react';
+import { Plus, X, MessageSquare, HelpCircle, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useMemo } from 'react';
 import Button from '../ui/Button';
@@ -10,6 +10,7 @@ import { staggerContainer } from '../../utils/animations';
 interface SidebarProps {
   chatHistory: ChatHistory[];
   currentChatId?: string;
+  isLoadingHistory?: boolean;
   onSelectChat: (chatId: string) => void;
   onNewChat: () => void;
   isOpen?: boolean;
@@ -19,6 +20,7 @@ interface SidebarProps {
 const Sidebar = ({
   chatHistory,
   currentChatId,
+  isLoadingHistory = false,
   onSelectChat,
   onNewChat,
   isOpen = true,
@@ -97,7 +99,14 @@ const Sidebar = ({
                 variants={staggerContainer}
                 animate="visible"
               >
-                {sortedChatHistory.length === 0 ? (
+                {isLoadingHistory ? (
+                  <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+                    <Loader2 className="w-6 h-6 text-primary animate-spin mb-3" />
+                    <p className="text-sm font-inter text-text-light dark:text-gray-400">
+                      Loading history...
+                    </p>
+                  </div>
+                ) : sortedChatHistory.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
                     <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full mb-3">
                       <MessageSquare className="w-6 h-6 text-gray-400 dark:text-gray-500" />

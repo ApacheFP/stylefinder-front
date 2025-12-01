@@ -30,7 +30,7 @@ vi.mock('react-router-dom', async () => {
 describe('Header', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        (useTheme as any).mockReturnValue({ theme: 'light', setTheme: vi.fn() });
+        (useTheme as any).mockReturnValue({ theme: 'light', setTheme: vi.fn(), toggleTheme: vi.fn() });
     });
 
     it('renders correctly', () => {

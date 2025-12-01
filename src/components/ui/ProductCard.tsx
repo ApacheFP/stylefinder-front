@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { ShoppingBag, ImageOff } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingBag, ImageOff, Maximize2 } from 'lucide-react';
 import type { OutfitItem } from '../../types';
-import Tooltip from './Tooltip';
 
 interface ProductCardProps {
   item: OutfitItem;
@@ -12,13 +11,11 @@ interface ProductCardProps {
 const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [isClicked, setIsClicked] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleShopClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click from triggering
+    e.stopPropagation();
     if (item.link) {
-      setIsClicked(true);
-      setTimeout(() => setIsClicked(false), 300);
       window.open(item.link, '_blank', 'noopener,noreferrer');
     }
   };
@@ -27,40 +24,25 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 overflow-hidden hover:shadow-xl hover:shadow-primary/10 dark:hover:shadow-primary/10 hover:ring-2 hover:ring-primary/20 dark:hover:ring-primary/30 transition-all duration-300 w-[160px] flex-shrink-0 group cursor-pointer relative"
-      whileHover={{ y: -5, scale: 1.02 }}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 overflow-hidden hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-300 w-[160px] flex-shrink-0 group cursor-pointer relative"
+      whileHover={{ y: -4 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
       onClick={onImageClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Brand bar at top */}
-      {item.brand && (
-        <div className="px-2 py-0.5 bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 dark:from-gray-700/50 dark:via-gray-700/70 dark:to-gray-700/50 border-b border-gray-200 dark:border-gray-600 text-center">
-          <span className="text-[10px] font-bold text-gray-700 dark:text-gray-100 uppercase tracking-wider truncate block">
-            {item.brand}
-          </span>
-        </div>
-      )}
-
-      {/* Image */}
-      <div
-        className={`w-full h-[120px] bg-white dark:bg-gray-800 flex items-center justify-center overflow-hidden relative`}
-      >
+      {/* Image with gradient background */}
+      <div className="w-full h-[130px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 flex items-center justify-center overflow-hidden relative">
         {item.imageUrl && !imageError ? (
           <>
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700">
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent"
-                  animate={{
-                    x: ['-100%', '100%'],
-                  }}
-                  transition={{
-                    duration: 1.2,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
+                  animate={{ x: ['-100%', '100%'] }}
+                  transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
             )}
@@ -69,57 +51,80 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               alt={item.name}
               loading="lazy"
               referrerPolicy="no-referrer"
-              className="max-w-[85%] max-h-[85%] object-contain group-hover:scale-110"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{
-                opacity: imageLoaded ? 1 : 0,
-                scale: imageLoaded ? 1 : 0.95
+              className="max-w-[90%] max-h-[90%] object-contain transition-all duration-300 mix-blend-multiply dark:mix-blend-normal"
+              initial={{ opacity: 0 }}
+              animate={{ 
+                opacity: imageLoaded ? (isHovered ? 0.4 : 1) : 0,
+                scale: isHovered ? 1.05 : 1
               }}
-              transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+              transition={{ duration: 0.3 }}
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
             />
+            
+            {/* Centered Expand overlay on hover */}
+            <AnimatePresence>
+              {isHovered && imageLoaded && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute inset-0 flex items-center justify-center"
+                >
+                  <div className="p-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 dark:border-gray-700/50">
+                    <Maximize2 className="w-5 h-5 text-primary dark:text-primary-light" />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center p-4 text-center gap-2">
-            <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-full">
-              <ImageOff className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+          <div className="flex flex-col items-center justify-center p-4 text-center">
+            <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-full">
+              <ImageOff className="w-5 h-5 text-gray-400 dark:text-gray-500" />
             </div>
           </div>
         )}
       </div>
 
       {/* Info */}
-      <div className="p-2.5">
-        {/* Product name with tooltip */}
-        <Tooltip content={item.name} position="top">
-          <h3 className="font-medium text-xs text-gray-800 dark:text-gray-100 line-clamp-2 leading-snug mb-2 h-[2.4em]">
-            {item.name}
-          </h3>
-        </Tooltip>
+      <div className="p-2.5 space-y-1.5">
+        {/* Brand with glassmorphism */}
+        {item.brand && (
+          <div className="inline-flex">
+            <span className="text-[8px] font-bold text-primary dark:text-primary-light uppercase tracking-wider px-1.5 py-0.5 bg-primary/10 dark:bg-primary/20 backdrop-blur-sm rounded-md border border-primary/20 dark:border-primary/30">
+              {item.brand}
+            </span>
+          </div>
+        )}
+        
+        {/* Product name */}
+        <h3 className="font-medium text-[11px] text-gray-800 dark:text-gray-100 line-clamp-2 leading-tight min-h-[2.2em]">
+          {item.name}
+        </h3>
 
-        {/* Price and Shop button on same line */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-primary dark:text-primary-light font-bold text-sm">
+        {/* Price and Shop */}
+        <div className="flex items-center justify-between pt-1">
+          <span className="text-primary dark:text-primary-light font-bold text-sm">
             ${item.price.toFixed(2)}
-          </p>
+          </span>
 
           {hasLink ? (
-            <button
+            <motion.button
               onClick={handleShopClick}
-              className={`px-2 py-1.5 bg-primary text-white text-[10px] font-semibold rounded-lg flex items-center gap-1 hover:bg-primary-hover hover:shadow-lg hover:shadow-primary/30 active:scale-95 transition-all duration-200 shadow-md ${isClicked ? 'animate-pulse-once' : ''
-                }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-2.5 py-1 bg-primary text-white text-[10px] font-semibold rounded-lg flex items-center gap-1 hover:bg-primary-hover transition-colors"
               aria-label={`Shop ${item.name}`}
-              title="Shop"
             >
               <ShoppingBag className="w-3 h-3" />
               <span>Shop</span>
-            </button>
+            </motion.button>
           ) : (
-            <div className="px-2 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 text-[10px] font-medium rounded-lg flex items-center gap-1 opacity-50">
-              <ShoppingBag className="w-3 h-3" />
-              <span>Shop</span>
-            </div>
+            <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-400 text-[10px] font-medium rounded-lg">
+              N/A
+            </span>
           )}
         </div>
       </div>
