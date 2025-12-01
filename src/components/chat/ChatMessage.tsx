@@ -10,7 +10,7 @@ import { fadeInUp } from '../../utils/animations';
 
 interface ChatMessageProps {
   message: ChatMessageType;
-  onExplainOutfit: (messageId: string, outfitId: string) => void;
+  onExplainOutfit: (messageId: string) => void;
   isLoadingExplanation?: boolean;
 }
 
@@ -131,7 +131,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMes
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onExplainOutfit(message.id, message.outfit!.id)}
+                  onClick={() => onExplainOutfit(message.id)}
                   disabled={isLoadingExplanation}
                   className="mb-4 rounded-lg"
                   aria-label="Explain this outfit"
