@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Maximize2, ShoppingBag } from 'lucide-react';
+import { Maximize2, ShoppingBag, AlertTriangle, RefreshCw } from 'lucide-react';
 import type { ChatMessage as ChatMessageType } from '../../types';
 import ProductCard from '../ui/ProductCard';
 import ProductCarousel from '../ui/ProductCarousel';
@@ -12,10 +12,59 @@ interface ChatMessageProps {
   message: ChatMessageType;
   onExplainOutfit: (messageId: string) => void;
   isLoadingExplanation?: boolean;
+  onRetry?: (messageId: string, originalMessage: string, originalImage?: File) => void;
 }
 
-const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation }: ChatMessageProps) => {
+const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }: ChatMessageProps) => {
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  // Handle error message display
+  if (message.isError) {
+    const handleRetry = async () => {
+      if (!onRetry || !message.errorDetails) return;
+      setIsRetrying(true);
+      await onRetry(message.id, message.errorDetails.originalMessage, message.errorDetails.originalImage);
+      setIsRetrying(false);
+    };
+
+    return (
+      <motion.div
+        className="flex justify-start mb-2"
+        initial="hidden"
+        animate="visible"
+        variants={fadeInUp}
+        role="alert"
+        aria-label="Error message"
+      >
+        <div className="max-w-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl rounded-bl-md px-5 py-4 shadow-md">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-red-500 dark:text-red-400" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-roboto font-bold text-red-700 dark:text-red-400 mb-1">
+                Oops! Something went wrong
+              </h4>
+              <p className="font-inter text-sm text-red-600 dark:text-red-300 mb-3">
+                We couldn't process your request. This might be a temporary issue with our servers.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRetry}
+                disabled={isRetrying}
+                className="border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 gap-2"
+              >
+                <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
+                {isRetrying ? 'Retrying...' : 'Try Again'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   if (message.role === 'user') {
     return (

@@ -154,11 +154,23 @@ export const useChatMessages = () => {
 
     } catch (error) {
       console.error('Failed to send message:', error);
-      showToast.error('Failed to get outfit recommendations. Please try again.');
+      
+      // Create an error message to display in the chat
+      const errorMessage: ChatMessage = {
+        id: `error-${Date.now()}`,
+        role: 'assistant',
+        content: '',
+        timestamp: new Date(),
+        isError: true,
+        errorDetails: {
+          originalMessage: content,
+          originalImage: imageFile,
+        },
+      };
 
-      // Remove the temporary user message on error
+      // Keep the user message but add an error response
       setMessages((prev) => {
-        const updated = prev.filter((msg) => msg.id !== userMessage.id);
+        const updated = [...prev, errorMessage];
         if (currentChatId) {
           setMessageCache(cache => ({ ...cache, [currentChatId]: updated }));
         }
@@ -167,6 +179,40 @@ export const useChatMessages = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const retryMessage = async (
+    errorMessageId: string,
+    originalMessage: string,
+    originalImage?: File,
+    filters?: OutfitFilters
+  ) => {
+    // Remove the error message
+    setMessages((prev) => {
+      const updated = prev.filter((msg) => msg.id !== errorMessageId);
+      if (currentChatId) {
+        setMessageCache(cache => ({ ...cache, [currentChatId]: updated }));
+      }
+      return updated;
+    });
+
+    // Also remove the original user message that preceded the error
+    setMessages((prev) => {
+      // Find and remove the last user message (which was the failed one)
+      const lastUserMsgIndex = [...prev].reverse().findIndex(msg => msg.role === 'user');
+      if (lastUserMsgIndex !== -1) {
+        const actualIndex = prev.length - 1 - lastUserMsgIndex;
+        const updated = prev.filter((_, i) => i !== actualIndex);
+        if (currentChatId) {
+          setMessageCache(cache => ({ ...cache, [currentChatId]: updated }));
+        }
+        return updated;
+      }
+      return prev;
+    });
+
+    // Retry sending the message
+    await sendMessage(originalMessage, originalImage, filters);
   };
 
   const explainOutfit = async (messageId: string) => {
@@ -206,6 +252,7 @@ export const useChatMessages = () => {
     loadingExplanationId,
     loadChatMessages,
     sendMessage,
+    retryMessage,
     explainOutfit,
     clearMessages,
     isFetching,

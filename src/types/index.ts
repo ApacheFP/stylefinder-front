@@ -21,6 +21,11 @@ export interface ChatMessage {
   timestamp: Date;
   outfit?: Outfit;
   imageUrl?: string; // Optional image attached to the message
+  isError?: boolean; // True if this is an error message
+  errorDetails?: {
+    originalMessage: string;
+    originalImage?: File;
+  };
 }
 
 export interface ChatHistory {

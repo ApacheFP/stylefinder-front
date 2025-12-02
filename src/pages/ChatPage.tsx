@@ -42,6 +42,7 @@ const ChatPage = () => {
     loadingExplanationId,
     loadChatMessages,
     sendMessage,
+    retryMessage,
     explainOutfit,
     clearMessages
   } = useChatMessages();
@@ -256,6 +257,7 @@ const ChatPage = () => {
                     message={message}
                     onExplainOutfit={explainOutfit}
                     isLoadingExplanation={loadingExplanationId === message.id}
+                    onRetry={(msgId, originalMsg, originalImg) => retryMessage(msgId, originalMsg, originalImg)}
                   />
                 ))
               )}
