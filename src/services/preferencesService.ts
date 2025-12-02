@@ -1,9 +1,17 @@
 import api from './api';
 
+// Nuova struttura delle preferenze dal backend
+export interface PreferenceOption {
+  id: number;
+  name: string;
+  values: string[];
+}
+
+export type AllPreferencesResponse = Record<string, PreferenceOption>;
 
 export const preferencesService = {
-  // Get user preferences
-  getPreferences: async (): Promise<Record<string, unknown> | null> => {
+  // Get user preferences (ritorna es. { "Brand": "h&m,zara", "Genere": "male" })
+  getPreferences: async (): Promise<Record<string, string> | null> => {
     try {
       const response = await api.get<{ success: boolean; user: { preferences: Record<string, string> } }>('/user/session');
       console.log('Raw preferences from backend:', response.data.user.preferences);
@@ -14,42 +22,32 @@ export const preferencesService = {
     }
   },
 
-  // Update user preferences
-  updatePreferences: async (preferences: Record<string, unknown>): Promise<boolean> => {
-    // Send as is, backend handles the mapping by name
+  // Update user preferences (invia es. { "Brand": "h&m,zara", "Genere": "male" })
+  updatePreferences: async (preferences: Record<string, string>): Promise<boolean> => {
     const response = await api.put<{ success: boolean }>('/preferences', preferences);
     return response.data.success;
   },
 
-  // Get all available preferences (names and ids)
-  getAllPreferences: async (): Promise<Array<{ id: number; name: string }>> => {
+  // Get all available preferences con i loro valori possibili
+  getAllPreferences: async (): Promise<AllPreferencesResponse> => {
     try {
-      const response = await api.get<{ preferences?: Array<{ id: number; name: string }> } | Record<string, string>>('/preferences/all');
+      const response = await api.get<AllPreferencesResponse>('/preferences/all');
       console.log('Raw all preferences response:', response.data);
-
-      // Case 1: Response is { success: true, preferences: [...] }
-      if ('preferences' in response.data && Array.isArray(response.data.preferences)) {
-        return response.data.preferences.map((p) => ({
-          id: p.id,
-          name: p.name
-        }));
-      }
-
-      // Case 2: Response is { "1": "gender", ... } (Dictionary)
-      // We use index as ID to be safe if keys are strings
-      return Object.entries(response.data).map(([, value], index) => {
-        // Filter out non-preference keys if mixed (like "success": true)
-        if (typeof value !== 'string') return null;
-
-        return {
-          id: index,
-          name: value
-        };
-      }).filter((p): p is { id: number; name: string } => p !== null);
-
+      return response.data;
     } catch (error) {
       console.error('Error loading all preferences:', error);
-      return [];
+      return {};
     }
+  },
+
+  // Helper: converte stringa separata da virgola in array
+  parseMultiValue: (value: string | undefined): string[] => {
+    if (!value || value.trim() === '') return [];
+    return value.split(',').map(v => v.trim()).filter(v => v !== '');
+  },
+
+  // Helper: converte array in stringa separata da virgola
+  joinMultiValue: (values: string[]): string => {
+    return values.join(',');
   },
 };
