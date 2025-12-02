@@ -60,13 +60,15 @@ describe('useChatMessages', () => {
 
     it('sendMessage adds optimistic user message and calls API', async () => {
         const mockResponse = {
+            status: 'COMPLETED',
             conv_id: 'new-chat-id',
             conv_title: 'New Chat',
-            content: { type: 1, message: 'Response', outfit: [], explanation: '', status_code: 200 }
+            content: { message: 'Response', outfit: [], explanation: '' }
         };
         (chatService.sendMessage as any).mockResolvedValue(mockResponse);
         (chatService.transformOutfitResponse as any).mockReturnValue({
-            type: 1,
+            status: 'COMPLETED',
+            hasOutfit: false,
             message: 'Response',
             items: [],
             totalPrice: 0,
@@ -136,13 +138,15 @@ describe('useChatMessages', () => {
     it('updates cache when sending message', async () => {
         const { result } = renderHook(() => useChatMessages());
         const mockResponse = {
-            content: { type: 1, message: 'Response', outfit: [] },
+            status: 'COMPLETED',
+            content: { message: 'Response', outfit: [], explanation: '' },
             conv_id: '1'
         };
         (chatService.sendMessage as any).mockResolvedValue(mockResponse);
         (chatService.transformOutfitResponse as any).mockReturnValue({
+            status: 'COMPLETED',
+            hasOutfit: false,
             message: 'Response',
-            type: 1,
             items: []
         });
         (chatService.getChatConversation as any).mockResolvedValue([]);

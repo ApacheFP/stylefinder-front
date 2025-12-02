@@ -93,7 +93,7 @@ describe('chatService', () => {
             },
             {
                 message_id: 102,
-                role: 'ai',
+                role: 'model',  // Backend now uses 'model' instead of 'ai'
                 text: 'Here is a jacket',
                 type: 0,
                 outfits: [
@@ -150,7 +150,7 @@ describe('chatService', () => {
     it('getChatConversation handles duplicate message IDs', async () => {
         const mockMessages = [
             { message_id: 1, role: 'user', text: 'Hello', created_at: '2023-01-01T12:00:00Z' },
-            { message_id: 1, role: 'ai', text: 'Hi', created_at: '2023-01-01T12:01:00Z' }, // Duplicate ID
+            { message_id: 1, role: 'model', text: 'Hi', created_at: '2023-01-01T12:01:00Z' }, // Duplicate ID
         ];
         (api.post as any).mockResolvedValue({ data: mockMessages });
 
@@ -163,25 +163,23 @@ describe('chatService', () => {
     });
 });
 
-it('transformOutfitResponse handles type 1 (normal message)', () => {
+it('transformOutfitResponse handles AWAITING_INPUT status (no outfit)', () => {
     const backendResponse = {
-        type: 1,
         message: 'Just text',
         outfit: [],
         explanation: '',
-        status_code: 200
     };
 
-    const result = chatService.transformOutfitResponse(backendResponse);
+    const result = chatService.transformOutfitResponse(backendResponse, 'AWAITING_INPUT');
 
-    expect(result.type).toBe(1);
+    expect(result.status).toBe('AWAITING_INPUT');
+    expect(result.hasOutfit).toBe(false);
     expect(result.message).toBe('Just text');
     expect(result.items).toEqual([]);
 });
 
-it('transformOutfitResponse handles type 0 (outfit)', () => {
+it('transformOutfitResponse handles COMPLETED status (with outfit)', () => {
     const backendResponse = {
-        type: 0,
         message: 'Here is an outfit',
         outfit: [
             {
@@ -193,22 +191,36 @@ it('transformOutfitResponse handles type 0 (outfit)', () => {
             }
         ],
         explanation: 'Good choice',
-        status_code: 200
     };
 
-    const result = chatService.transformOutfitResponse(backendResponse);
+    const result = chatService.transformOutfitResponse(backendResponse, 'COMPLETED');
 
-    expect(result.type).toBe(0);
+    expect(result.status).toBe('COMPLETED');
+    expect(result.hasOutfit).toBe(true);
     expect(result.items).toHaveLength(1);
     expect(result.totalPrice).toBe(50);
     expect(result.explanation).toBe('Good choice');
+});
+
+it('transformOutfitResponse handles Guardrail status', () => {
+    const backendResponse = {
+        message: 'I cannot help with that request.',
+        outfit: [],
+        explanation: '',
+    };
+
+    const result = chatService.transformOutfitResponse(backendResponse, 'Guardrail');
+
+    expect(result.status).toBe('Guardrail');
+    expect(result.hasOutfit).toBe(false);
+    expect(result.message).toBe('I cannot help with that request.');
 });
 
 it('getChatConversation handles messages without outfits', async () => {
     const mockMessages = [
         {
             message_id: 1,
-            role: 'ai',
+            role: 'model',
             text: 'Hello',
             type: 1,
             created_at: '2023-01-01T10:00:00Z'

@@ -24,24 +24,26 @@ interface BackendOutfitItem {
   similarity?: number;
 }
 
+// New response status types from backend
+type ResponseStatus = 'AWAITING_INPUT' | 'Guardrail' | 'COMPLETED';
+
 interface BackendOutfitResponse {
-  type?: number;  // 0 = outfit, 1 = normal message (default: 0)
   outfit: BackendOutfitItem[];
   message: string;
-  explanation: string;
-  status_code: number;
+  explanation?: string;
 }
 
 interface SendMessageResponse {
-  conv_id?: string;
-  conv_title?: string;
+  status: ResponseStatus;
+  conv_id?: number | string;
+  conv_title?: string;  // Optional: title for new conversations
   img_url?: string | null;
   content: BackendOutfitResponse;
 }
 
 interface BackendMessage {
   message_id?: number;
-  role: 'user' | 'ai';
+  role: 'user' | 'model';  // Backend now uses 'model' instead of 'ai'
   text: string;  // Backend uses 'text', not 'content'
   type?: number;  // 0 = outfit, 1 = normal message (default: 0)
   image_id?: string | null;
@@ -149,7 +151,7 @@ export const chatService = {
 
       return {
         id,
-        role: msg.role === 'ai' ? 'assistant' as const : 'user' as const,
+        role: msg.role === 'model' ? 'assistant' as const : 'user' as const,
         content: msg.text,  // Backend uses 'text'
         timestamp: msg.created_at ? new Date(msg.created_at) : new Date(),  // Backend uses 'created_at'
         imageUrl: msg.image_id || undefined,
@@ -186,14 +188,15 @@ export const chatService = {
   },
 
   // Transform backend response to frontend ChatMessage format
-  // type: 0 = outfit response, 1 = normal text message
-  transformOutfitResponse: (backendResponse: BackendOutfitResponse) => {
-    const responseType = backendResponse.type ?? 0; // Default to 0 (outfit) if not provided
+  // Status: COMPLETED = outfit response, AWAITING_INPUT = needs more info, Guardrail = blocked
+  transformOutfitResponse: (backendResponse: BackendOutfitResponse, status: ResponseStatus) => {
+    const hasOutfit = backendResponse.outfit && backendResponse.outfit.length > 0;
 
-    // Type 1: Normal message (no outfit)
-    if (responseType === 1) {
+    // AWAITING_INPUT or Guardrail: No outfit, just message
+    if (status !== 'COMPLETED' || !hasOutfit) {
       return {
-        type: 1 as const,
+        status,
+        hasOutfit: false,
         message: backendResponse.message,
         items: [],
         totalPrice: 0,
@@ -201,12 +204,13 @@ export const chatService = {
       };
     }
 
-    // Type 0: Outfit response (default)
+    // COMPLETED with outfit
     return {
-      type: 0 as const,
+      status,
+      hasOutfit: true,
       items: transformOutfitItems(backendResponse.outfit || []),
       totalPrice: calculateTotalPrice(backendResponse.outfit || []),
-      explanation: backendResponse.explanation,
+      explanation: backendResponse.explanation || '',
       message: backendResponse.message,
     };
   },

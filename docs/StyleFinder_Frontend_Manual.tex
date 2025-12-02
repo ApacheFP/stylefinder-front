@@ -1,0 +1,4612 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% StyleFinder AI - Manuale Tecnico Frontend
+% Documentazione Completa per il Cliente
+% Versione 1.0 - Dicembre 2025
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt,a4paper,twoside]{report}
+
+%% ============================================================================
+%% PACCHETTI
+%% ============================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+\usepackage{mdframed}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{pifont}
+\usepackage{amssymb}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, calc}
+
+%% ============================================================================
+%% CONFIGURAZIONE PAGINA
+%% ============================================================================
+\geometry{
+    a4paper,
+    left=3cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm,
+    headheight=14pt
+}
+
+%% ============================================================================
+%% COLORI PERSONALIZZATI (Brand StyleFinder)
+%% ============================================================================
+\definecolor{primaryBlue}{HTML}{0D6EFD}
+\definecolor{primaryHover}{HTML}{0B5ED7}
+\definecolor{textDark}{HTML}{212529}
+\definecolor{textMedium}{HTML}{495057}
+\definecolor{textLight}{HTML}{ADB5BD}
+\definecolor{bgLight}{HTML}{F4F7F6}
+\definecolor{codeBackground}{HTML}{F8F9FA}
+\definecolor{successGreen}{HTML}{198754}
+\definecolor{warningYellow}{HTML}{FFC107}
+\definecolor{dangerRed}{HTML}{DC3545}
+
+%% ============================================================================
+%% CONFIGURAZIONE HYPERREF
+%% ============================================================================
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryBlue,
+    filecolor=primaryBlue,
+    urlcolor=primaryBlue,
+    citecolor=primaryBlue,
+    pdftitle={StyleFinder AI - Manuale Tecnico Frontend},
+    pdfauthor={StyleFinder Team},
+    pdfsubject={Documentazione Tecnica},
+    pdfkeywords={React, TypeScript, Frontend, AI, Fashion}
+}
+
+%% ============================================================================
+%% CONFIGURAZIONE LISTINGS (CODE)
+%% ============================================================================
+\lstdefinestyle{codestyle}{
+    backgroundcolor=\color{codeBackground},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{textLight}\itshape,
+    keywordstyle=\color{primaryBlue}\bfseries,
+    stringstyle=\color{successGreen},
+    numberstyle=\tiny\color{textLight},
+    numbers=left,
+    numbersep=8pt,
+    frame=single,
+    framerule=0.5pt,
+    rulecolor=\color{textLight},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    xleftmargin=15pt,
+    framexleftmargin=15pt,
+    aboveskip=10pt,
+    belowskip=10pt
+}
+\lstset{style=codestyle}
+
+% Definizione linguaggi
+\lstdefinelanguage{TypeScript}{
+    keywords={abstract, any, as, async, await, boolean, break, case, catch, class, const, constructor, continue, debugger, declare, default, delete, do, else, enum, export, extends, false, finally, for, from, function, get, if, implements, import, in, instanceof, interface, let, module, namespace, new, null, number, object, of, package, private, protected, public, readonly, require, return, set, static, string, super, switch, symbol, this, throw, true, try, type, typeof, undefined, var, void, while, with, yield},
+    sensitive=true,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]',
+    morestring=[b]",
+    morestring=[b]`
+}
+
+\lstdefinelanguage{TSX}[]{TypeScript}{
+    morekeywords={React, useState, useEffect, useContext, useRef, useCallback, useMemo}
+}
+
+%% ============================================================================
+%% CONFIGURAZIONE HEADER/FOOTER
+%% ============================================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%% ============================================================================
+%% CONFIGURAZIONE TITOLI
+%% ============================================================================
+\titleformat{\chapter}[display]
+    {\normalfont\huge\bfseries\color{primaryBlue}}
+    {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{40pt}
+
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{textDark}}
+    {\thesection}{1em}{}
+\titleformat{\subsection}
+    {\normalfont\large\bfseries\color{textDark}}
+    {\thesubsection}{1em}{}
+
+%% ============================================================================
+%% BOX PERSONALIZZATI
+%% ============================================================================
+\newtcolorbox{infobox}{
+    colback=primaryBlue!5,
+    colframe=primaryBlue,
+    fonttitle=\bfseries,
+    title=\faIcon{info-circle} Informazione,
+    rounded corners,
+    boxrule=1pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt
+}
+
+\newtcolorbox{warningbox}{
+    colback=warningYellow!10,
+    colframe=warningYellow!80!black,
+    fonttitle=\bfseries,
+    title=\faIcon{exclamation-triangle} Attenzione,
+    rounded corners,
+    boxrule=1pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt
+}
+
+\newtcolorbox{successbox}{
+    colback=successGreen!5,
+    colframe=successGreen,
+    fonttitle=\bfseries,
+    title=\faIcon{check-circle} Completato,
+    rounded corners,
+    boxrule=1pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt
+}
+
+\newtcolorbox{codebox}{
+    colback=codeBackground,
+    colframe=textLight,
+    fonttitle=\bfseries\ttfamily,
+    rounded corners,
+    boxrule=0.5pt,
+    left=5pt,
+    right=5pt,
+    top=5pt,
+    bottom=5pt
+}
+
+%% ============================================================================
+%% COMANDI PERSONALIZZATI
+%% ============================================================================
+\newcommand{\mymark}{\ding{51}}
+\newcommand{\crossmark}{\ding{55}}
+\newcommand{\tech}[1]{\texttt{\color{primaryBlue}#1}}
+\newcommand{\file}[1]{\texttt{\color{textMedium}#1}}
+\newcommand{\component}[1]{\textbf{\color{primaryBlue}#1}}
+
+%% ============================================================================
+%% INIZIO DOCUMENTO
+%% ============================================================================
+\begin{document}
+
+%% ============================================================================
+%% FRONTESPIZIO
+%% ============================================================================
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    % Logo placeholder
+    \begin{tikzpicture}
+        \fill[primaryBlue, rounded corners=10pt] (0,0) rectangle (4,1.5);
+        \node[white, font=\bfseries\Large] at (2,0.75) {StyleFinder};
+    \end{tikzpicture}
+    
+    \vspace{1cm}
+    
+    {\Huge\bfseries\color{primaryBlue} StyleFinder AI\par}
+    
+    \vspace{0.5cm}
+    
+    {\LARGE\color{textDark} Manuale Tecnico Frontend\par}
+    
+    \vspace{1.5cm}
+    
+    {\Large\color{textMedium} Documentazione Completa\par}
+    
+    \vspace{3cm}
+    
+    \begin{tikzpicture}
+        \draw[primaryBlue, line width=2pt] (0,0) -- (10,0);
+    \end{tikzpicture}
+    
+    \vspace{1cm}
+    
+    {\large
+    \begin{tabular}{ll}
+        \textbf{Versione:} & 1.0 \\[5pt]
+        \textbf{Data:} & Dicembre 2025 \\[5pt]
+        \textbf{Tecnologie:} & React 19, TypeScript, Vite \\[5pt]
+        \textbf{Stato:} & Produzione \\
+    \end{tabular}
+    \par}
+    
+    \vfill
+    
+    {\color{textLight}\small
+    Documento riservato --- Proprietà di StyleFinder AI Team\par}
+    
+\end{titlepage}
+
+%% ============================================================================
+%% PAGINA COPYRIGHT
+%% ============================================================================
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+    {\color{textMedium}
+    \textbf{StyleFinder AI --- Manuale Tecnico Frontend}\\[10pt]
+    Copyright \copyright\ 2025 StyleFinder AI Team\\[5pt]
+    Tutti i diritti riservati.\\[20pt]
+    
+    Questo documento è stato generato automaticamente\\
+    dalla documentazione del codice sorgente.\\[10pt]
+    
+    \textit{Versione del documento: 1.0}\\
+    \textit{Ultima modifica: Dicembre 2025}
+    }
+\end{center}
+\vspace*{\fill}
+\newpage
+
+%% ============================================================================
+%% INDICE
+%% ============================================================================
+\tableofcontents
+\newpage
+
+%% ============================================================================
+%% CAPITOLO 1: INTRODUZIONE
+%% ============================================================================
+\chapter{Introduzione}
+
+\section{Panoramica del Progetto}
+
+\textbf{StyleFinder AI} è un'applicazione web intelligente progettata per risolvere la comune sfida della creazione di outfit e dell'indecisione negli acquisti di moda. Il sistema permette agli utenti di esprimere le proprie esigenze in \textbf{linguaggio naturale} e ricevere istantaneamente look curati e pronti all'acquisto, assemblati da piattaforme e-commerce live.
+
+\begin{infobox}
+L'applicazione combina tecnologie moderne di frontend con intelligenza artificiale per offrire un'esperienza utente fluida e personalizzata nella ricerca di outfit perfetti.
+\end{infobox}
+
+\subsection{Obiettivi del Sistema}
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Semplicità d'uso}: Interfaccia conversazionale in linguaggio naturale
+    \item \textbf{Personalizzazione}: Raccomandazioni basate su preferenze utente
+    \item \textbf{Integrazione e-commerce}: Prodotti reali da piattaforme online
+    \item \textbf{Esperienza moderna}: UI/UX responsive e animata
+    \item \textbf{Performance}: Caricamento veloce e interazioni fluide
+\end{enumerate}
+
+\subsection{Funzionalità Principali}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Funzionalità} & \textbf{Descrizione} \\
+\hline
+Chat AI & Interfaccia conversazionale per richieste in linguaggio naturale \\
+\hline
+Outfit Recommendations & Suggerimenti di outfit completi basati su AI \\
+\hline
+Image Upload & Caricamento immagini per ricerca visuale \\
+\hline
+User Preferences & Salvataggio preferenze (stili, budget, taglie) \\
+\hline
+Dark Mode & Tema chiaro/scuro con transizioni fluide \\
+\hline
+Responsive Design & Ottimizzato per mobile, tablet e desktop \\
+\hline
+\end{tabularx}
+\caption{Funzionalità principali dell'applicazione}
+\end{table}
+
+\section{Stack Tecnologico}
+
+Il frontend di StyleFinder AI è costruito utilizzando le tecnologie più moderne e performanti disponibili nell'ecosistema JavaScript/TypeScript.
+
+\subsection{Tecnologie Core}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Tecnologia} & \textbf{Versione} & \textbf{Scopo} \\
+\hline
+React & 19.2.0 & Libreria UI component-based \\
+\hline
+TypeScript & 5.9.3 & Type safety e developer experience \\
+\hline
+Vite & 7.2.2 & Build tool ultra-veloce \\
+\hline
+Tailwind CSS & 3.4.18 & Framework CSS utility-first \\
+\hline
+React Router & 7.9.5 & Routing client-side \\
+\hline
+\end{tabularx}
+\caption{Tecnologie core del progetto}
+\end{table}
+
+\subsection{Librerie Aggiuntive}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Libreria} & \textbf{Utilizzo} \\
+\hline
+\tech{Axios} & Client HTTP per chiamate API \\
+\hline
+\tech{Framer Motion} & Animazioni e transizioni fluide \\
+\hline
+\tech{Lucide React} & Libreria di icone SVG \\
+\hline
+\tech{React Hot Toast} & Notifiche toast eleganti \\
+\hline
+\tech{Canvas Confetti} & Effetti celebrativi \\
+\hline
+\end{tabularx}
+\caption{Librerie aggiuntive utilizzate}
+\end{table}
+
+\subsection{Strumenti di Sviluppo}
+
+\begin{itemize}[label=\faIcon{tools}]
+    \item \textbf{ESLint} --- Linting del codice JavaScript/TypeScript
+    \item \textbf{Vitest} --- Framework di testing unitario
+    \item \textbf{Testing Library} --- Testing di componenti React
+    \item \textbf{PostCSS + Autoprefixer} --- Processamento CSS
+\end{itemize}
+
+\section{Requisiti di Sistema}
+
+\subsection{Ambiente di Sviluppo}
+
+\begin{successbox}
+Per sviluppare e buildare l'applicazione sono necessari:
+\begin{itemize}
+    \item Node.js versione 18 o superiore
+    \item npm (incluso con Node.js)
+    \item Un editor di codice moderno (VS Code consigliato)
+\end{itemize}
+\end{successbox}
+
+\subsection{Browser Supportati}
+
+L'applicazione è testata e supportata sui seguenti browser:
+
+\begin{itemize}[label=\mymark]
+    \item Google Chrome (ultime 2 versioni)
+    \item Mozilla Firefox (ultime 2 versioni)
+    \item Safari (ultime 2 versioni)
+    \item Microsoft Edge (ultime 2 versioni)
+\end{itemize}
+
+\section{Installazione e Avvio}
+
+\subsection{Clonazione e Setup}
+
+\begin{lstlisting}[language=bash, caption=Comandi di installazione]
+# Navigare nella cartella del progetto
+cd stylefinder-front
+
+# Installare le dipendenze
+npm install
+
+# Creare il file di configurazione ambiente
+cp .env.example .env
+
+# Avviare il server di sviluppo
+npm run dev
+\end{lstlisting}
+
+L'applicazione sarà disponibile all'indirizzo: \url{http://localhost:5173}
+
+\subsection{Script Disponibili}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Comando} & \textbf{Descrizione} \\
+\hline
+\texttt{npm run dev} & Avvia il server di sviluppo con hot-reload \\
+\hline
+\texttt{npm run build} & Compila l'applicazione per la produzione \\
+\hline
+\texttt{npm run preview} & Anteprima della build di produzione \\
+\hline
+\texttt{npm run lint} & Esegue il linting del codice \\
+\hline
+\texttt{npm run test} & Esegue i test unitari con Vitest \\
+\hline
+\end{tabularx}
+\caption{Script npm disponibili}
+\end{table}
+
+\begin{warningbox}
+Assicurarsi di configurare correttamente il file \file{.env} con l'URL del backend prima di avviare l'applicazione in modalità connessa.
+\end{warningbox}
+
+%% ============================================================================
+%% CAPITOLO 2: ARCHITETTURA DEL PROGETTO
+%% ============================================================================
+\chapter{Architettura del Progetto}
+
+\section{Struttura delle Cartelle}
+
+Il progetto segue una struttura modulare e scalabile, organizzata per funzionalità e responsabilità.
+
+\begin{lstlisting}[caption=Struttura directory del progetto]
+stylefinder-front/
+|-- src/
+|   |-- components/       # Componenti React riutilizzabili
+|   |   |-- chat/         # Componenti specifici chat
+|   |   |-- layout/       # Layout (Header, Sidebar)
+|   |   |-- ui/           # Componenti UI base
+|   |-- context/          # React Context (stato globale)
+|   |-- hooks/            # Custom React Hooks
+|   |-- pages/            # Pagine dell'applicazione
+|   |-- services/         # Servizi API
+|   |-- types/            # Definizioni TypeScript
+|   |-- utils/            # Funzioni utility
+|   |-- App.tsx           # Componente root
+|   |-- main.tsx          # Entry point
+|-- public/               # Asset statici
+|-- docs/                 # Documentazione
+|-- package.json          # Dipendenze e script
+|-- vite.config.ts        # Configurazione Vite
+|-- tailwind.config.js    # Configurazione Tailwind
+|-- tsconfig.json         # Configurazione TypeScript
+\end{lstlisting}
+
+\section{Pattern Architetturali}
+
+\subsection{Component-Based Architecture}
+
+L'applicazione segue il pattern \textbf{Component-Based Architecture} di React, dove ogni elemento dell'interfaccia è un componente riutilizzabile e autonomo.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Tipo Componente} & \textbf{Responsabilità} \\
+\hline
+\textbf{Pages} & Componenti di pagina, gestiscono routing e layout \\
+\hline
+\textbf{Layout} & Struttura comune (Header, Sidebar, Footer) \\
+\hline
+\textbf{UI Components} & Elementi riutilizzabili (Button, Input, Modal) \\
+\hline
+\textbf{Feature Components} & Componenti specifici per funzionalità (Chat, Products) \\
+\hline
+\end{tabularx}
+\caption{Tipologie di componenti}
+\end{table}
+
+\subsection{Container/Presentational Pattern}
+
+\begin{itemize}
+    \item \textbf{Container Components} (Smart): Gestiscono logica e stato
+    \item \textbf{Presentational Components} (Dumb): Renderizzano solo UI
+\end{itemize}
+
+\begin{infobox}
+Questo pattern migliora la testabilità e la riusabilità dei componenti, separando la logica dalla presentazione.
+\end{infobox}
+
+\subsection{Custom Hooks Pattern}
+
+I custom hooks incapsulano logica riutilizzabile:
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Hook} & \textbf{Funzionalità} \\
+\hline
+\tech{useChatMessages} & Gestione messaggi chat, invio, ricezione \\
+\hline
+\tech{useImageUpload} & Upload immagini con drag\&drop \\
+\hline
+\tech{useScrollToBottom} & Auto-scroll nella chat \\
+\hline
+\tech{useKeyboardShortcuts} & Scorciatoie da tastiera \\
+\hline
+\tech{useLocalStorage} & Persistenza dati locale \\
+\hline
+\tech{useOutfitFilters} & Filtri per outfit \\
+\hline
+\end{tabularx}
+\caption{Custom Hooks disponibili}
+\end{table}
+
+\section{Gestione dello Stato}
+
+\subsection{Context API}
+
+L'applicazione utilizza React Context API per la gestione dello stato globale, evitando prop drilling.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                text width=3.5cm, text centered, rounded corners, 
+                minimum height=1cm, font=\small},
+    arrow/.style={-{Stealth[length=3mm]}, thick, primaryBlue}
+]
+    % Nodes
+    \node[box] (app) {App.tsx};
+    \node[box, below left=of app, xshift=-0.5cm] (theme) {ThemeProvider};
+    \node[box, below right=of app, xshift=0.5cm] (auth) {AuthProvider};
+    \node[box, below=2.5cm of app] (pages) {Pages \& Components};
+    
+    % Arrows
+    \draw[arrow] (app) -- (theme);
+    \draw[arrow] (app) -- (auth);
+    \draw[arrow] (theme) -- (pages);
+    \draw[arrow] (auth) -- (pages);
+\end{tikzpicture}
+\caption{Gerarchia dei Context Provider}
+\end{figure}
+
+\subsubsection{AuthContext}
+
+Gestisce l'autenticazione utente:
+
+\begin{lstlisting}[language=TypeScript, caption=Interfaccia AuthContext]
+interface AuthContextType {
+  user: User | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, 
+           password: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+\end{lstlisting}
+
+\subsubsection{ThemeContext}
+
+Gestisce il tema chiaro/scuro:
+
+\begin{lstlisting}[language=TypeScript, caption=Interfaccia ThemeContext]
+interface ThemeProviderState {
+  theme: 'dark' | 'light';
+  setTheme: (theme: Theme) => void;
+  toggleTheme: () => void;
+}
+\end{lstlisting}
+
+\subsection{Stato Locale vs Globale}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Tipo} & \textbf{Quando Usare} & \textbf{Esempio} \\
+\hline
+useState & Stato locale del componente & Form inputs, toggle UI \\
+\hline
+Context & Stato condiviso tra componenti & User, Theme \\
+\hline
+Custom Hooks & Logica riutilizzabile con stato & Chat messages, Upload \\
+\hline
+\end{tabularx}
+\caption{Strategie di gestione stato}
+\end{table}
+
+\section{Flusso dei Dati}
+
+\subsection{Unidirectional Data Flow}
+
+React segue un flusso di dati unidirezionale:
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=2cm,
+    box/.style={rectangle, draw=primaryBlue, fill=white, 
+                text width=2.5cm, text centered, rounded corners, 
+                minimum height=0.8cm, font=\small},
+    arrow/.style={-{Stealth[length=3mm]}, thick, primaryBlue}
+]
+    \node[box] (action) {User Action};
+    \node[box, right=of action] (state) {State Update};
+    \node[box, right=of state] (render) {Re-render};
+    \node[box, right=of render] (ui) {UI Update};
+    
+    \draw[arrow] (action) -- (state);
+    \draw[arrow] (state) -- (render);
+    \draw[arrow] (render) -- (ui);
+    \draw[arrow, dashed] (ui) to[bend right=40] (action);
+\end{tikzpicture}
+\caption{Flusso dati unidirezionale in React}
+\end{figure}
+
+\subsection{Flusso Comunicazione API}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm,
+    box/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                text width=2.2cm, text centered, rounded corners, 
+                minimum height=0.9cm, font=\footnotesize},
+    service/.style={rectangle, draw=successGreen, fill=successGreen!10, 
+                text width=2.2cm, text centered, rounded corners, 
+                minimum height=0.9cm, font=\footnotesize},
+    api/.style={rectangle, draw=warningYellow!80!black, fill=warningYellow!10, 
+                text width=2.2cm, text centered, rounded corners, 
+                minimum height=0.9cm, font=\footnotesize},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick}
+]
+    \node[box] (component) {Component};
+    \node[box, right=of component] (hook) {Hook};
+    \node[service, right=of hook] (service) {Service};
+    \node[api, right=of service] (axios) {Axios};
+    \node[box, right=of axios] (backend) {Backend};
+    
+    \draw[arrow, primaryBlue] (component) -- (hook);
+    \draw[arrow, primaryBlue] (hook) -- (service);
+    \draw[arrow, successGreen] (service) -- (axios);
+    \draw[arrow, warningYellow!80!black] (axios) -- (backend);
+\end{tikzpicture}
+\caption{Flusso chiamate API}
+\end{figure}
+
+\section{Routing}
+
+L'applicazione utilizza \tech{React Router v7} per la navigazione client-side.
+
+\subsection{Configurazione Route}
+
+\begin{lstlisting}[language=TSX, caption=Configurazione routing in App.tsx]
+<Routes>
+  <Route path="/" element={<LandingPage />} />
+  <Route path="/login" element={<LoginPage />} />
+  <Route path="/signup" element={<SignUpPage />} />
+  <Route path="/chat" element={<ChatPage />} />
+  <Route path="/chat/:chatId" element={<ChatPage />} />
+  <Route path="/preferences" element={
+    <ProtectedRoute><PreferencesPage /></ProtectedRoute>
+  } />
+  <Route path="/profile" element={
+    <ProtectedRoute><ProfilePage /></ProtectedRoute>
+  } />
+  <Route path="/how-to-use" element={<HowToUsePage />} />
+  <Route path="*" element={<Navigate to="/" />} />
+</Routes>
+\end{lstlisting}
+
+\subsection{Route Protette}
+
+Il componente \component{ProtectedRoute} protegge le pagine che richiedono autenticazione:
+
+\begin{lstlisting}[language=TSX, caption=Componente ProtectedRoute]
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) return <LoadingSkeleton />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" 
+                     state={{ from: location }} replace />;
+  }
+  return <>{children}</>;
+};
+\end{lstlisting}
+
+\subsection{Mappa delle Route}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|c|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Path} & \textbf{Componente} & \textbf{Auth} & \textbf{Descrizione} \\
+\hline
+\texttt{/} & LandingPage & No & Homepage pubblica \\
+\hline
+\texttt{/login} & LoginPage & No & Pagina di login \\
+\hline
+\texttt{/signup} & SignUpPage & No & Registrazione utente \\
+\hline
+\texttt{/chat} & ChatPage & No & Chat AI principale \\
+\hline
+\texttt{/chat/:chatId} & ChatPage & No & Chat specifica \\
+\hline
+\texttt{/preferences} & PreferencesPage & Sì & Preferenze utente \\
+\hline
+\texttt{/profile} & ProfilePage & Sì & Profilo utente \\
+\hline
+\texttt{/how-to-use} & HowToUsePage & No & Guida all'uso \\
+\hline
+\end{tabularx}
+\caption{Mappa completa delle route}
+\end{table}
+
+\section{Lazy Loading e Code Splitting}
+
+Per ottimizzare le performance, le pagine sono caricate in modo lazy:
+
+\begin{lstlisting}[language=TSX, caption=Lazy loading delle pagine]
+import { lazy, Suspense } from 'react';
+
+// Lazy load pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
+
+// Loading Fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <Loader2 className="w-8 h-8 animate-spin" />
+  </div>
+);
+
+// Utilizzo con Suspense
+<Suspense fallback={<LoadingFallback />}>
+  <LandingPage />
+</Suspense>
+\end{lstlisting}
+
+\begin{successbox}
+Il lazy loading riduce significativamente il bundle iniziale, migliorando i tempi di caricamento della prima pagina (First Contentful Paint).
+\end{successbox}
+
+%% ============================================================================
+%% CAPITOLO 3: COMPONENTI
+%% ============================================================================
+\chapter{Componenti}
+
+Questo capitolo descrive in dettaglio tutti i componenti React dell'applicazione, organizzati per categoria.
+
+\section{Componenti UI Base}
+
+I componenti UI base si trovano in \file{src/components/ui/} e forniscono gli elementi fondamentali dell'interfaccia.
+
+\subsection{Button}
+
+Componente pulsante con varianti multiple e supporto per stati di caricamento.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Prop} & \textbf{Tipo} & \textbf{Descrizione} \\
+\hline
+\texttt{variant} & \texttt{string} & \texttt{'primary'} | \texttt{'secondary'} | \texttt{'outline'} | \texttt{'ghost'} \\
+\hline
+\texttt{size} & \texttt{string} & \texttt{'sm'} | \texttt{'md'} | \texttt{'lg'} \\
+\hline
+\texttt{isLoading} & \texttt{boolean} & Mostra spinner di caricamento \\
+\hline
+\texttt{disabled} & \texttt{boolean} & Disabilita il pulsante \\
+\hline
+\end{tabularx}
+\caption{Props del componente Button}
+\end{table}
+
+\begin{lstlisting}[language=TSX, caption=Esempio utilizzo Button]
+<Button variant="primary" size="lg" isLoading={isSubmitting}>
+  Invia Messaggio
+</Button>
+
+<Button variant="outline" onClick={handleCancel}>
+  Annulla
+</Button>
+\end{lstlisting}
+
+\subsection{Input}
+
+Campo di input con supporto per label, validazione errori e toggle password.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Prop} & \textbf{Tipo} & \textbf{Descrizione} \\
+\hline
+\texttt{label} & \texttt{string} & Etichetta sopra l'input \\
+\hline
+\texttt{error} & \texttt{string} & Messaggio di errore \\
+\hline
+\texttt{type} & \texttt{string} & Tipo input (text, email, password) \\
+\hline
+\end{tabularx}
+\caption{Props del componente Input}
+\end{table}
+
+\begin{lstlisting}[language=TSX, caption=Esempio utilizzo Input]
+<Input
+  label="Email"
+  type="email"
+  placeholder="esempio@email.com"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  error={emailError}
+/>
+\end{lstlisting}
+
+\subsection{Modal}
+
+Componente modale con overlay, animazioni e gestione chiusura.
+
+\begin{lstlisting}[language=TSX, caption=Struttura componente Modal]
+<Modal isOpen={isOpen} onClose={handleClose} title="Titolo">
+  <p>Contenuto del modale</p>
+  <Button onClick={handleConfirm}>Conferma</Button>
+</Modal>
+\end{lstlisting}
+
+\subsection{ProductCard}
+
+Card prodotto con immagine, prezzo, brand e link acquisto.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Prop} & \textbf{Tipo} & \textbf{Descrizione} \\
+\hline
+\texttt{item} & \texttt{OutfitItem} & Dati del prodotto \\
+\hline
+\texttt{onImageClick} & \texttt{function} & Callback click immagine \\
+\hline
+\end{tabularx}
+\caption{Props del componente ProductCard}
+\end{table}
+
+\textbf{Caratteristiche:}
+\begin{itemize}
+    \item Caricamento lazy delle immagini
+    \item Skeleton loading durante caricamento
+    \item Hover effects con animazioni Framer Motion
+    \item Pulsante "Shop" per aprire link prodotto
+    \item Supporto per lightbox immagine
+\end{itemize}
+
+\subsection{ProductCarousel}
+
+Carosello orizzontale per visualizzare prodotti outfit.
+
+\begin{lstlisting}[language=TSX, caption=Utilizzo ProductCarousel]
+<ProductCarousel 
+  items={outfit.items} 
+  onItemClick={handleProductClick}
+/>
+\end{lstlisting}
+
+\subsection{Skeleton}
+
+Componente placeholder per stati di caricamento.
+
+\begin{lstlisting}[language=TSX, caption=Utilizzo Skeleton]
+{isLoading ? (
+  <>
+    <Skeleton className="h-12 w-full" />
+    <Skeleton className="h-4 w-3/4" />
+  </>
+) : (
+  <ActualContent />
+)}
+\end{lstlisting}
+
+\subsection{Tooltip}
+
+Tooltip informativo con posizionamento automatico.
+
+\begin{lstlisting}[language=TSX, caption=Utilizzo Tooltip]
+<Tooltip content="Informazione aggiuntiva">
+  <Button>Hover me</Button>
+</Tooltip>
+\end{lstlisting}
+
+\subsection{ThemeToggle}
+
+Toggle per cambio tema chiaro/scuro con animazione.
+
+\begin{lstlisting}[language=TSX, caption=Utilizzo ThemeToggle]
+<ThemeToggle size="sm" />
+\end{lstlisting}
+
+\subsection{Riepilogo Componenti UI}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Componente} & \textbf{Scopo} \\
+\hline
+\component{Button} & Pulsanti con varianti e stati \\
+\hline
+\component{Input} & Campi input con validazione \\
+\hline
+\component{Modal} & Finestre modali \\
+\hline
+\component{ProductCard} & Card prodotto e-commerce \\
+\hline
+\component{ProductCarousel} & Carosello prodotti \\
+\hline
+\component{Skeleton} & Placeholder caricamento \\
+\hline
+\component{Tooltip} & Tooltip informativi \\
+\hline
+\component{ThemeToggle} & Switch tema chiaro/scuro \\
+\hline
+\component{ScrollToBottomButton} & Scroll automatico chat \\
+\hline
+\component{TypingIndicator} & Indicatore digitazione AI \\
+\hline
+\component{ImageLightbox} & Visualizzazione immagini fullscreen \\
+\hline
+\component{HamburgerMenu} & Menu hamburger mobile \\
+\hline
+\component{ParticleBackground} & Sfondo animato particelle \\
+\hline
+\end{tabularx}
+\caption{Riepilogo componenti UI}
+\end{table}
+
+\section{Componenti Layout}
+
+I componenti layout si trovano in \file{src/components/layout/} e definiscono la struttura delle pagine.
+
+\subsection{Header}
+
+Header principale con logo, navigazione e menu utente.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    box/.style={rectangle, draw=primaryBlue, fill=white, 
+                minimum height=0.8cm, font=\small},
+]
+    % Header container
+    \draw[primaryBlue, thick] (0,0) rectangle (12,1.2);
+    
+    % Logo
+    \node[box, fill=primaryBlue!20] at (1.5,0.6) {Logo};
+    
+    % Spacer
+    \node at (6,0.6) {...};
+    
+    % Theme toggle
+    \node[box] at (9,0.6) {Theme};
+    
+    % User menu
+    \node[box, fill=primaryBlue!10] at (11,0.6) {User};
+\end{tikzpicture}
+\caption{Layout del componente Header}
+\end{figure}
+
+\textbf{Funzionalità:}
+\begin{itemize}
+    \item Logo con link alla home
+    \item Toggle tema chiaro/scuro
+    \item Menu dropdown utente (quando autenticato)
+    \item Link a Preferenze e Profilo
+    \item Pulsante Logout
+\end{itemize}
+
+\begin{lstlisting}[language=TSX, caption=Struttura Header]
+const Header = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+  
+  return (
+    <header className="bg-white border-b">
+      <Link to="/"><h1>StyleFinder AI</h1></Link>
+      <ThemeToggle />
+      {isAuthenticated ? (
+        <UserDropdown user={user} onLogout={logout} />
+      ) : (
+        <Link to="/login"><Button>Log In</Button></Link>
+      )}
+    </header>
+  );
+};
+\end{lstlisting}
+
+\subsection{Sidebar}
+
+Sidebar laterale con cronologia chat e navigazione.
+
+\textbf{Stati della Sidebar:}
+\begin{enumerate}
+    \item \textbf{Utente autenticato}: Mostra cronologia chat, pulsante nuova chat
+    \item \textbf{Utente non autenticato}: Mostra CTA per login/registrazione
+    \item \textbf{Mobile}: Sidebar collassabile con overlay
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Prop} & \textbf{Tipo} & \textbf{Descrizione} \\
+\hline
+\texttt{chatHistory} & \texttt{ChatHistory[]} & Lista conversazioni \\
+\hline
+\texttt{currentChatId} & \texttt{string} & ID chat attiva \\
+\hline
+\texttt{isLoadingHistory} & \texttt{boolean} & Stato caricamento \\
+\hline
+\texttt{onSelectChat} & \texttt{function} & Callback selezione chat \\
+\hline
+\texttt{onNewChat} & \texttt{function} & Callback nuova chat \\
+\hline
+\texttt{isOpen} & \texttt{boolean} & Stato apertura (mobile) \\
+\hline
+\texttt{onClose} & \texttt{function} & Callback chiusura (mobile) \\
+\hline
+\end{tabularx}
+\caption{Props del componente Sidebar}
+\end{table}
+
+\section{Componenti Chat}
+
+I componenti chat si trovano in \file{src/components/chat/} e gestiscono l'interfaccia conversazionale.
+
+\subsection{ChatInput}
+
+Campo di input per messaggi con supporto immagini.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    box/.style={rectangle, draw=textLight, fill=white, 
+                minimum height=1cm, font=\small, rounded corners},
+]
+    % Input container
+    \draw[textLight, thick, rounded corners] (0,0) rectangle (12,1.5);
+    
+    % Plus button
+    \node[circle, draw=primaryBlue, fill=primaryBlue!10, minimum size=0.6cm] at (0.8,0.75) {+};
+    
+    % Text area
+    \node[box, text width=8cm, minimum width=8.5cm] at (5.5,0.75) {Ask me for a style tip...};
+    
+    % Send button
+    \node[circle, draw=primaryBlue, fill=primaryBlue, minimum size=0.8cm] at (11.2,0.75) {\color{white}\faIcon{paper-plane}};
+\end{tikzpicture}
+\caption{Layout del componente ChatInput}
+\end{figure}
+
+\textbf{Caratteristiche:}
+\begin{itemize}
+    \item Textarea auto-espandibile (max 200px)
+    \item Upload immagine con anteprima
+    \item Invio con Enter (Shift+Enter per nuova riga)
+    \item Limite 1000 caratteri con contatore
+    \item Pulsante invio animato
+    \item Stato disabilitato durante caricamento
+\end{itemize}
+
+\begin{lstlisting}[language=TSX, caption=Props ChatInput]
+interface ChatInputProps {
+  inputMessage: string;
+  setInputMessage: (message: string) => void;
+  imagePreview: string | null;
+  selectedImage: File | null;
+  onImageSelect: (e: ChangeEvent<HTMLInputElement>) => void;
+  onRemoveImage: () => void;
+  onSendMessage: () => void;
+  isLoading: boolean;
+}
+\end{lstlisting}
+
+\subsection{ChatMessage}
+
+Componente per renderizzare singoli messaggi (utente o AI).
+
+\textbf{Tipi di messaggio:}
+\begin{enumerate}
+    \item \textbf{Messaggio utente}: Bubble blu allineato a destra
+    \item \textbf{Messaggio AI testuale}: Bubble grigio allineato a sinistra
+    \item \textbf{Messaggio AI con outfit}: Include card prodotti e carosello
+\end{enumerate}
+
+\begin{lstlisting}[language=TSX, caption=Struttura ChatMessage]
+const ChatMessage = ({ message, onExplainOutfit }) => {
+  if (message.role === 'user') {
+    return (
+      <div className="flex justify-end">
+        <div className="bg-primary text-white rounded-2xl">
+          {message.imageUrl && <ImageAttachment />}
+          {message.content}
+        </div>
+      </div>
+    );
+  }
+  
+  // Assistant message
+  return (
+    <div className="flex justify-start">
+      <div className="bg-gray-100 rounded-2xl">
+        {message.content}
+      </div>
+      {message.outfit && (
+        <ProductCarousel items={message.outfit.items} />
+      )}
+    </div>
+  );
+};
+\end{lstlisting}
+
+\subsection{ChatEmptyState}
+
+Stato vuoto mostrato quando non ci sono messaggi.
+
+\begin{lstlisting}[language=TSX, caption=Struttura ChatEmptyState]
+const ChatEmptyState = ({ userName, isLoggedIn }) => (
+  <div className="text-center">
+    <h2>Ciao {userName}!</h2>
+    <p>Come posso aiutarti oggi?</p>
+    <div className="grid grid-cols-2 gap-4">
+      {suggestedPrompts.map(prompt => (
+        <SuggestionCard key={prompt.id} {...prompt} />
+      ))}
+    </div>
+  </div>
+);
+\end{lstlisting}
+
+\subsection{DragDropOverlay}
+
+Overlay per drag\&drop immagini sulla chat.
+
+\begin{lstlisting}[language=TSX, caption=Utilizzo DragDropOverlay]
+<div 
+  onDragEnter={handleDragEnter}
+  onDragLeave={handleDragLeave}
+  onDragOver={handleDragOver}
+  onDrop={handleDrop}
+>
+  {isDragging && <DragDropOverlay />}
+  <ChatContent />
+</div>
+\end{lstlisting}
+
+\subsection{ImageAttachment}
+
+Visualizzazione immagine allegata a un messaggio.
+
+\subsection{ChatMessageSkeleton}
+
+Skeleton per messaggi in caricamento.
+
+\section{Componenti Speciali}
+
+\subsection{ErrorBoundary}
+
+Componente React per catturare errori JavaScript nei figli.
+
+\begin{lstlisting}[language=TSX, caption=Implementazione ErrorBoundary]
+class ErrorBoundary extends Component<Props, State> {
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Uncaught error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-container">
+          <h1>Oops! Qualcosa e' andato storto</h1>
+          <button onClick={() => window.location.reload()}>
+            Ricarica Applicazione
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+\end{lstlisting}
+
+\begin{warningbox}
+L'ErrorBoundary cattura solo errori durante il rendering, nei lifecycle methods e nei costruttori. Non cattura errori in event handlers, codice asincrono o server-side rendering.
+\end{warningbox}
+
+\subsection{ProtectedRoute}
+
+Wrapper per route che richiedono autenticazione.
+
+\begin{lstlisting}[language=TSX, caption=Logica ProtectedRoute]
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  // Mostra skeleton durante verifica sessione
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  // Redirect a login se non autenticato
+  if (!isAuthenticated) {
+    return <Navigate to="/login" 
+                     state={{ from: location }} 
+                     replace />;
+  }
+
+  // Renderizza children se autenticato
+  return <>{children}</>;
+};
+\end{lstlisting}
+
+\section{Gerarchia Componenti}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    level 1/.style={sibling distance=4cm},
+    level 2/.style={sibling distance=2cm},
+    box/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                text width=2.5cm, text centered, rounded corners, 
+                minimum height=0.7cm, font=\footnotesize},
+    arrow/.style={-{Stealth[length=2mm]}, thick, primaryBlue}
+]
+    \node[box, fill=primaryBlue!30] (app) {App}
+        child {node[box] (eb) {ErrorBoundary}
+            child {node[box] (theme) {ThemeProvider}
+                child {node[box] (auth) {AuthProvider}
+                    child {node[box] (router) {BrowserRouter}
+                        child {node[box] (routes) {Routes}}
+                    }
+                }
+            }
+        };
+\end{tikzpicture}
+\caption{Gerarchia componenti root}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Livello} & \textbf{Componenti} \\
+\hline
+Root & App, ErrorBoundary \\
+\hline
+Providers & ThemeProvider, AuthProvider \\
+\hline
+Router & BrowserRouter, Routes, Route \\
+\hline
+Pages & LandingPage, LoginPage, ChatPage, etc. \\
+\hline
+Layout & Header, Sidebar \\
+\hline
+Features & ChatInput, ChatMessage, ProductCard \\
+\hline
+UI Base & Button, Input, Modal, Skeleton \\
+\hline
+\end{tabularx}
+\caption{Livelli della gerarchia componenti}
+\end{table}
+
+%% ============================================================================
+%% CAPITOLO 4: SERVIZI E API
+%% ============================================================================
+\chapter{Servizi e API}
+
+Questo capitolo documenta l'integrazione con il backend Flask, i servizi per le chiamate HTTP e la gestione delle risposte API.
+
+\section{Configurazione Axios}
+
+L'applicazione utilizza \tech{Axios} come client HTTP, configurato in \file{src/services/api.ts}.
+
+\subsection{Istanza Base}
+
+\begin{lstlisting}[language=TypeScript, caption=Configurazione istanza Axios]
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL 
+           || 'http://localhost:5000/api',
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, // Cookie-based sessions
+});
+
+export default api;
+\end{lstlisting}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Opzione} & \textbf{Descrizione} \\
+\hline
+\texttt{baseURL} & URL base del backend (da variabile ambiente) \\
+\hline
+\texttt{timeout} & Timeout richieste: 15 secondi \\
+\hline
+\texttt{withCredentials} & Abilita invio cookie per sessioni Flask-Login \\
+\hline
+\end{tabularx}
+\caption{Configurazione Axios}
+\end{table}
+
+\subsection{Interceptor per Errori}
+
+\begin{lstlisting}[language=TypeScript, caption=Response interceptor]
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Redirect a login se non autenticato
+      const currentPath = window.location.pathname;
+      if (currentPath !== '/login' && 
+          currentPath !== '/signup' && 
+          currentPath !== '/') {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+\end{lstlisting}
+
+\begin{infobox}
+L'interceptor gestisce automaticamente gli errori 401 (Unauthorized), reindirizzando l'utente alla pagina di login quando la sessione è scaduta.
+\end{infobox}
+
+\section{Authentication Service}
+
+Il servizio \file{authService.ts} gestisce tutte le operazioni di autenticazione.
+
+\subsection{Metodo di Autenticazione}
+
+Il backend utilizza \textbf{Flask-Login} con sessioni basate su cookie (non JWT).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm,
+    box/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                text width=2.5cm, text centered, rounded corners, 
+                minimum height=0.8cm, font=\small},
+    arrow/.style={-{Stealth[length=3mm]}, thick, primaryBlue}
+]
+    \node[box] (client) {Frontend};
+    \node[box, right=3cm of client] (server) {Backend};
+    
+    \draw[arrow] ([yshift=0.5cm]client.east) -- node[above, font=\footnotesize] {POST /login} ([yshift=0.5cm]server.west);
+    \draw[arrow, dashed] ([yshift=-0.5cm]server.west) -- node[below, font=\footnotesize] {Set-Cookie: session} ([yshift=-0.5cm]client.east);
+\end{tikzpicture}
+\caption{Flusso autenticazione cookie-based}
+\end{figure}
+
+\subsection{Endpoint Autenticazione}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Metodo} & \textbf{Endpoint} & \textbf{Descrizione} \\
+\hline
+POST & \texttt{/user/login} & Login utente \\
+\hline
+POST & \texttt{/user/} & Registrazione nuovo utente \\
+\hline
+GET & \texttt{/user/session} & Verifica sessione corrente \\
+\hline
+GET & \texttt{/user/logout} & Logout utente \\
+\hline
+PUT & \texttt{/user/profile} & Aggiorna profilo \\
+\hline
+PUT & \texttt{/user/password} & Cambia password \\
+\hline
+DELETE & \texttt{/user/delete} & Elimina account \\
+\hline
+\end{tabularx}
+\caption{Endpoint autenticazione}
+\end{table}
+
+\subsection{Metodi del Servizio}
+
+\begin{lstlisting}[language=TypeScript, caption=authService methods]
+export const authService = {
+  // Login
+  login: async (credentials: LoginCredentials) => {
+    const response = await api.post('/user/login', credentials);
+    return { user: transformUser(response.data.user) };
+  },
+
+  // Sign up + auto-login
+  signUp: async (data: SignUpData) => {
+    await api.post('/user/', {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
+    // Auto-login dopo registrazione
+    const loginResponse = await api.post('/user/login', {
+      email: data.email,
+      password: data.password,
+    });
+    return { user: transformUser(loginResponse.data.user) };
+  },
+
+  // Logout
+  logout: async () => {
+    await api.get('/user/logout');
+  },
+
+  // Get current user
+  getCurrentUser: async (): Promise<User> => {
+    const response = await api.get('/user/session');
+    return transformUser(response.data.user);
+  },
+
+  // Update profile
+  updateProfile: async (data: { name: string }) => {
+    const response = await api.put('/user/profile', data);
+    return transformUser(response.data.user);
+  },
+
+  // Change password
+  changePassword: async (data: { current: string; new: string }) => {
+    const response = await api.put('/user/password', data);
+    return response.data.success;
+  },
+
+  // Delete account
+  deleteAccount: async () => {
+    const response = await api.delete('/user/delete');
+    return response.data.success;
+  },
+};
+\end{lstlisting}
+
+\subsection{Trasformazione Dati Utente}
+
+\begin{lstlisting}[language=TypeScript, caption=Funzione transformUser]
+const transformUser = (backendUser: BackendUser): User => ({
+  id: String(backendUser.id),
+  name: backendUser.name || backendUser.email.split('@')[0],
+  email: backendUser.email,
+  preferences: backendUser.preferences,
+});
+\end{lstlisting}
+
+\section{Chat Service}
+
+Il servizio \file{chatService.ts} gestisce la comunicazione chat con l'AI.
+
+\subsection{Endpoint Chat}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Metodo} & \textbf{Endpoint} & \textbf{Descrizione} \\
+\hline
+POST & \texttt{/messages/send} & Invia messaggio e ricevi outfit \\
+\hline
+GET & \texttt{/conversations} & Lista conversazioni utente \\
+\hline
+POST & \texttt{/chat} & Messaggi di una conversazione \\
+\hline
+PUT & \texttt{/conversations/rename} & Rinomina conversazione \\
+\hline
+DELETE & \texttt{/conversations/delete} & Elimina conversazione \\
+\hline
+\end{tabularx}
+\caption{Endpoint chat}
+\end{table}
+
+\subsection{Invio Messaggi}
+
+\begin{lstlisting}[language=TypeScript, caption=Metodo sendMessage]
+sendMessage: async (
+  message: string,
+  filters: OutfitFilters,
+  convId?: string,
+  imageFile?: File
+): Promise<SendMessageResponse> => {
+  // Con immagine: usa FormData
+  if (imageFile) {
+    const formData = new FormData();
+    formData.append('message', message);
+    if (convId) formData.append('conv_id', convId);
+    formData.append('image', imageFile);
+
+    return (await api.post('/messages/send', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })).data;
+  }
+
+  // Senza immagine: JSON
+  return (await api.post('/messages/send', {
+    message,
+    conv_id: convId,
+  })).data;
+}
+\end{lstlisting}
+
+\subsection{Struttura Risposta Backend}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipi risposta backend]
+interface BackendOutfitResponse {
+  type?: number;  // 0 = outfit, 1 = messaggio normale
+  outfit: BackendOutfitItem[];
+  message: string;
+  explanation: string;
+  status_code: number;
+}
+
+interface BackendOutfitItem {
+  id: string;
+  title: string;
+  url: string;
+  image_link: string;
+  price: number;
+  brand?: string;
+  material?: string;
+}
+\end{lstlisting}
+
+\subsection{Trasformazione Outfit}
+
+\begin{lstlisting}[language=TypeScript, caption=Trasformazione items]
+const transformOutfitItems = (
+  backendItems: BackendOutfitItem[]
+): OutfitItem[] => {
+  return backendItems.map((item, index) => ({
+    id: item.id || `item-${index}-${Date.now()}`,
+    name: item.title,
+    price: item.price,
+    imageUrl: item.image_link,
+    category: 'accessories',
+    brand: item.brand,
+    link: item.url,
+  }));
+};
+\end{lstlisting}
+
+\subsection{Tipi di Risposta}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|c|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Type} & \textbf{Tipo} & \textbf{Contenuto} \\
+\hline
+0 & Outfit & Messaggio + lista prodotti + spiegazione \\
+\hline
+1 & Testuale & Solo messaggio di testo (no prodotti) \\
+\hline
+\end{tabularx}
+\caption{Tipi di risposta AI}
+\end{table}
+
+\section{Preferences Service}
+
+Il servizio \file{preferencesService.ts} gestisce le preferenze utente.
+
+\subsection{Endpoint Preferenze}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Metodo} & \textbf{Endpoint} & \textbf{Descrizione} \\
+\hline
+GET & \texttt{/user/session} & Ottiene preferenze (incluse in sessione) \\
+\hline
+PUT & \texttt{/preferences} & Aggiorna preferenze utente \\
+\hline
+GET & \texttt{/preferences/all} & Lista tutte le preferenze disponibili \\
+\hline
+\end{tabularx}
+\caption{Endpoint preferenze}
+\end{table}
+
+\subsection{Metodi del Servizio}
+
+\begin{lstlisting}[language=TypeScript, caption=preferencesService methods]
+export const preferencesService = {
+  // Get user preferences
+  getPreferences: async () => {
+    const response = await api.get('/user/session');
+    return response.data.user.preferences || {};
+  },
+
+  // Update preferences
+  updatePreferences: async (preferences: Record<string, unknown>) => {
+    const response = await api.put('/preferences', preferences);
+    return response.data.success;
+  },
+
+  // Get all available preference options
+  getAllPreferences: async () => {
+    const response = await api.get('/preferences/all');
+    // Handle both array and dictionary formats
+    if (Array.isArray(response.data.preferences)) {
+      return response.data.preferences;
+    }
+    return Object.entries(response.data).map(
+      ([, value], index) => ({ id: index, name: value })
+    );
+  },
+};
+\end{lstlisting}
+
+\section{Gestione Errori}
+
+\subsection{Pattern Try-Catch}
+
+\begin{lstlisting}[language=TypeScript, caption=Gestione errori nei servizi]
+try {
+  const response = await chatService.sendMessage(message);
+  // Handle success
+} catch (error) {
+  if (axios.isAxiosError(error)) {
+    if (error.response?.status === 401) {
+      // Session expired
+      showToast.error('Sessione scaduta');
+    } else if (error.response?.status === 500) {
+      // Server error
+      showToast.error('Errore del server');
+    } else {
+      showToast.error('Errore di rete');
+    }
+  }
+}
+\end{lstlisting}
+
+\subsection{Codici di Stato HTTP}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|c|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Codice} & \textbf{Stato} & \textbf{Azione Frontend} \\
+\hline
+200 & OK & Processa risposta normalmente \\
+\hline
+201 & Created & Risorsa creata (es. nuovo utente) \\
+\hline
+400 & Bad Request & Mostra errore validazione \\
+\hline
+401 & Unauthorized & Redirect a login \\
+\hline
+403 & Forbidden & Mostra errore permessi \\
+\hline
+404 & Not Found & Mostra risorsa non trovata \\
+\hline
+500 & Server Error & Mostra errore generico \\
+\hline
+\end{tabularx}
+\caption{Gestione codici HTTP}
+\end{table}
+
+\section{Variabili d'Ambiente}
+
+\begin{lstlisting}[language=bash, caption=File .env]
+# Backend API URL
+VITE_API_BASE_URL=http://localhost:5000/api
+
+# Environment
+VITE_ENV=development
+\end{lstlisting}
+
+\begin{warningbox}
+Le variabili d'ambiente in Vite devono avere il prefisso \texttt{VITE\_} per essere accessibili nel codice frontend.
+\end{warningbox}
+
+\section{Flusso Completo: Invio Messaggio}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    box/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                text width=2.8cm, text centered, rounded corners, 
+                minimum height=0.7cm, font=\footnotesize},
+    arrow/.style={-{Stealth[length=2mm]}, thick, primaryBlue},
+    label/.style={font=\tiny, text=textMedium}
+]
+    % Nodes
+    \node[box] (user) {Utente digita};
+    \node[box, below=of user] (input) {ChatInput};
+    \node[box, below=of input] (hook) {useChatMessages};
+    \node[box, below=of hook] (service) {chatService};
+    \node[box, below=of service] (axios) {Axios API};
+    \node[box, below=of axios] (backend) {Backend Flask};
+    
+    % Forward arrows
+    \draw[arrow] (user) -- (input);
+    \draw[arrow] (input) -- node[right, label] {onSendMessage} (hook);
+    \draw[arrow] (hook) -- node[right, label] {sendMessage()} (service);
+    \draw[arrow] (service) -- node[right, label] {POST /messages/send} (axios);
+    \draw[arrow] (axios) -- (backend);
+    
+    % Return arrows (dashed, on left side)
+    \draw[arrow, dashed, successGreen] ([xshift=-0.5cm]backend.west) -- ++(0,0.8) -- node[left, label, text=successGreen] {JSON response} ++(-0.5,0) |- ([xshift=-0.5cm]axios.west);
+    \draw[arrow, dashed, successGreen] ([xshift=-0.5cm]axios.west) -- ++(0,0.8) |- ([xshift=-0.5cm]service.west);
+    \draw[arrow, dashed, successGreen] ([xshift=-0.5cm]service.west) -- ++(0,0.8) -- node[left, label, text=successGreen] {transform} |- ([xshift=-0.5cm]hook.west);
+    \draw[arrow, dashed, successGreen] ([xshift=-0.5cm]hook.west) -- ++(0,0.8) -- node[left, label, text=successGreen] {setMessages} |- ([xshift=-0.5cm]input.west);
+\end{tikzpicture}
+\caption{Flusso completo invio messaggio}
+\end{figure}
+
+\section{Riepilogo Servizi}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Servizio} & \textbf{File} & \textbf{Responsabilità} \\
+\hline
+api & \texttt{api.ts} & Configurazione Axios, interceptors \\
+\hline
+authService & \texttt{authService.ts} & Login, logout, registrazione, profilo \\
+\hline
+chatService & \texttt{chatService.ts} & Messaggi, conversazioni, outfit \\
+\hline
+preferencesService & \texttt{preferencesService.ts} & Preferenze utente \\
+\hline
+\end{tabularx}
+\caption{Riepilogo servizi API}
+\end{table}
+
+%% ============================================================================
+%% CAPITOLO 5: HOOKS PERSONALIZZATI
+%% ============================================================================
+\chapter{Hooks Personalizzati}
+
+Questo capitolo documenta gli hooks React personalizzati sviluppati per StyleFinder AI. Gli hooks incapsulano logica riutilizzabile e semplificano la gestione dello stato nei componenti.
+
+\section{Panoramica degli Hooks}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Hook} & \textbf{Responsabilità} \\
+\hline
+\texttt{useChatMessages} & Gestione messaggi, invio, cache conversazioni \\
+\hline
+\texttt{useImageUpload} & Upload immagini, validazione, drag \& drop \\
+\hline
+\texttt{useKeyboardShortcuts} & Gestione shortcut tastiera \\
+\hline
+\texttt{useLocalStorage} & Sincronizzazione stato con localStorage \\
+\hline
+\texttt{useOutfitFilters} & Gestione filtri outfit \\
+\hline
+\texttt{useScrollToBottom} & Auto-scroll e rilevamento posizione \\
+\hline
+\end{tabularx}
+\caption{Panoramica hooks personalizzati}
+\end{table}
+
+\section{useChatMessages}
+
+Hook principale per la gestione dei messaggi della chat. Gestisce invio, ricezione, cache e stati di caricamento.
+
+\subsection{Stato Interno}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Stato} & \textbf{Tipo} & \textbf{Descrizione} \\
+\hline
+\texttt{messages} & \texttt{ChatMessage[]} & Array messaggi conversazione \\
+\hline
+\texttt{isLoading} & \texttt{boolean} & Invio messaggio in corso \\
+\hline
+\texttt{isFetching} & \texttt{boolean} & Caricamento conversazione \\
+\hline
+\texttt{currentChatId} & \texttt{string | undefined} & ID chat attiva \\
+\hline
+\texttt{currentChatTitle} & \texttt{string | undefined} & Titolo chat attiva \\
+\hline
+\texttt{messageCache} & \texttt{Record<string, ChatMessage[]>} & Cache messaggi per chat \\
+\hline
+\texttt{loadingExplanationId} & \texttt{string | null} & ID messaggio con spiegazione in caricamento \\
+\hline
+\end{tabularx}
+\caption{Stati di useChatMessages}
+\end{table}
+
+\subsection{Funzioni Esposte}
+
+\begin{lstlisting}[language=TypeScript, caption=API di useChatMessages]
+export const useChatMessages = () => {
+  // Carica messaggi di una conversazione
+  const loadChatMessages = async (
+    chatId: string, 
+    preloadedMessages?: ChatMessage[]
+  ) => { ... };
+
+  // Invia nuovo messaggio
+  const sendMessage = async (
+    content: string,
+    imageFile?: File,
+    filters?: OutfitFilters,
+    onSuccess?: () => void
+  ) => { ... };
+
+  // Richiedi spiegazione outfit
+  const requestExplanation = async (
+    messageId: string
+  ) => { ... };
+
+  // Reset per nuova chat
+  const startNewChat = () => { ... };
+
+  return {
+    messages, isLoading, isFetching,
+    currentChatId, currentChatTitle,
+    loadChatMessages, sendMessage,
+    requestExplanation, startNewChat,
+    loadingExplanationId
+  };
+};
+\end{lstlisting}
+
+\subsection{Sistema di Cache}
+
+Il hook implementa un sistema di cache per evitare richieste ripetute:
+
+\begin{lstlisting}[language=TypeScript, caption=Logica di cache messaggi]
+const loadChatMessages = async (chatId: string, preloadedMessages?) => {
+  setCurrentChatId(chatId);
+
+  // 1. Usa messaggi precaricati se forniti
+  if (preloadedMessages) {
+    setMessages(preloadedMessages);
+    setMessageCache(prev => ({ ...prev, [chatId]: preloadedMessages }));
+    return;
+  }
+
+  // 2. Controlla cache
+  if (messageCache[chatId]) {
+    setMessages(messageCache[chatId]);
+    return;
+  }
+
+  // 3. Carica da API
+  const fetchedMessages = await chatService.getChatConversation(chatId);
+  setMessages(fetchedMessages);
+  setMessageCache(prev => ({ ...prev, [chatId]: fetchedMessages }));
+};
+\end{lstlisting}
+
+\subsection{Ottimistic Update}
+
+L'invio messaggi utilizza l'ottimistic update per una UX fluida:
+
+\begin{lstlisting}[language=TypeScript, caption=Ottimistic update pattern]
+const sendMessage = async (content: string, imageFile?: File) => {
+  // Crea messaggio utente temporaneo
+  const userMessage: ChatMessage = {
+    id: `temp-${Date.now()}`,
+    role: 'user',
+    content: content,
+    timestamp: new Date(),
+    imageUrl: imageFile ? URL.createObjectURL(imageFile) : undefined,
+  };
+
+  // Aggiunge immediatamente alla UI
+  setMessages(prev => [...prev, userMessage]);
+  setIsLoading(true);
+
+  try {
+    // Invia al backend
+    const response = await chatService.sendMessage(content, filters);
+    
+    // Aggiorna con risposta AI
+    const aiMessage: ChatMessage = {
+      id: response.msg_id,
+      role: 'assistant',
+      content: response.text_response,
+      timestamp: new Date(),
+      outfit: response.outfit,
+    };
+    setMessages(prev => [...prev, aiMessage]);
+  } catch (error) {
+    showToast.error('Errore invio messaggio');
+  } finally {
+    setIsLoading(false);
+  }
+};
+\end{lstlisting}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.6cm,
+    box/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                text width=3cm, text centered, rounded corners, 
+                minimum height=0.6cm, font=\footnotesize},
+    arrow/.style={-{Stealth[length=2mm]}, thick, primaryBlue}
+]
+    \node[box] (send) {sendMessage()};
+    \node[box, below=of send] (temp) {Crea msg temporaneo};
+    \node[box, below=of temp] (update1) {UI update immediato};
+    \node[box, below=of update1] (api) {Chiamata API};
+    \node[box, below left=of api, xshift=-1cm] (success) {Aggiungi risposta AI};
+    \node[box, below right=of api, xshift=1cm] (error) {Mostra errore};
+    
+    \draw[arrow] (send) -- (temp);
+    \draw[arrow] (temp) -- (update1);
+    \draw[arrow] (update1) -- (api);
+    \draw[arrow] (api) -- node[left, font=\tiny] {success} (success);
+    \draw[arrow] (api) -- node[right, font=\tiny] {error} (error);
+\end{tikzpicture}
+\caption{Flusso ottimistic update}
+\end{figure}
+
+\section{useImageUpload}
+
+Hook per la gestione dell'upload immagini con validazione, preview e drag \& drop.
+
+\subsection{Stato e Validazione}
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useImageUpload]
+export const useImageUpload = () => {
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
+
+  const validateAndSetImage = (file: File) => {
+    // Valida tipo file
+    if (!file.type.startsWith('image/')) {
+      showToast.error('Seleziona un file immagine (JPEG, PNG, WebP)');
+      return false;
+    }
+
+    // Valida dimensione (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      showToast.error('L\'immagine deve essere < 5MB');
+      return false;
+    }
+
+    setSelectedImage(file);
+
+    // Crea preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+      showToast.success('Immagine allegata');
+    };
+    reader.readAsDataURL(file);
+
+    return true;
+  };
+  
+  // ...
+};
+\end{lstlisting}
+
+\subsection{Gestione Drag \& Drop}
+
+\begin{lstlisting}[language=TypeScript, caption=Handlers drag and drop]
+const handleDragEnter = (e: React.DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter.current++;
+  if (e.dataTransfer.items?.length > 0) {
+    setIsDragging(true);
+  }
+};
+
+const handleDragLeave = (e: React.DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dragCounter.current--;
+  if (dragCounter.current === 0) {
+    setIsDragging(false);
+  }
+};
+
+const handleDrop = (e: React.DragEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+  setIsDragging(false);
+  dragCounter.current = 0;
+
+  const files = e.dataTransfer.files;
+  if (files?.length > 0) {
+    validateAndSetImage(files[0]);
+  }
+};
+\end{lstlisting}
+
+\subsection{API Restituita}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Proprietà} & \textbf{Tipo} & \textbf{Descrizione} \\
+\hline
+\texttt{selectedImage} & \texttt{File | null} & File immagine selezionato \\
+\hline
+\texttt{imagePreview} & \texttt{string | null} & URL data preview \\
+\hline
+\texttt{isDragging} & \texttt{boolean} & Stato drag attivo \\
+\hline
+\texttt{handleImageSelect} & \texttt{function} & Handler input file \\
+\hline
+\texttt{handleRemoveImage} & \texttt{function} & Rimuove immagine \\
+\hline
+\texttt{handleDragEnter} & \texttt{function} & Handler drag enter \\
+\hline
+\texttt{handleDragLeave} & \texttt{function} & Handler drag leave \\
+\hline
+\texttt{handleDragOver} & \texttt{function} & Handler drag over \\
+\hline
+\texttt{handleDrop} & \texttt{function} & Handler drop \\
+\hline
+\texttt{clearImage} & \texttt{function} & Reset completo \\
+\hline
+\end{tabularx}
+\caption{API di useImageUpload}
+\end{table}
+
+\section{useKeyboardShortcuts}
+
+Hook per la gestione di shortcut da tastiera configurabili.
+
+\subsection{Definizione Shortcut}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipo KeyboardShortcut]
+type KeyboardShortcut = {
+  key: string;          // Tasto (es. 'Enter', 'k')
+  ctrlKey?: boolean;    // Richiede Ctrl
+  metaKey?: boolean;    // Richiede Cmd (macOS)
+  shiftKey?: boolean;   // Richiede Shift
+  action: () => void;   // Callback da eseguire
+  description?: string; // Descrizione per UI
+};
+\end{lstlisting}
+
+\subsection{Implementazione}
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useKeyboardShortcuts]
+export const useKeyboardShortcuts = (
+  shortcuts: KeyboardShortcut[], 
+  enabled = true
+) => {
+  useEffect(() => {
+    if (!enabled) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      shortcuts.forEach((shortcut) => {
+        const keyMatches = event.key.toLowerCase() === 
+                          shortcut.key.toLowerCase();
+        const ctrlMatches = shortcut.ctrlKey === undefined || 
+                           shortcut.ctrlKey === event.ctrlKey;
+        const metaMatches = shortcut.metaKey === undefined || 
+                           shortcut.metaKey === event.metaKey;
+        const shiftMatches = shortcut.shiftKey === undefined || 
+                            shortcut.shiftKey === event.shiftKey;
+
+        if (keyMatches && ctrlMatches && metaMatches && shiftMatches) {
+          event.preventDefault();
+          shortcut.action();
+        }
+      });
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [shortcuts, enabled]);
+};
+\end{lstlisting}
+
+\subsection{useEnterSubmit}
+
+Hook specializzato per gestire l'invio con Enter:
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useEnterSubmit]
+export const useEnterSubmit = (
+  onSubmit: () => void,
+  multiline = false
+) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      // Cmd/Ctrl+Enter in multiline: nuova riga
+      if ((event.metaKey || event.ctrlKey) && multiline) {
+        return; // Default behavior
+      }
+
+      // Enter senza modificatori: submit
+      if (!event.metaKey && !event.ctrlKey && !event.shiftKey) {
+        event.preventDefault();
+        onSubmit();
+      }
+    }
+  };
+
+  return { handleKeyDown };
+};
+\end{lstlisting}
+
+\begin{infobox}
+\textbf{Esempio utilizzo:}
+\begin{lstlisting}[language=TSX]
+const { handleKeyDown } = useEnterSubmit(handleSend);
+
+<textarea 
+  onKeyDown={handleKeyDown}
+  placeholder="Scrivi un messaggio..."
+/>
+\end{lstlisting}
+\end{infobox}
+
+\section{useLocalStorage}
+
+Hook per sincronizzare lo stato React con localStorage, con supporto per SSR e sync tra tab.
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useLocalStorage]
+export function useLocalStorage<T>(
+  key: string, 
+  initialValue: T
+): [T, SetValue<T>] {
+  
+  // Inizializzazione lazy
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === 'undefined') {
+      return initialValue;
+    }
+
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.warn(`Error loading localStorage "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  // Setter con persistenza
+  const setValue: SetValue<T> = (value) => {
+    try {
+      const valueToStore = value instanceof Function 
+        ? value(storedValue) 
+        : value;
+      
+      setStoredValue(valueToStore);
+      
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      }
+    } catch (error) {
+      console.warn(`Error setting localStorage "${key}":`, error);
+    }
+  };
+
+  // Sync tra tab/finestre
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === key && e.newValue) {
+        try {
+          setStoredValue(JSON.parse(e.newValue));
+        } catch (error) {
+          console.warn(`Error parsing storage event:`, error);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [key]);
+
+  return [storedValue, setValue];
+}
+\end{lstlisting}
+
+\begin{successbox}
+\textbf{Caratteristiche:}
+\begin{itemize}
+  \item API identica a \texttt{useState}
+  \item Supporto per valori complessi (oggetti, array)
+  \item Sincronizzazione automatica tra tab del browser
+  \item Compatibile con SSR (check \texttt{typeof window})
+\end{itemize}
+\end{successbox}
+
+\section{useOutfitFilters}
+
+Hook per gestire i filtri di ricerca outfit.
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useOutfitFilters]
+export const useOutfitFilters = () => {
+  const [filters, setFilters] = useState<OutfitFilters>({
+    budgetMax: 150,
+    outfitType: 'full',
+    selectedItems: [],
+  });
+
+  const updateBudget = (budget: number) => {
+    setFilters(prev => ({ ...prev, budgetMax: budget }));
+  };
+
+  const updateOutfitType = (type: 'full' | 'partial') => {
+    setFilters(prev => ({ ...prev, outfitType: type }));
+  };
+
+  const toggleItem = (
+    item: 'jacket' | 'blazer' | 'shirt' | 'pants' | 'shoes'
+  ) => {
+    setFilters(prev => ({
+      ...prev,
+      selectedItems: prev.selectedItems.includes(item)
+        ? prev.selectedItems.filter(i => i !== item)
+        : [...prev.selectedItems, item],
+    }));
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      budgetMax: undefined,
+      outfitType: 'full',
+      selectedItems: [],
+    });
+  };
+
+  return { filters, updateBudget, updateOutfitType, toggleItem, resetFilters };
+};
+\end{lstlisting}
+
+\subsection{Tipo OutfitFilters}
+
+\begin{lstlisting}[language=TypeScript, caption=Interfaccia OutfitFilters]
+interface OutfitFilters {
+  budgetMax?: number;                                    // Budget massimo
+  outfitType: 'full' | 'partial';                       // Tipo outfit
+  selectedItems: ('jacket'|'blazer'|'shirt'|'pants'|'shoes')[];
+}
+\end{lstlisting}
+
+\section{useScrollToBottom}
+
+Hook per gestire auto-scroll e rilevamento posizione in container scrollabili.
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useScrollToBottom]
+export const useScrollToBottom = (dependency: unknown) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<number | null>(null);
+
+  // Scroll fluido verso il basso
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior,
+      });
+      setIsUserScrolling(false);
+    }
+  }, []);
+
+  // Verifica se vicino al fondo (< 100px)
+  const isNearBottom = useCallback(() => {
+    if (!scrollRef.current) return true;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    return scrollHeight - scrollTop - clientHeight < 100;
+  }, []);
+
+  // Handler scroll con debounce
+  const handleScroll = useCallback(() => {
+    const isAtBottom = isNearBottom();
+    setShowScrollButton(!isAtBottom);
+    setIsUserScrolling(true);
+
+    // Reset dopo 150ms senza scroll
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    scrollTimeoutRef.current = setTimeout(() => {
+      if (isAtBottom) setIsUserScrolling(false);
+    }, 150);
+  }, [isNearBottom]);
+
+  // Auto-scroll su nuovi messaggi (solo se utente non sta scrollando)
+  useEffect(() => {
+    if (!isUserScrolling && dependency) {
+      scrollToBottom('smooth');
+    }
+  }, [dependency, isUserScrolling, scrollToBottom]);
+
+  return { scrollRef, showScrollButton, scrollToBottom, handleScroll };
+};
+\end{lstlisting}
+
+\subsection{API Restituita}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Proprietà} & \textbf{Tipo} & \textbf{Descrizione} \\
+\hline
+\texttt{scrollRef} & \texttt{RefObject<HTMLDivElement>} & Ref da assegnare al container \\
+\hline
+\texttt{showScrollButton} & \texttt{boolean} & Mostra pulsante scroll down \\
+\hline
+\texttt{scrollToBottom} & \texttt{function} & Scrolla al fondo \\
+\hline
+\texttt{handleScroll} & \texttt{function} & Handler onScroll \\
+\hline
+\end{tabularx}
+\caption{API di useScrollToBottom}
+\end{table}
+
+\begin{infobox}
+\textbf{Utilizzo tipico:}
+\begin{lstlisting}[language=TSX]
+const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = 
+  useScrollToBottom(messages);
+
+<div ref={scrollRef} onScroll={handleScroll} className="overflow-y-auto">
+  {messages.map(msg => <Message key={msg.id} {...msg} />)}
+</div>
+
+{showScrollButton && (
+  <button onClick={() => scrollToBottom()}>
+    <ArrowDown />
+  </button>
+)}
+\end{lstlisting}
+\end{infobox}
+
+\section{Riepilogo Hooks}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm and 2cm,
+    hook/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                 text width=2.5cm, text centered, rounded corners, 
+                 minimum height=0.8cm, font=\footnotesize\bfseries},
+    feature/.style={rectangle, draw=textLight, fill=backgroundDark!30, 
+                    text width=2cm, text centered, rounded corners, 
+                    minimum height=0.5cm, font=\tiny},
+    arrow/.style={-{Stealth[length=2mm]}, thick, textLight}
+]
+    % Central node
+    \node[hook, fill=accentPurple!20, draw=accentPurple] (center) {ChatPage};
+    
+    % Hooks around
+    \node[hook, above left=of center] (chat) {useChatMessages};
+    \node[hook, above=of center] (scroll) {useScrollToBottom};
+    \node[hook, above right=of center] (image) {useImageUpload};
+    \node[hook, right=of center] (filters) {useOutfitFilters};
+    \node[hook, below right=of center] (keyboard) {useKeyboardShortcuts};
+    \node[hook, below=of center] (storage) {useLocalStorage};
+    
+    % Connections
+    \draw[arrow] (chat) -- (center);
+    \draw[arrow] (scroll) -- (center);
+    \draw[arrow] (image) -- (center);
+    \draw[arrow] (filters) -- (center);
+    \draw[arrow] (keyboard) -- (center);
+    \draw[arrow] (storage) -- (center);
+\end{tikzpicture}
+\caption{Hooks utilizzati da ChatPage}
+\end{figure}
+
+%% ============================================================================
+%% CAPITOLO 6: GESTIONE DELLO STATO (CONTEXT)
+%% ============================================================================
+\chapter{Gestione dello Stato (Context)}
+
+Questo capitolo descrive l'utilizzo dei React Context per la gestione dello stato globale dell'applicazione.
+
+\section{Architettura Context}
+
+StyleFinder AI utilizza il pattern Context per gestire stato condiviso tra componenti. I context sono definiti in \file{src/context/}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    provider/.style={rectangle, draw=accentPurple, fill=accentPurple!10, 
+                     text width=3.5cm, text centered, rounded corners, 
+                     minimum height=0.7cm, font=\footnotesize\bfseries},
+    component/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                      text width=2.5cm, text centered, rounded corners, 
+                      minimum height=0.5cm, font=\footnotesize},
+    arrow/.style={-{Stealth[length=2mm]}, thick, textLight}
+]
+    % Providers (top level)
+    \node[provider] (theme) {ThemeProvider};
+    \node[provider, below=of theme] (auth) {AuthProvider};
+    \node[provider, below=of auth] (router) {BrowserRouter};
+    \node[component, below=of router] (app) {App};
+    
+    % Arrows
+    \draw[arrow] (theme) -- (auth);
+    \draw[arrow] (auth) -- (router);
+    \draw[arrow] (router) -- (app);
+    
+    % Labels
+    \node[right=0.5cm of theme, font=\tiny, text=textMedium] {Tema light/dark};
+    \node[right=0.5cm of auth, font=\tiny, text=textMedium] {Autenticazione};
+    \node[right=0.5cm of router, font=\tiny, text=textMedium] {Routing};
+\end{tikzpicture}
+\caption{Gerarchia dei Context Provider}
+\end{figure}
+
+\section{AuthContext}
+
+Gestisce l'autenticazione utente, sessioni e operazioni di login/logout.
+
+\subsection{Interfaccia AuthContextType}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipo AuthContextType]
+interface AuthContextType {
+  user: User | null;           // Utente corrente
+  isLoading: boolean;          // Verifica sessione in corso
+  isAuthenticated: boolean;    // Utente autenticato
+  login: (email: string, password: string) => Promise<void>;
+  signUp: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+\end{lstlisting}
+
+\subsection{Implementazione AuthProvider}
+
+\begin{lstlisting}[language=TSX, caption=AuthProvider completo]
+import { createContext, useContext, useState, useEffect } from 'react';
+import { authService } from '../services/authService';
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Verifica sessione al mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      } catch {
+        console.log('No active session');
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    const response = await authService.login({ email, password });
+    setUser(response.user);
+  };
+
+  const signUp = async (name: string, email: string, password: string) => {
+    const response = await authService.signUp({ name, email, password });
+    setUser(response.user);
+  };
+
+  const logout = async () => {
+    await authService.logout();
+    setUser(null);
+  };
+
+  const value = {
+    user,
+    isLoading,
+    isAuthenticated: !!user,
+    login,
+    signUp,
+    logout,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+\end{lstlisting}
+
+\subsection{Hook useAuth}
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useAuth con validazione]
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  
+  return context;
+};
+\end{lstlisting}
+
+\subsection{Utilizzo nei Componenti}
+
+\begin{lstlisting}[language=TSX, caption=Esempio utilizzo useAuth]
+const ProfilePage = () => {
+  const { user, isAuthenticated, logout } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  return (
+    <div>
+      <h1>Benvenuto, {user?.name}</h1>
+      <p>Email: {user?.email}</p>
+      <Button onClick={logout}>Logout</Button>
+    </div>
+  );
+};
+\end{lstlisting}
+
+\subsection{Flusso di Autenticazione}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.7cm,
+    state/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                  text width=2.5cm, text centered, rounded corners, 
+                  minimum height=0.6cm, font=\footnotesize},
+    decision/.style={diamond, draw=warningYellow, fill=warningYellow!10, 
+                     text width=1.5cm, text centered, aspect=2, 
+                     font=\tiny},
+    arrow/.style={-{Stealth[length=2mm]}, thick, primaryBlue}
+]
+    \node[state] (mount) {App Mount};
+    \node[decision, below=of mount] (check) {Session attiva?};
+    \node[state, below left=of check, xshift=-0.5cm] (loading) {isLoading: true};
+    \node[state, below=1.5cm of check] (loaded) {isLoading: false};
+    \node[decision, below=of loaded] (auth) {user !== null?};
+    \node[state, below left=of auth, xshift=-0.5cm] (yes) {isAuthenticated: true};
+    \node[state, below right=of auth, xshift=0.5cm] (no) {isAuthenticated: false};
+    
+    \draw[arrow] (mount) -- (check);
+    \draw[arrow] (check) -- node[left, font=\tiny] {verifica...} (loading);
+    \draw[arrow] (loading) -- ++(0,-0.5) -| (loaded);
+    \draw[arrow] (check) -- (loaded);
+    \draw[arrow] (loaded) -- (auth);
+    \draw[arrow] (auth) -- node[left, font=\tiny] {sì} (yes);
+    \draw[arrow] (auth) -- node[right, font=\tiny] {no} (no);
+\end{tikzpicture}
+\caption{Flusso verifica autenticazione}
+\end{figure}
+
+\section{ThemeContext}
+
+Gestisce il tema dell'applicazione (light/dark) con persistenza e transizioni animate.
+
+\subsection{Interfaccia ThemeProviderState}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipo ThemeProviderState]
+type Theme = 'dark' | 'light';
+
+interface ThemeProviderState {
+  theme: Theme;                    // Tema corrente
+  setTheme: (theme: Theme) => void; // Imposta tema
+  toggleTheme: () => void;         // Toggle dark/light
+}
+\end{lstlisting}
+
+\subsection{Implementazione ThemeProvider}
+
+\begin{lstlisting}[language=TSX, caption=ThemeProvider con transizioni]
+const THEME_TRANSITION_DURATION = 400;
+
+// Applica tema con transizione premium
+const applyTheme = (theme: Theme, enableTransition = true) => {
+  const root = window.document.documentElement;
+  
+  if (enableTransition) {
+    root.classList.add('theme-transitioning');
+  }
+  
+  root.classList.remove('light', 'dark');
+  root.classList.add(theme);
+  
+  if (enableTransition) {
+    setTimeout(() => {
+      root.classList.remove('theme-transitioning');
+    }, THEME_TRANSITION_DURATION);
+  }
+};
+
+// Ottieni tema iniziale (sincrono per evitare flash)
+const getInitialTheme = (storageKey: string, defaultTheme: Theme): Theme => {
+  if (typeof window === 'undefined') return defaultTheme;
+  
+  const stored = localStorage.getItem(storageKey) as Theme | null;
+  if (stored === 'dark' || stored === 'light') {
+    return stored;
+  }
+  
+  // Rispetta preferenza sistema
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  
+  return defaultTheme;
+};
+\end{lstlisting}
+
+\begin{lstlisting}[language=TSX, caption=ThemeProvider component]
+export function ThemeProvider({
+  children,
+  defaultTheme = 'light',
+  storageKey = 'vite-ui-theme',
+}: ThemeProviderProps) {
+  const [theme, setThemeState] = useState<Theme>(() => {
+    const initial = getInitialTheme(storageKey, defaultTheme);
+    // Applica subito senza transizione
+    if (typeof window !== 'undefined') {
+      applyTheme(initial, false);
+    }
+    return initial;
+  });
+
+  // Applica tema in modo sincrono prima del paint
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    if (!root.classList.contains(theme)) {
+      applyTheme(theme, true);
+    }
+  }, [theme]);
+
+  const setTheme = useCallback((newTheme: Theme) => {
+    localStorage.setItem(storageKey, newTheme);
+    setThemeState(newTheme);
+  }, [storageKey]);
+
+  const toggleTheme = useCallback(() => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+  }, [theme, setTheme]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+\end{lstlisting}
+
+\subsection{Hook useTheme}
+
+\begin{lstlisting}[language=TypeScript, caption=Hook useTheme]
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  
+  return context;
+};
+\end{lstlisting}
+
+\subsection{Utilizzo nei Componenti}
+
+\begin{lstlisting}[language=TSX, caption=Toggle tema in Header]
+const ThemeToggle = () => {
+  const { theme, toggleTheme } = useTheme();
+
+  return (
+    <button 
+      onClick={toggleTheme}
+      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+    >
+      {theme === 'dark' ? <Sun /> : <Moon />}
+    </button>
+  );
+};
+\end{lstlisting}
+
+\subsection{Caratteristiche Tema}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Feature} & \textbf{Descrizione} \\
+\hline
+Persistenza & Salvataggio automatico in localStorage \\
+\hline
+System Preference & Rispetta \texttt{prefers-color-scheme} al primo caricamento \\
+\hline
+No Flash & Tema applicato sincronamente prima del render \\
+\hline
+Transizioni Smooth & Classe \texttt{theme-transitioning} per animazioni fluide \\
+\hline
+SSR Compatible & Check \texttt{typeof window} per compatibilità server \\
+\hline
+\end{tabularx}
+\caption{Caratteristiche ThemeContext}
+\end{table}
+
+\section{Configurazione in main.tsx}
+
+\begin{lstlisting}[language=TSX, caption=Setup Provider in main.tsx]
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import App from './App';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <ThemeProvider defaultTheme="light">
+      <AuthProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  </StrictMode>
+);
+\end{lstlisting}
+
+\begin{warningbox}
+\textbf{Ordine dei Provider:} L'ordine è importante. ThemeProvider è il più esterno perché non dipende da altri context. AuthProvider è dentro per poter usare il tema se necessario.
+\end{warningbox}
+
+\section{Pattern e Best Practices}
+
+\subsection{Separazione Logica}
+
+\begin{itemize}
+  \item Ogni context ha una singola responsabilità
+  \item Provider e hook sono esportati dallo stesso file
+  \item Validazione hook con errore esplicativo
+\end{itemize}
+
+\subsection{Ottimizzazione Performance}
+
+\begin{lstlisting}[language=TypeScript, caption=Memoizzazione value object]
+// EVITARE - nuovo oggetto ad ogni render
+const value = { user, isLoading, login, logout };
+
+// PREFERIRE - useMemo per oggetti complessi
+const value = useMemo(() => ({
+  user, isLoading, login, logout
+}), [user, isLoading]);
+\end{lstlisting}
+
+\subsection{Pattern Provider Composition}
+
+Per evitare provider nesting eccessivo:
+
+\begin{lstlisting}[language=TSX, caption=Composizione provider]
+// providers/index.tsx
+export const AppProviders = ({ children }: { children: ReactNode }) => (
+  <ThemeProvider>
+    <AuthProvider>
+      <ToastProvider>
+        {children}
+      </ToastProvider>
+    </AuthProvider>
+  </ThemeProvider>
+);
+
+// main.tsx
+<AppProviders>
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+</AppProviders>
+\end{lstlisting}
+
+\section{Riepilogo Context}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Context} & \textbf{Hook} & \textbf{Provider} & \textbf{Responsabilità} \\
+\hline
+AuthContext & useAuth & AuthProvider & Autenticazione, sessioni \\
+\hline
+ThemeContext & useTheme & ThemeProvider & Tema light/dark \\
+\hline
+\end{tabularx}
+\caption{Riepilogo React Context}
+\end{table}
+
+%% ============================================================================
+%% CAPITOLO 7: PAGINE DELL'APPLICAZIONE
+%% ============================================================================
+\chapter{Pagine dell'Applicazione}
+
+Questo capitolo descrive tutte le pagine (views) dell'applicazione, la loro struttura e funzionalità.
+
+\section{Panoramica delle Pagine}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Pagina} & \textbf{Route} & \textbf{Auth} & \textbf{Descrizione} \\
+\hline
+LandingPage & \texttt{/} & No & Homepage con hero e features \\
+\hline
+LoginPage & \texttt{/login} & No & Form di login \\
+\hline
+SignUpPage & \texttt{/signup} & No & Registrazione utente \\
+\hline
+ChatPage & \texttt{/chat} & No & Chat AI principale \\
+\hline
+PreferencesPage & \texttt{/preferences} & Sì & Impostazione preferenze \\
+\hline
+ProfilePage & \texttt{/profile} & Sì & Gestione profilo utente \\
+\hline
+HowToUsePage & \texttt{/how-to-use} & No & Guida all'uso \\
+\hline
+\end{tabularx}
+\caption{Mappa delle pagine}
+\end{table}
+
+\section{LandingPage}
+
+Homepage pubblica con hero section animata, feature cards e call-to-action.
+
+\subsection{Struttura}
+
+\begin{lstlisting}[language=TSX, caption=Struttura LandingPage]
+const LandingPage = () => {
+  return (
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Sfondo particelle animato */}
+      <ParticleBackground />
+
+      {/* Header sticky con blur */}
+      <header className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50">
+        <h1>StyleFinder AI</h1>
+        <Link to="/login">
+          <Button variant="primary">Log In / Sign Up</Button>
+        </Link>
+      </header>
+
+      {/* Hero Section con animazioni */}
+      <main>
+        <motion.div variants={staggerContainer}>
+          <motion.h2 variants={fadeInUp}>
+            Find Your Perfect Outfit <span>in Seconds</span>
+          </motion.h2>
+          <motion.p variants={fadeInUp}>
+            Tell us what you need in natural language...
+          </motion.p>
+          <Link to="/chat">
+            <Button variant="primary" size="lg">Get Started</Button>
+          </Link>
+        </motion.div>
+
+        {/* Feature Cards */}
+        <motion.div className="grid md:grid-cols-3 gap-6">
+          <FeatureCard icon={MessageSquare} title="Natural Language" />
+          <FeatureCard icon={Sparkles} title="AI-Powered" />
+          <FeatureCard icon={TrendingUp} title="Personalized" />
+        </motion.div>
+      </main>
+    </div>
+  );
+};
+\end{lstlisting}
+
+\subsection{Caratteristiche}
+
+\begin{itemize}
+  \item \textbf{ParticleBackground}: Sfondo animato con particelle interattive
+  \item \textbf{Framer Motion}: Animazioni staggered per elementi hero
+  \item \textbf{Responsive}: Layout adattivo mobile/tablet/desktop
+  \item \textbf{Glassmorphism}: Header con effetto blur backdrop
+\end{itemize}
+
+\section{ChatPage}
+
+Pagina principale dell'applicazione, gestisce la chat con l'AI stylist.
+
+\subsection{Stato e Hooks Utilizzati}
+
+\begin{lstlisting}[language=TypeScript, caption=Hooks in ChatPage]
+const ChatPage = () => {
+  // Stato locale
+  const [inputMessage, setInputMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Context
+  const { isAuthenticated, user } = useAuth();
+
+  // Custom Hooks
+  const { messages, isLoading, sendMessage, ... } = useChatMessages();
+  const { selectedImage, isDragging, ... } = useImageUpload();
+  const { scrollRef, showScrollButton, ... } = useScrollToBottom(messages.length);
+  
+  // Keyboard Shortcuts
+  useKeyboardShortcuts([
+    { key: 'k', metaKey: true, action: handleNewChat },
+    { key: '/', metaKey: true, action: () => inputRef.current?.focus() },
+  ]);
+  
+  // ...
+};
+\end{lstlisting}
+
+\subsection{Layout}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.3cm,
+    box/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                minimum height=1cm, font=\footnotesize},
+    label/.style={font=\tiny, text=textMedium}
+]
+    % Container
+    \node[box, minimum width=8cm, minimum height=5cm] (container) {};
+    
+    % Sidebar
+    \node[box, minimum width=2cm, minimum height=4.6cm, fill=accentPurple!10, draw=accentPurple] 
+          at (-2.8,0) (sidebar) {};
+    \node[label] at (-2.8,2) {Sidebar};
+    \node[label] at (-2.8,1.5) {Chat History};
+    
+    % Main content
+    \node[box, minimum width=5.5cm, minimum height=0.6cm, fill=successGreen!10, draw=successGreen] 
+          at (1.1,2.2) (header) {};
+    \node[label] at (1.1,2.2) {Header};
+    
+    % Messages area
+    \node[box, minimum width=5.5cm, minimum height=3cm] 
+          at (1.1,0) (messages) {};
+    \node[label] at (1.1,0) {Messages Area};
+    
+    % Input
+    \node[box, minimum width=5.5cm, minimum height=0.6cm, fill=warningYellow!10, draw=warningYellow] 
+          at (1.1,-2.2) (input) {};
+    \node[label] at (1.1,-2.2) {ChatInput};
+\end{tikzpicture}
+\caption{Layout ChatPage}
+\end{figure}
+
+\subsection{Gestione Messaggi}
+
+\begin{lstlisting}[language=TSX, caption=Rendering messaggi]
+{/* Messages Area */}
+<div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto">
+  {showEmptyState && !isFetching ? (
+    <ChatEmptyState
+      isLoggedIn={isLoggedIn}
+      userName={userName}
+      onSuggestionClick={setInputMessage}
+    />
+  ) : (
+    <div className="max-w-[992px] mx-auto space-y-6">
+      {isFetching ? (
+        <ChatMessageSkeleton />
+      ) : (
+        messages.map((message) => (
+          <ChatMessage
+            key={message.id}
+            message={message}
+            onExplainOutfit={explainOutfit}
+            isLoadingExplanation={loadingExplanationId === message.id}
+          />
+        ))
+      )}
+      
+      {isLoading && (
+        <div className="flex justify-start">
+          <span>AI is thinking</span>
+          <TypingIndicator />
+        </div>
+      )}
+    </div>
+  )}
+</div>
+\end{lstlisting}
+
+\subsection{Keyboard Shortcuts}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Shortcut} & \textbf{macOS} & \textbf{Azione} \\
+\hline
+Nuova chat & \texttt{Cmd+K} & Inizia nuova conversazione \\
+\hline
+Focus input & \texttt{Cmd+/} & Focus sulla textarea \\
+\hline
+Invia & \texttt{Enter} & Invia messaggio \\
+\hline
+\end{tabularx}
+\caption{Shortcut tastiera ChatPage}
+\end{table}
+
+\section{LoginPage}
+
+Form di autenticazione con validazione e feedback.
+
+\begin{lstlisting}[language=TSX, caption=LoginPage]
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await login(email, password);
+      showToast.success('Welcome back!');
+      navigate('/chat');
+    } catch (err) {
+      setError('Invalid email or password');
+      showToast.error('Invalid email or password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <form onSubmit={handleSubmit}>
+        <Input label="Email" type="email" value={email} ... />
+        <Input label="Password" type="password" value={password} ... />
+        {error && <div className="text-red-500">{error}</div>}
+        <Button type="submit" isLoading={isLoading}>Log In</Button>
+      </form>
+      <Link to="/signup">Sign Up</Link>
+    </div>
+  );
+};
+\end{lstlisting}
+
+\section{SignUpPage}
+
+Registrazione nuovo utente con redirect a PreferencesPage.
+
+\begin{lstlisting}[language=TSX, caption=Flusso SignUp]
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+
+  try {
+    await signUp(name, email, password);
+    showToast.success('Account created successfully!');
+    navigate('/preferences'); // Redirect per impostare preferenze
+  } catch (err) {
+    showToast.error('Failed to create account');
+  } finally {
+    setIsLoading(false);
+  }
+};
+\end{lstlisting}
+
+\section{PreferencesPage}
+
+Pagina per impostare le preferenze utente (stili, colori, brand).
+
+\subsection{Caratteristiche}
+
+\begin{itemize}
+  \item Caricamento dinamico opzioni dal backend
+  \item Skeleton loading durante fetch
+  \item Contatore preferenze selezionate
+  \item Animazione confetti al salvataggio
+\end{itemize}
+
+\begin{lstlisting}[language=TSX, caption=Caricamento preferenze]
+useEffect(() => {
+  const loadPreferencesAndOptions = async () => {
+    setIsLoadingPrefs(true);
+    const [existingPrefs, allPrefs] = await Promise.all([
+      preferencesService.getPreferences(),
+      preferencesService.getAllPreferences()
+    ]);
+    setPreferences(existingPrefs || {});
+    setAllPreferences(allPrefs);
+    setIsLoadingPrefs(false);
+  };
+  loadPreferencesAndOptions();
+}, []);
+\end{lstlisting}
+
+\begin{lstlisting}[language=TSX, caption=Salvataggio con confetti]
+const handleSave = async () => {
+  setIsLoading(true);
+  try {
+    const success = await preferencesService.updatePreferences(preferences);
+    if (success) {
+      triggerSuccessConfetti(); // Effetto celebrativo
+      showToast.success('Preferences saved!');
+      setTimeout(() => navigate('/chat'), 500);
+    }
+  } catch (error) {
+    showToast.error('Failed to save preferences');
+  } finally {
+    setIsLoading(false);
+  }
+};
+\end{lstlisting}
+
+\section{ProfilePage}
+
+Gestione profilo utente con sezioni per dati personali, password e eliminazione account.
+
+\subsection{Sezioni}
+
+\begin{enumerate}
+  \item \textbf{Profile Information}: Modifica nome
+  \item \textbf{Change Password}: Cambio password con validazione
+  \item \textbf{Danger Zone}: Eliminazione account con conferma modale
+\end{enumerate}
+
+\begin{lstlisting}[language=TSX, caption=Eliminazione account]
+const handleDeleteAccount = async () => {
+  setIsDeleting(true);
+  try {
+    await authService.deleteAccount();
+    showToast.success('Account deleted. Bye bye! 👋');
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 1500);
+  } catch {
+    showToast.error('Failed to delete account');
+  } finally {
+    setIsDeleting(false);
+  }
+};
+\end{lstlisting}
+
+\section{HowToUsePage}
+
+Guida interattiva con sezioni animate e pro tips.
+
+\begin{lstlisting}[language=TSX, caption=Struttura HowToUsePage]
+const sections = [
+  { icon: <MessageSquare />, title: "Chat with AI", description: "..." },
+  { icon: <User />, title: "Create Your Profile", description: "..." },
+  { icon: <Settings />, title: "Set Preferences", description: "..." },
+  { icon: <Sparkles />, title: "Get Recommendations", description: "..." },
+];
+
+return (
+  <div className="min-h-screen p-6 md:p-12">
+    <motion.div className="grid gap-6 md:grid-cols-2" variants={staggerContainer}>
+      {sections.map((section, index) => (
+        <motion.div key={index} variants={fadeInUp} className="bg-white p-6 rounded-2xl">
+          {section.icon}
+          <h3>{section.title}</h3>
+          <p>{section.description}</p>
+        </motion.div>
+      ))}
+    </motion.div>
+    
+    {/* Pro Tips */}
+    <motion.div className="mt-12 bg-primary/5 rounded-3xl p-8">
+      <h2>Pro Tips</h2>
+      <ul>
+        <li>Be specific: more details = better recommendations</li>
+        <li>Use follow-up questions to refine results</li>
+        <li>Save preferences for personalized experience</li>
+      </ul>
+    </motion.div>
+  </div>
+);
+\end{lstlisting}
+
+%% ============================================================================
+%% CAPITOLO 8: TIPI TYPESCRIPT
+%% ============================================================================
+\chapter{Tipi TypeScript}
+
+Questo capitolo documenta le definizioni di tipo TypeScript utilizzate nell'applicazione.
+
+\section{File dei Tipi}
+
+Tutti i tipi sono centralizzati in \file{src/types/index.ts}.
+
+\section{Tipi Utente}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipi User]
+// Utente base
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  preferences?: UserPreferences;
+}
+
+// Preferenze utente
+export interface UserPreferences {
+  gender: 'man' | 'woman' | 'non-binary';
+  favoriteStyles: string[];
+  favoriteColors: string[];
+  favoriteBrands?: string[];
+}
+\end{lstlisting}
+
+\section{Tipi Chat}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipi Chat]
+// Messaggio chat
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  outfit?: Outfit;            // Outfit suggerito (solo assistant)
+  imageUrl?: string;          // Immagine allegata (solo user)
+}
+
+// Storico conversazioni
+export interface ChatHistory {
+  id: string;
+  title: string;
+  lastMessage: Date;
+}
+\end{lstlisting}
+
+\section{Tipi Outfit}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipi Outfit]
+// Outfit completo
+export interface Outfit {
+  id: string;
+  items: OutfitItem[];
+  totalPrice: number;
+  explanation?: string;  // Spiegazione AI
+}
+
+// Singolo item outfit
+export interface OutfitItem {
+  id: string;
+  name: string;
+  price: number;
+  imageUrl?: string;
+  category: 'jacket' | 'blazer' | 'shirt' | 'pants' | 'shoes' | 'accessories';
+  brand?: string;
+  link?: string;  // Link acquisto
+}
+\end{lstlisting}
+
+\section{Tipi Filtri}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipi Filtri]
+export interface OutfitFilters {
+  budgetMax?: number;
+  outfitType: 'full' | 'partial';
+  selectedItems: ('jacket' | 'blazer' | 'shirt' | 'pants' | 'shoes')[];
+}
+\end{lstlisting}
+
+\section{Tipi Autenticazione}
+
+\begin{lstlisting}[language=TypeScript, caption=Tipi Auth]
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface SignUpData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+\end{lstlisting}
+
+\section{Diagramma Relazioni Tipi}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 2cm,
+    type/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                 text width=2.5cm, text centered, rounded corners, 
+                 minimum height=0.8cm, font=\footnotesize\bfseries},
+    arrow/.style={-{Stealth[length=2mm]}, thick, textLight}
+]
+    \node[type] (user) {User};
+    \node[type, right=of user] (prefs) {UserPreferences};
+    \node[type, below=of user] (chat) {ChatMessage};
+    \node[type, right=of chat] (outfit) {Outfit};
+    \node[type, below=of outfit] (item) {OutfitItem};
+    \node[type, left=of chat] (history) {ChatHistory};
+    
+    \draw[arrow] (user) -- node[above, font=\tiny] {has} (prefs);
+    \draw[arrow] (chat) -- node[above, font=\tiny] {contains} (outfit);
+    \draw[arrow] (outfit) -- node[right, font=\tiny] {has many} (item);
+\end{tikzpicture}
+\caption{Relazioni tra tipi}
+\end{figure}
+
+%% ============================================================================
+%% CAPITOLO 9: UTILITIES E HELPERS
+%% ============================================================================
+\chapter{Utilities e Helpers}
+
+Questo capitolo documenta le funzioni utility e helper presenti in \file{src/utils/}.
+
+\section{Panoramica File Utility}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{File} & \textbf{Responsabilità} \\
+\hline
+\texttt{animations.ts} & Varianti Framer Motion per animazioni \\
+\hline
+\texttt{toast.ts} & Wrapper per notifiche toast \\
+\hline
+\texttt{confetti.ts} & Effetti confetti celebrativi \\
+\hline
+\texttt{test-utils.tsx} & Utilities per testing \\
+\hline
+\texttt{mockData.ts} & Dati mock per sviluppo \\
+\hline
+\end{tabularx}
+\caption{File utility}
+\end{table}
+
+\section{Animazioni (animations.ts)}
+
+Contiene varianti Framer Motion riutilizzabili per animazioni consistenti.
+
+\subsection{Animazioni Base}
+
+\begin{lstlisting}[language=TypeScript, caption=Animazioni fade]
+import type { Variants } from 'framer-motion';
+
+// Fade In semplice
+export const fadeIn: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { duration: 0.3, ease: 'easeOut' }
+  },
+  exit: { opacity: 0, transition: { duration: 0.2 } }
+};
+
+// Fade In con movimento verso l'alto
+export const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: 'easeOut' }
+  },
+  exit: { opacity: 0, y: 10, transition: { duration: 0.2 } }
+};
+\end{lstlisting}
+
+\subsection{Animazioni Slide}
+
+\begin{lstlisting}[language=TypeScript, caption=Animazioni slide]
+// Slide da destra
+export const slideInRight: Variants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: 'easeOut' }
+  }
+};
+
+// Slide da sinistra
+export const slideInLeft: Variants = {
+  hidden: { opacity: 0, x: -50 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.4, ease: 'easeOut' }
+  }
+};
+
+// Sidebar slide
+export const sidebarSlide: Variants = {
+  hidden: { x: -280, opacity: 0 },
+  visible: { x: 0, opacity: 1, transition: { duration: 0.3 } },
+  exit: { x: -280, opacity: 0, transition: { duration: 0.2 } }
+};
+\end{lstlisting}
+
+\subsection{Animazioni Stagger}
+
+\begin{lstlisting}[language=TypeScript, caption=Animazioni stagger per liste]
+// Container per stagger children
+export const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
+    }
+  }
+};
+
+// Item in stagger container
+export const staggerItem: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3 }
+  }
+};
+\end{lstlisting}
+
+\subsection{Animazioni Modal}
+
+\begin{lstlisting}[language=TypeScript, caption=Animazioni modal]
+export const modalBackdrop: Variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.2 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } }
+};
+
+export const modalContent: Variants = {
+  hidden: { opacity: 0, scale: 0.95, y: 20 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: 'easeOut' }
+  },
+  exit: { opacity: 0, scale: 0.95, y: 10 }
+};
+\end{lstlisting}
+
+\subsection{Animazioni Speciali}
+
+\begin{lstlisting}[language=TypeScript, caption=Animazioni speciali]
+// Hover per cards
+export const hoverScale = {
+  scale: 1.02,
+  y: -4,
+  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'
+};
+
+// Tap per buttons
+export const tapScale = { scale: 0.98 };
+
+// Float continuo
+export const float: Variants = {
+  visible: {
+    y: [0, -10, 0],
+    transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+  }
+};
+
+// Pulse sottile
+export const subtlePulse: Variants = {
+  visible: {
+    scale: [1, 1.03, 1],
+    transition: { duration: 2.5, repeat: Infinity }
+  }
+};
+\end{lstlisting}
+
+\section{Toast Notifications (toast.ts)}
+
+Wrapper per \texttt{react-hot-toast} con styling personalizzato.
+
+\begin{lstlisting}[language=TypeScript, caption=Sistema toast]
+import toast from 'react-hot-toast';
+
+export const showToast = {
+  success: (message: string) => {
+    toast.success(message, {
+      duration: 3000,
+      position: 'top-right',
+      className: '!bg-white dark:!bg-gray-800 !rounded-xl !shadow-lg',
+      iconTheme: { primary: '#10B981', secondary: '#fff' },
+    });
+  },
+
+  error: (message: string) => {
+    toast.error(message, {
+      duration: 4000,
+      position: 'top-right',
+      iconTheme: { primary: '#EF4444', secondary: '#fff' },
+    });
+  },
+
+  info: (message: string) => {
+    toast(message, {
+      duration: 3000,
+      position: 'top-right',
+      icon: 'ℹ️',
+    });
+  },
+
+  loading: (message: string) => {
+    return toast.loading(message, { position: 'top-right' });
+  },
+
+  dismiss: (toastId?: string) => {
+    toast.dismiss(toastId);
+  },
+
+  promise: <T,>(promise: Promise<T>, messages: {
+    loading: string;
+    success: string;
+    error: string;
+  }) => toast.promise(promise, messages),
+};
+\end{lstlisting}
+
+\subsection{Utilizzo}
+
+\begin{lstlisting}[language=TypeScript, caption=Esempi utilizzo toast]
+// Success
+showToast.success('Account created!');
+
+// Error
+showToast.error('Failed to save');
+
+// Promise (auto gestisce loading/success/error)
+showToast.promise(
+  saveData(),
+  {
+    loading: 'Saving...',
+    success: 'Saved!',
+    error: 'Error saving'
+  }
+);
+\end{lstlisting}
+
+\section{Confetti (confetti.ts)}
+
+Effetti celebrativi per azioni completate con successo.
+
+\begin{lstlisting}[language=TypeScript, caption=Confetti utility]
+import confetti from 'canvas-confetti';
+
+export const triggerSuccessConfetti = () => {
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 },
+    colors: ['#0D6EFD', '#10B981', '#F59E0B', '#8B5CF6']
+  });
+};
+
+export const triggerCelebration = () => {
+  const duration = 3000;
+  const end = Date.now() + duration;
+
+  const frame = () => {
+    confetti({
+      particleCount: 3,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 }
+    });
+    confetti({
+      particleCount: 3,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 }
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  };
+  frame();
+};
+\end{lstlisting}
+
+\section{Test Utilities (test-utils.tsx)}
+
+Wrapper per testing con tutti i provider necessari.
+
+\begin{lstlisting}[language=TSX, caption=Test utilities]
+import { render, type RenderOptions } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from '../context/ThemeContext';
+import { AuthProvider } from '../context/AuthContext';
+import '@testing-library/jest-dom';
+
+// Provider wrapper per test
+const AllTheProviders = ({ children }: { children: React.ReactNode }) => (
+  <ThemeProvider>
+    <AuthProvider>
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    </AuthProvider>
+  </ThemeProvider>
+);
+
+// Custom render con provider
+const customRender = (
+  ui: ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+) => render(ui, { wrapper: AllTheProviders, ...options });
+
+// Re-export everything
+export * from '@testing-library/react';
+export { customRender as render };
+\end{lstlisting}
+
+%% ============================================================================
+%% CAPITOLO 10: STYLING E DESIGN SYSTEM
+%% ============================================================================
+\chapter{Styling e Design System}
+
+Questo capitolo documenta il sistema di design, configurazione Tailwind CSS e stili globali.
+
+\section{Stack Styling}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Tecnologia} & \textbf{Utilizzo} \\
+\hline
+Tailwind CSS & Utility-first CSS framework \\
+\hline
+PostCSS & Processore CSS \\
+\hline
+CSS Custom Properties & Variabili design system \\
+\hline
+Framer Motion & Animazioni \\
+\hline
+\end{tabularx}
+\caption{Stack styling}
+\end{table}
+
+\section{Configurazione Tailwind}
+
+\subsection{Colori Personalizzati}
+
+\begin{lstlisting}[language=JavaScript, caption=tailwind.config.js - Colori]
+export default {
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#0D6EFD',  // Blu principale
+          hover: '#0B5ED7',    // Hover state
+          light: '#3D8BFD',    // Per dark mode
+        },
+        text: {
+          dark: '#212529',     // Testo principale
+          medium: '#495057',   // Testo secondario
+          light: '#ADB5BD',    // Testo terziario
+          muted: '#757575',    // Testo disabilitato
+        },
+        background: {
+          DEFAULT: '#F4F7F6',  // Sfondo pagina
+          white: '#FFFFFF',    // Sfondo card
+        },
+        border: {
+          DEFAULT: '#E5E7EB',  // Bordo standard
+          input: '#94979A',    // Bordo input
+        },
+      },
+    },
+  },
+};
+\end{lstlisting}
+
+\subsection{Font Family}
+
+\begin{lstlisting}[language=JavaScript, caption=tailwind.config.js - Font]
+fontFamily: {
+  roboto: ['Roboto', 'sans-serif'],  // Headings
+  inter: ['Inter', 'sans-serif'],     // Body text
+},
+\end{lstlisting}
+
+\subsection{Spacing e Border Radius}
+
+\begin{lstlisting}[language=JavaScript, caption=Design tokens]
+spacing: {
+  'xs': 'var(--spacing-xs)',   // 4px
+  'sm': 'var(--spacing-sm)',   // 8px
+  'md': 'var(--spacing-md)',   // 12px
+  'lg': 'var(--spacing-lg)',   // 16px
+  'xl': 'var(--spacing-xl)',   // 24px
+  '2xl': 'var(--spacing-2xl)', // 32px
+},
+borderRadius: {
+  'sm': 'var(--radius-sm)',    // 8px
+  'md': 'var(--radius-md)',    // 12px
+  'lg': 'var(--radius-lg)',    // 16px
+  'xl': 'var(--radius-xl)',    // 20px
+  '2xl': 'var(--radius-2xl)',  // 24px
+},
+\end{lstlisting}
+
+\subsection{Animazioni Tailwind}
+
+\begin{lstlisting}[language=JavaScript, caption=Keyframes e animazioni]
+keyframes: {
+  fadeIn: {
+    'from': { opacity: '0', transform: 'translateY(10px)' },
+    'to': { opacity: '1', transform: 'translateY(0)' },
+  },
+  shimmer: {
+    '0%': { opacity: '0.6' },
+    '50%': { opacity: '1' },
+    '100%': { opacity: '0.6' },
+  },
+  'glow-pulse': {
+    '0%, 100%': { boxShadow: '0 0 5px rgba(13, 110, 253, 0.3)' },
+    '50%': { boxShadow: '0 0 20px rgba(13, 110, 253, 0.6)' },
+  },
+},
+animation: {
+  'fade-in': 'fadeIn 0.3s ease-out',
+  'shimmer': 'shimmer 2s ease-in-out infinite',
+  'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
+},
+\end{lstlisting}
+
+\section{CSS Globale (index.css)}
+
+\subsection{Variabili CSS}
+
+\begin{lstlisting}[language=CSS, caption=CSS Custom Properties]
+:root {
+  /* Spacing Scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+
+  /* Border Radius Scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  /* Theme Transition */
+  --theme-transition-duration: 400ms;
+  --theme-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+\end{lstlisting}
+
+\subsection{Transizione Tema Premium}
+
+\begin{lstlisting}[language=CSS, caption=Theme transition]
+/* Transizione sincronizzata per cambio tema */
+.theme-transitioning *:not([data-theme-toggle] *) {
+  transition: 
+    background-color var(--theme-transition-duration) var(--theme-transition-easing),
+    border-color var(--theme-transition-duration) var(--theme-transition-easing),
+    color var(--theme-transition-duration) var(--theme-transition-easing),
+    box-shadow var(--theme-transition-duration) var(--theme-transition-easing) !important;
+}
+\end{lstlisting}
+
+\subsection{Focus Accessibility}
+
+\begin{lstlisting}[language=CSS, caption=Focus visible]
+*:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2 
+         ring-offset-white dark:ring-offset-gray-900;
+}
+\end{lstlisting}
+
+\subsection{Utility Classes Custom}
+
+\begin{lstlisting}[language=CSS, caption=Utility classes]
+@layer utilities {
+  /* Transizioni smooth */
+  .transition-smooth {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  /* Glow effect per input */
+  .input-glow:focus {
+    @apply ring-2 ring-primary ring-opacity-50;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+  }
+
+  /* Card lift effect */
+  .card-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+  .card-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  }
+
+  /* Hover scale */
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+}
+\end{lstlisting}
+
+\subsection{Scrollbar Personalizzata}
+
+\begin{lstlisting}[language=CSS, caption=Custom scrollbar]
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-400 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-500 dark:bg-gray-500;
+}
+
+/* Nasconde scrollbar mantenendo funzionalità */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+\end{lstlisting}
+
+\section{Dark Mode}
+
+Tailwind è configurato con \texttt{darkMode: 'class'}, il tema è gestito da ThemeContext.
+
+\begin{lstlisting}[language=TSX, caption=Esempio dark mode]
+<div className="
+  bg-white dark:bg-gray-800 
+  text-gray-900 dark:text-white 
+  border-gray-200 dark:border-gray-700
+">
+  Contenuto adattivo
+</div>
+\end{lstlisting}
+
+\section{Palette Colori}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Nome} & \textbf{Valore} & \textbf{Utilizzo} \\
+\hline
+primary & \texttt{\#0D6EFD} & CTA, link, accent \\
+\hline
+primary-hover & \texttt{\#0B5ED7} & Hover state \\
+\hline
+text-dark & \texttt{\#212529} & Testo principale \\
+\hline
+text-medium & \texttt{\#495057} & Testo secondario \\
+\hline
+background & \texttt{\#F4F7F6} & Sfondo pagina \\
+\hline
+success & \texttt{\#10B981} & Messaggi successo \\
+\hline
+error & \texttt{\#EF4444} & Messaggi errore \\
+\hline
+warning & \texttt{\#F59E0B} & Warning \\
+\hline
+\end{tabularx}
+\caption{Palette colori design system}
+\end{table}
+
+%% ============================================================================
+%% CAPITOLO 11: TESTING
+%% ============================================================================
+\chapter{Testing}
+
+Questo capitolo documenta la strategia di testing e gli strumenti utilizzati.
+
+\section{Stack Testing}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Strumento} & \textbf{Utilizzo} \\
+\hline
+Vitest & Test runner, compatibile con Jest API \\
+\hline
+React Testing Library & Testing componenti React \\
+\hline
+jsdom & DOM environment per test \\
+\hline
+@testing-library/user-event & Simulazione interazioni utente \\
+\hline
+\end{tabularx}
+\caption{Stack testing}
+\end{table}
+
+\section{Configurazione Vitest}
+
+\begin{lstlisting}[language=TypeScript, caption=vitest.config.ts]
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,           // describe, it, expect globali
+    environment: 'jsdom',    // DOM environment
+    setupFiles: './src/utils/test-utils.tsx',  // Setup file
+    css: true,               // Processa CSS
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
+\end{lstlisting}
+
+\section{Setup File}
+
+\begin{lstlisting}[language=TSX, caption=test-utils.tsx]
+import { render, type RenderOptions } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from '../context/ThemeContext';
+import { AuthProvider } from '../context/AuthContext';
+import '@testing-library/jest-dom';
+
+const AllTheProviders = ({ children }: { children: React.ReactNode }) => (
+  <ThemeProvider>
+    <AuthProvider>
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    </AuthProvider>
+  </ThemeProvider>
+);
+
+const customRender = (
+  ui: ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+) => render(ui, { wrapper: AllTheProviders, ...options });
+
+export * from '@testing-library/react';
+export { customRender as render };
+\end{lstlisting}
+
+\section{Esempio Test Context}
+
+\begin{lstlisting}[language=TSX, caption=AuthContext.test.tsx]
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { AuthProvider, useAuth } from './AuthContext';
+import { authService } from '../services/authService';
+
+// Test component
+const TestComponent = () => {
+  const { user, isAuthenticated, login, logout } = useAuth();
+  return (
+    <div>
+      <div data-testid="auth-status">
+        {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
+      </div>
+      <div data-testid="user-name">{user?.name}</div>
+      <button onClick={() => login('test@example.com', 'password')}>
+        Login
+      </button>
+      <button onClick={() => logout()}>Logout</button>
+    </div>
+  );
+};
+
+describe('AuthContext', () => {
+  beforeEach(() => {
+    vi.spyOn(authService, 'getCurrentUser').mockImplementation(vi.fn());
+    vi.spyOn(authService, 'login').mockImplementation(vi.fn());
+    vi.spyOn(authService, 'logout').mockImplementation(vi.fn());
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('checks session on mount', async () => {
+    const mockUser = { id: '1', name: 'Test User', email: 'test@example.com' };
+    vi.mocked(authService.getCurrentUser).mockResolvedValue(mockUser);
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('auth-status'))
+        .toHaveTextContent('Authenticated');
+      expect(screen.getByTestId('user-name'))
+        .toHaveTextContent('Test User');
+    });
+  });
+
+  it('handles no active session', async () => {
+    vi.mocked(authService.getCurrentUser)
+      .mockRejectedValue(new Error('No session'));
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId('auth-status'))
+        .toHaveTextContent('Not Authenticated');
+    });
+  });
+
+  it('login updates user state', async () => {
+    const user = userEvent.setup();
+    vi.mocked(authService.getCurrentUser)
+      .mockRejectedValue(new Error('No session'));
+    vi.mocked(authService.login)
+      .mockResolvedValue({ user: { id: '1', name: 'User' } });
+
+    render(
+      <AuthProvider>
+        <TestComponent />
+      </AuthProvider>
+    );
+
+    await user.click(screen.getByText('Login'));
+
+    await waitFor(() => {
+      expect(screen.getByTestId('auth-status'))
+        .toHaveTextContent('Authenticated');
+    });
+  });
+});
+\end{lstlisting}
+
+\section{Script NPM}
+
+\begin{lstlisting}[language=bash, caption=Comandi testing]
+# Esegui tutti i test
+npm test
+
+# Watch mode
+npm run test:watch
+
+# Coverage report
+npm run test:coverage
+\end{lstlisting}
+
+\section{Coverage}
+
+Il coverage è configurato per generare report in \file{coverage/}.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Metrica} & \textbf{Target} \\
+\hline
+Statements & 70\%+ \\
+\hline
+Branches & 60\%+ \\
+\hline
+Functions & 70\%+ \\
+\hline
+Lines & 70\%+ \\
+\hline
+\end{tabularx}
+\caption{Target coverage}
+\end{table}
+
+%% ============================================================================
+%% CAPITOLO 12: APP ENTRY POINT
+%% ============================================================================
+\chapter{App Entry Point}
+
+Questo capitolo documenta il punto di ingresso dell'applicazione e la configurazione dei provider.
+
+\section{File main.tsx}
+
+\begin{lstlisting}[language=TSX, caption=main.tsx - Entry point]
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+\end{lstlisting}
+
+\section{File App.tsx}
+
+\begin{lstlisting}[language=TSX, caption=App.tsx completo]
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AnimatePresence, motion } from 'framer-motion';
+import { lazy, Suspense } from 'react';
+import { Loader2 } from 'lucide-react';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+
+// Lazy load pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const SignUpPage = lazy(() => import('./pages/SignUpPage'));
+const PreferencesPage = lazy(() => import('./pages/PreferencesPage'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const HowToUsePage = lazy(() => import('./pages/HowToUsePage'));
+
+// Loading Fallback
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-[50vh]">
+    <Loader2 className="w-8 h-8 text-primary animate-spin" />
+  </div>
+);
+
+// Page Transition wrapper
+const PageTransition = ({ children }: { children: React.ReactNode }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -10 }}
+    transition={{ duration: 0.3, ease: "easeOut" }}
+  >
+    <Suspense fallback={<LoadingFallback />}>
+      {children}
+    </Suspense>
+  </motion.div>
+);
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Toaster position="top-right" reverseOrder={false} />
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={
+                  <PageTransition><LandingPage /></PageTransition>
+                } />
+                <Route path="/login" element={
+                  <PageTransition><LoginPage /></PageTransition>
+                } />
+                <Route path="/signup" element={
+                  <PageTransition><SignUpPage /></PageTransition>
+                } />
+                <Route path="/preferences" element={
+                  <ProtectedRoute>
+                    <PageTransition><PreferencesPage /></PageTransition>
+                  </ProtectedRoute>
+                } />
+                <Route path="/chat" element={
+                  <PageTransition><ChatPage /></PageTransition>
+                } />
+                <Route path="/chat/:chatId" element={
+                  <PageTransition><ChatPage /></PageTransition>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <PageTransition><ProfilePage /></PageTransition>
+                  </ProtectedRoute>
+                } />
+                <Route path="/how-to-use" element={
+                  <PageTransition><HowToUsePage /></PageTransition>
+                } />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </AnimatePresence>
+          </BrowserRouter>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
+  );
+}
+
+export default App;
+\end{lstlisting}
+
+\section{Gerarchia Provider}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=0.6cm,
+    provider/.style={rectangle, draw=accentPurple, fill=accentPurple!10, 
+                     text width=4cm, text centered, rounded corners, 
+                     minimum height=0.7cm, font=\footnotesize\bfseries},
+    component/.style={rectangle, draw=primaryBlue, fill=primaryBlue!10, 
+                      text width=3cm, text centered, rounded corners, 
+                      minimum height=0.5cm, font=\footnotesize},
+    arrow/.style={-{Stealth[length=2mm]}, thick, textLight}
+]
+    \node[provider] (strict) {StrictMode};
+    \node[provider, below=of strict] (error) {ErrorBoundary};
+    \node[provider, below=of error] (theme) {ThemeProvider};
+    \node[provider, below=of theme] (auth) {AuthProvider};
+    \node[provider, below=of auth] (router) {BrowserRouter};
+    \node[component, below=of router] (toaster) {Toaster};
+    \node[component, below=of toaster] (animate) {AnimatePresence};
+    \node[component, below=of animate] (routes) {Routes};
+    
+    \draw[arrow] (strict) -- (error);
+    \draw[arrow] (error) -- (theme);
+    \draw[arrow] (theme) -- (auth);
+    \draw[arrow] (auth) -- (router);
+    \draw[arrow] (router) -- (toaster);
+    \draw[arrow] (toaster) -- (animate);
+    \draw[arrow] (animate) -- (routes);
+\end{tikzpicture}
+\caption{Gerarchia provider in App.tsx}
+\end{figure}
+
+\section{ErrorBoundary}
+
+Componente class per catturare errori JavaScript nei componenti figli.
+
+\begin{lstlisting}[language=TSX, caption=ErrorBoundary.tsx]
+class ErrorBoundary extends Component<Props, State> {
+  public state: State = { hasError: false, error: null };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Uncaught error:', error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
+            <AlertTriangle className="w-16 h-16 text-red-500 mx-auto" />
+            <h1>Oops! Something went wrong</h1>
+            <code>{this.state.error?.message}</code>
+            <button onClick={() => window.location.reload()}>
+              <RefreshCw /> Reload Application
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+\end{lstlisting}
+
+\section{ProtectedRoute}
+
+Componente per proteggere route che richiedono autenticazione.
+
+\begin{lstlisting}[language=TSX, caption=ProtectedRoute.tsx]
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  // Mostra skeleton durante verifica auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Skeleton className="h-12 w-3/4" />
+      </div>
+    );
+  }
+
+  // Redirect a login se non autenticato
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+};
+\end{lstlisting}
+
+%% ============================================================================
+%% APPENDICE A: STRUTTURA DIRECTORY COMPLETA
+%% ============================================================================
+\appendix
+\chapter{Struttura Directory Completa}
+
+\begin{lstlisting}[language=bash, caption=Albero directory src/]
+src/
+|-- App.css
+|-- App.tsx                    # Root component
+|-- index.css                  # Global styles
+|-- main.tsx                   # Entry point
+|
+|-- assets/
+|   `-- react.svg
+|
+|-- components/
+|   |-- ErrorBoundary.tsx      # Error boundary
+|   |-- ProtectedRoute.tsx     # Auth guard
+|   |
+|   |-- chat/                  # Chat components
+|   |   |-- ChatEmptyState.tsx
+|   |   |-- ChatInput.tsx
+|   |   |-- ChatMessage.tsx
+|   |   |-- ChatMessageSkeleton.tsx
+|   |   |-- DragDropOverlay.tsx
+|   |   `-- OutfitCard.tsx
+|   |
+|   |-- layout/                # Layout components
+|   |   |-- Header.tsx
+|   |   `-- Sidebar.tsx
+|   |
+|   `-- ui/                    # UI primitives
+|       |-- Button.tsx
+|       |-- HamburgerMenu.tsx
+|       |-- Input.tsx
+|       |-- Modal.tsx
+|       |-- ParticleBackground.tsx
+|       |-- ProductCard.tsx
+|       |-- ScrollToBottomButton.tsx
+|       |-- Skeleton.tsx
+|       |-- ThemeToggle.tsx
+|       `-- TypingIndicator.tsx
+|
+|-- context/                   # React Context
+|   |-- AuthContext.tsx
+|   `-- ThemeContext.tsx
+|
+|-- hooks/                     # Custom Hooks
+|   |-- useChatMessages.ts
+|   |-- useImageUpload.ts
+|   |-- useKeyboardShortcuts.ts
+|   |-- useLocalStorage.ts
+|   |-- useOutfitFilters.ts
+|   `-- useScrollToBottom.ts
+|
+|-- pages/                     # Page components
+|   |-- ChatPage.tsx
+|   |-- HowToUsePage.tsx
+|   |-- LandingPage.tsx
+|   |-- LoginPage.tsx
+|   |-- PreferencesPage.tsx
+|   |-- ProfilePage.tsx
+|   `-- SignUpPage.tsx
+|
+|-- services/                  # API services
+|   |-- api.ts
+|   |-- authService.ts
+|   |-- chatService.ts
+|   `-- preferencesService.ts
+|
+|-- types/                     # TypeScript types
+|   `-- index.ts
+|
+`-- utils/                     # Utilities
+    |-- animations.ts
+    |-- confetti.ts
+    |-- mockData.ts
+    |-- test-utils.tsx
+    `-- toast.ts
+\end{lstlisting}
+
+%% ============================================================================
+%% APPENDICE B: SCRIPT NPM
+%% ============================================================================
+\chapter{Script NPM}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Comando} & \textbf{Descrizione} \\
+\hline
+\texttt{npm run dev} & Avvia server sviluppo Vite \\
+\hline
+\texttt{npm run build} & Build produzione \\
+\hline
+\texttt{npm run preview} & Preview build produzione \\
+\hline
+\texttt{npm run lint} & Esegue ESLint \\
+\hline
+\texttt{npm test} & Esegue test Vitest \\
+\hline
+\texttt{npm run test:watch} & Test in watch mode \\
+\hline
+\texttt{npm run test:coverage} & Test con coverage report \\
+\hline
+\end{tabularx}
+\caption{Script npm disponibili}
+\end{table}
+
+%% ============================================================================
+%% APPENDICE C: VARIABILI D'AMBIENTE
+%% ============================================================================
+\chapter{Variabili d'Ambiente}
+
+\begin{lstlisting}[language=bash, caption=.env.example]
+# Backend API
+VITE_API_BASE_URL=http://localhost:5000/api
+
+# Environment
+VITE_ENV=development
+\end{lstlisting}
+
+\begin{warningbox}
+Le variabili in Vite devono avere prefisso \texttt{VITE\_} per essere accessibili nel bundle frontend. Non includere mai segreti nel frontend.
+\end{warningbox}
+
+%% ============================================================================
+%% APPENDICE D: DIPENDENZE
+%% ============================================================================
+\chapter{Dipendenze}
+
+\section{Dipendenze Produzione}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Pacchetto} & \textbf{Utilizzo} \\
+\hline
+react, react-dom & Core React \\
+\hline
+react-router-dom & Routing \\
+\hline
+axios & HTTP client \\
+\hline
+framer-motion & Animazioni \\
+\hline
+react-hot-toast & Notifiche toast \\
+\hline
+lucide-react & Icone \\
+\hline
+canvas-confetti & Effetti confetti \\
+\hline
+\end{tabularx}
+\caption{Dipendenze produzione}
+\end{table}
+
+\section{Dipendenze Sviluppo}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{primaryBlue!10}
+\textbf{Pacchetto} & \textbf{Utilizzo} \\
+\hline
+vite & Build tool \\
+\hline
+typescript & Type checking \\
+\hline
+tailwindcss, postcss, autoprefixer & Styling \\
+\hline
+vitest & Test runner \\
+\hline
+@testing-library/react & Testing utilities \\
+\hline
+eslint & Linting \\
+\hline
+\end{tabularx}
+\caption{Dipendenze sviluppo}
+\end{table}
+
+%% ============================================================================
+%% FINE DOCUMENTO
+%% ============================================================================
+
+\end{document}

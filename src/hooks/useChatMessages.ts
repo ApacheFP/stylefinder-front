@@ -121,15 +121,15 @@ export const useChatMessages = () => {
       }
 
       // Transform and add assistant message
-      const outfitData = chatService.transformOutfitResponse(response.content);
+      const outfitData = chatService.transformOutfitResponse(response.content, response.status);
 
       const assistantMessage: ChatMessage = {
         id: `assistant-${Date.now()}`,
         role: 'assistant',
         content: outfitData.message,
         timestamp: new Date(),
-        // Only include outfit if it's an outfit response (type 0) with items
-        outfit: outfitData.type === 0 && outfitData.items.length > 0 ? {
+        // Only include outfit if it's a COMPLETED response with items
+        outfit: outfitData.hasOutfit && outfitData.items.length > 0 ? {
           id: `outfit-${Date.now()}`,
           items: outfitData.items,
           totalPrice: outfitData.totalPrice,
@@ -146,8 +146,8 @@ export const useChatMessages = () => {
         return updated;
       });
 
-      // Show appropriate toast based on response type
-      if (outfitData.type === 0 && outfitData.items.length > 0) {
+      // Show appropriate toast based on response status
+      if (outfitData.status === 'COMPLETED' && outfitData.hasOutfit) {
         showToast.success('Outfit recommendations ready!');
       }
       onSuccess?.();
