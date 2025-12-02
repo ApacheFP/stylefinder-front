@@ -16,6 +16,9 @@ interface ChatMessageProps {
 }
 
 const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }: ChatMessageProps) => {
+  if (message.outfit) {
+    console.log(`DEBUG: ChatMessage ${message.id} has outfit with ${message.outfit.items.length} items`);
+  }
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -84,10 +87,10 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
 
   // Format timestamp
   const formatTime = (date: Date) => {
-    return new Date(date).toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
+    return new Date(date).toLocaleTimeString('en-US', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: false 
+      hour12: false
     });
   };
 
@@ -115,6 +118,17 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
       </motion.div>
     );
   }
+
+  const [showExplanation, setShowExplanation] = useState(false);
+
+  // Handle explanation toggle
+  const handleExplainClick = () => {
+    if (message.outfit?.explanation) {
+      setShowExplanation(!showExplanation);
+    } else {
+      onExplainOutfit(message.id);
+    }
+  };
 
   // Calculate total price for outfit
   const totalPrice = message.outfit?.items.reduce((sum, item) => sum + item.price, 0) || 0;
@@ -144,7 +158,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
         {!message.outfit ? (
           <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-md px-5 py-3 shadow-md max-w-lg relative">
             <div className="font-inter text-text-dark dark:text-gray-100">{message.content}</div>
-            
+
             {/* Copy button - appears on hover */}
             {showActions && message.content && (
               <button
@@ -220,56 +234,49 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
                 initialIndex={selectedProductIndex || 0}
               />
 
-              {/* Explain Button - Only show if explanation doesn't exist */}
-              {!message.outfit.explanation ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onExplainOutfit(message.id)}
-                  disabled={isLoadingExplanation}
-                  className="mb-4 rounded-lg"
-                  aria-label="Explain this outfit"
-                >
-                  {isLoadingExplanation ? (
-                    <div className="flex items-center gap-2">
-                      <span>Generating explanation</span>
-                      <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </div>
+              {/* Explain Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExplainClick}
+                disabled={isLoadingExplanation && !message.outfit.explanation}
+                className="mb-4 rounded-lg"
+                aria-label={showExplanation ? "Hide explanation" : "Explain this outfit"}
+              >
+                {isLoadingExplanation && !message.outfit.explanation ? (
+                  <div className="flex items-center gap-2">
+                    <span>Generating explanation</span>
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <div className="w-1.5 h-1.5 bg-text-medium dark:bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
-                  ) : (
-                    'Explain this outfit'
-                  )}
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled
-                  className="mb-4 rounded-lg opacity-50 cursor-not-allowed"
-                  aria-label="Explanation already shown below"
-                >
-                  Explanation shown below
-                </Button>
-              )}
+                  </div>
+                ) : (
+                  showExplanation ? 'Hide Explanation' : 'Explain this outfit'
+                )}
+              </Button>
 
-              {/* Explanation - Show if it exists */}
-              {message.outfit.explanation && (
-                <div className="bg-gray-50 dark:bg-gray-700/50 border border-border dark:border-gray-600 rounded-xl p-6 mt-4">
+              {/* Explanation - Show if it exists and is toggled on */}
+              {message.outfit.explanation && showExplanation && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-gray-50 dark:bg-gray-700/50 border border-border dark:border-gray-600 rounded-xl p-6 mt-4 overflow-hidden"
+                >
                   <h4 className="font-roboto font-bold text-text-dark dark:text-gray-100 mb-3">
                     Why this outfit works:
                   </h4>
                   <p className="font-inter text-text-dark dark:text-gray-200 leading-relaxed">
                     {message.outfit.explanation}
                   </p>
-                </div>
+                </motion.div>
               )}
             </div>
           </>
         )}
-        
+
         {/* Timestamp for assistant messages */}
         <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 ml-1">
           {formatTime(message.timestamp)}

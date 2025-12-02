@@ -72,7 +72,7 @@ const getErrorDetails = (error: unknown): { title: string; message: string } => 
         };
     }
   }
-  
+
   return {
     title: 'Unexpected Error',
     message: 'Something went wrong. Please try again.',
@@ -113,8 +113,10 @@ export const useChatMessages = () => {
 
     // Load from API if not cached
     try {
+      console.log(`DEBUG: Loading chat history for chat ID: ${chatId}`);
       setMessages([]);
       const fetchedMessages = await chatService.getChatConversation(chatId);
+      console.log(`DEBUG: Fetched ${fetchedMessages.length} messages for chat ${chatId}`);
       setMessages(fetchedMessages);
       // Update cache
       setMessageCache(prev => ({ ...prev, [chatId]: fetchedMessages }));
@@ -238,10 +240,10 @@ export const useChatMessages = () => {
 
     } catch (error) {
       console.error('Failed to send message:', error);
-      
+
       // Get specific error details based on error type
       const errorInfo = getErrorDetails(error);
-      
+
       // Create an error message to display in the chat
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,

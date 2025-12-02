@@ -48,7 +48,7 @@ interface BackendMessage {
   type?: number;  // 0 = outfit, 1 = normal message (default: 0)
   image_id?: string | null;
   explanation?: string;
-  outfits?: BackendOutfitItem[];
+  outfit?: BackendOutfitItem[];
   created_at?: string;  // Backend uses 'created_at', not 'timestamp'
 }
 
@@ -137,11 +137,12 @@ export const chatService = {
     // Use POST with JSON body since GET with body is not standard
     // Backend expects conv_id in JSON body
     const response = await api.post<BackendMessage[]>('/chat', { conv_id: convId });
+    console.log('DEBUG: Raw history response:', response.data);
 
     const seenIds = new Set<string>();
-    return response.data.map((msg, index) => {
+    const parsedMessages = response.data.map((msg, index) => {
       const messageType = msg.type ?? 0; // Default to 0 (outfit) if not provided
-      const hasOutfit = messageType === 0 && msg.outfits && msg.outfits.length > 0;
+      const hasOutfit = messageType === 0 && msg.outfit && msg.outfit.length > 0;
 
       let id = msg.message_id?.toString() || `msg-${index}-${Date.now()}`;
       if (seenIds.has(id)) {
@@ -157,12 +158,15 @@ export const chatService = {
         imageUrl: msg.image_id || undefined,
         outfit: hasOutfit ? {
           id: `outfit-${id}`, // Use message ID to ensure outfit ID is also unique and related
-          items: transformOutfitItems(msg.outfits!),
-          totalPrice: calculateTotalPrice(msg.outfits!),
+          items: transformOutfitItems(msg.outfit!),
+          totalPrice: calculateTotalPrice(msg.outfit!),
           explanation: msg.explanation,
         } : undefined,
       };
     });
+
+    console.log('DEBUG: Parsed messages:', response.data.map(m => ({ id: m.message_id, hasOutfit: m.outfit && m.outfit.length > 0 })));
+    return parsedMessages;
   },
 
   // Rename a conversation
