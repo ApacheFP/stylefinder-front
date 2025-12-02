@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Maximize2, ShoppingBag, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Maximize2, ShoppingBag, AlertTriangle, RefreshCw, Copy, Check } from 'lucide-react';
 import type { ChatMessage as ChatMessageType } from '../../types';
 import ProductCard from '../ui/ProductCard';
 import ProductCarousel from '../ui/ProductCarousel';
@@ -18,6 +18,19 @@ interface ChatMessageProps {
 const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }: ChatMessageProps) => {
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+
+  // Copy message to clipboard
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   // Handle error message display
   if (message.isError) {
@@ -69,10 +82,19 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
     );
   }
 
+  // Format timestamp
+  const formatTime = (date: Date) => {
+    return new Date(date).toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+  };
+
   if (message.role === 'user') {
     return (
       <motion.div
-        className="flex justify-end mb-2"
+        className="flex flex-col items-end mb-2"
         initial="hidden"
         animate="visible"
         variants={fadeInUp}
@@ -87,6 +109,9 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
           )}
           {message.content}
         </div>
+        <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 mr-1">
+          {formatTime(message.timestamp)}
+        </span>
       </motion.div>
     );
   }
@@ -111,12 +136,29 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
       variants={fadeInUp}
       role="article"
       aria-label="Assistant message"
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
     >
-      <div className="max-w-4xl">
+      <div className="max-w-4xl relative group">
         {/* Text content in bubble style */}
         {!message.outfit ? (
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-md px-5 py-3 shadow-md max-w-lg">
+          <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-md px-5 py-3 shadow-md max-w-lg relative">
             <div className="font-inter text-text-dark dark:text-gray-100">{message.content}</div>
+            
+            {/* Copy button - appears on hover */}
+            {showActions && message.content && (
+              <button
+                onClick={handleCopy}
+                className="absolute -right-10 top-1/2 -translate-y-1/2 p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors opacity-0 group-hover:opacity-100"
+                title="Copy message"
+              >
+                {copied ? (
+                  <Check className="w-4 h-4 text-green-500" />
+                ) : (
+                  <Copy className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                )}
+              </button>
+            )}
           </div>
         ) : (
           <>
@@ -227,6 +269,11 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
             </div>
           </>
         )}
+        
+        {/* Timestamp for assistant messages */}
+        <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 ml-1">
+          {formatTime(message.timestamp)}
+        </span>
       </div>
     </motion.div>
   );

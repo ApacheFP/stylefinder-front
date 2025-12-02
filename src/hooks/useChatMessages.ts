@@ -82,6 +82,7 @@ const getErrorDetails = (error: unknown): { title: string; message: string } => 
 export const useChatMessages = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState<string>('');
   const [currentChatId, setCurrentChatId] = useState<string | undefined>();
   const [currentChatTitle, setCurrentChatTitle] = useState<string | undefined>();
   const [loadingExplanationId, setLoadingExplanationId] = useState<string | null>(null);
@@ -158,6 +159,7 @@ export const useChatMessages = () => {
 
     updateMessagesAndCache(userMessage);
     setIsLoading(true);
+    setLoadingStatus('Analyzing your request...');
 
     try {
       const response = await chatService.sendMessage(
@@ -175,6 +177,8 @@ export const useChatMessages = () => {
         setCurrentChatId(activeChatId);
         setCurrentChatTitle(response.conv_title);
       }
+
+      setLoadingStatus('Finding the perfect outfit...');
 
       // Update user message image URL if backend returned one
       if (response.img_url) {
@@ -225,6 +229,10 @@ export const useChatMessages = () => {
       // Show appropriate toast based on response status
       if (outfitData.status === 'COMPLETED' && outfitData.hasOutfit) {
         showToast.success('Outfit recommendations ready!');
+        // Haptic feedback on mobile devices
+        if ('vibrate' in navigator) {
+          navigator.vibrate(50);
+        }
       }
       onSuccess?.();
 
@@ -259,6 +267,7 @@ export const useChatMessages = () => {
       });
     } finally {
       setIsLoading(false);
+      setLoadingStatus('');
     }
   };
 
@@ -328,6 +337,7 @@ export const useChatMessages = () => {
   return {
     messages,
     isLoading,
+    loadingStatus,
     currentChatId,
     currentChatTitle,
     loadingExplanationId,

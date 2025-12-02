@@ -14,6 +14,7 @@ import ChatInput from '../components/chat/ChatInput';
 import DragDropOverlay from '../components/chat/DragDropOverlay';
 import TypingIndicator from '../components/ui/TypingIndicator';
 import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
+import KeyboardShortcutsHelper from '../components/ui/KeyboardShortcutsHelper';
 import { chatService } from '../services/chatService';
 import type { ChatHistory } from '../types';
 
@@ -36,6 +37,7 @@ const ChatPage = () => {
   const {
     messages,
     isLoading,
+    loadingStatus,
     isFetching,
     currentChatId,
     currentChatTitle,
@@ -141,7 +143,7 @@ const ChatPage = () => {
       description: 'New chat (Windows/Linux)',
     },
     {
-      key: '/',
+      key: 'i',
       metaKey: true,
       action: () => {
         inputRef.current?.focus();
@@ -149,7 +151,7 @@ const ChatPage = () => {
       description: 'Focus input',
     },
     {
-      key: '/',
+      key: 'i',
       ctrlKey: true,
       action: () => {
         inputRef.current?.focus();
@@ -269,7 +271,9 @@ const ChatPage = () => {
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-gray-50 dark:bg-gray-800 border border-border dark:border-gray-700 px-6 py-4 rounded-2xl flex items-center gap-3">
-                    <span className="text-sm font-inter text-text-medium dark:text-gray-300">AI is thinking</span>
+                    <span className="text-sm font-inter text-text-medium dark:text-gray-300">
+                      {loadingStatus || 'AI is thinking'}
+                    </span>
                     <TypingIndicator />
                   </div>
                 </div>
@@ -298,6 +302,9 @@ const ChatPage = () => {
         <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
           {messages.length > 0 && `${messages.length} messages in conversation`}
         </div>
+
+        {/* Keyboard Shortcuts Helper - always visible */}
+        <KeyboardShortcutsHelper />
       </div>
     </div>
   );
