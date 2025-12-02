@@ -2,6 +2,82 @@ import { useState } from 'react';
 import type { ChatMessage, OutfitFilters } from '../types';
 import { chatService } from '../services/chatService';
 import { showToast } from '../utils/toast';
+import axios from 'axios';
+
+// Error message helper
+const getErrorDetails = (error: unknown): { title: string; message: string } => {
+  if (axios.isAxiosError(error)) {
+    const status = error.response?.status;
+    const serverMessage = error.response?.data?.message || error.response?.data?.error;
+
+    switch (status) {
+      case 400:
+        return {
+          title: 'Invalid Request',
+          message: serverMessage || 'Please check your message and try again.',
+        };
+      case 401:
+        return {
+          title: 'Session Expired',
+          message: 'Please log in again to continue.',
+        };
+      case 403:
+        return {
+          title: 'Access Denied',
+          message: 'You don\'t have permission to perform this action.',
+        };
+      case 404:
+        return {
+          title: 'Not Found',
+          message: 'The requested resource was not found.',
+        };
+      case 408:
+        return {
+          title: 'Request Timeout',
+          message: 'The request took too long. Please try again.',
+        };
+      case 429:
+        return {
+          title: 'Too Many Requests',
+          message: 'Please wait a moment before trying again.',
+        };
+      case 500:
+        return {
+          title: 'Server Error',
+          message: 'Something went wrong on our end. Please try again later.',
+        };
+      case 502:
+      case 503:
+      case 504:
+        return {
+          title: 'Service Unavailable',
+          message: 'Our servers are temporarily unavailable. Please try again in a few minutes.',
+        };
+      default:
+        if (error.code === 'ECONNABORTED') {
+          return {
+            title: 'Connection Timeout',
+            message: 'The request timed out. Please check your connection and try again.',
+          };
+        }
+        if (error.code === 'ERR_NETWORK') {
+          return {
+            title: 'Network Error',
+            message: 'Unable to connect to the server. Please check your internet connection.',
+          };
+        }
+        return {
+          title: 'Something Went Wrong',
+          message: serverMessage || 'An unexpected error occurred. Please try again.',
+        };
+    }
+  }
+  
+  return {
+    title: 'Unexpected Error',
+    message: 'Something went wrong. Please try again.',
+  };
+};
 
 export const useChatMessages = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -155,6 +231,9 @@ export const useChatMessages = () => {
     } catch (error) {
       console.error('Failed to send message:', error);
       
+      // Get specific error details based on error type
+      const errorInfo = getErrorDetails(error);
+      
       // Create an error message to display in the chat
       const errorMessage: ChatMessage = {
         id: `error-${Date.now()}`,
@@ -165,6 +244,8 @@ export const useChatMessages = () => {
         errorDetails: {
           originalMessage: content,
           originalImage: imageFile,
+          errorTitle: errorInfo.title,
+          errorMessage: errorInfo.message,
         },
       };
 

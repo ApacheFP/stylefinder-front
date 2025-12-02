@@ -25,6 +25,8 @@ export interface ChatMessage {
   errorDetails?: {
     originalMessage: string;
     originalImage?: File;
+    errorTitle?: string;
+    errorMessage?: string;
   };
 }
 

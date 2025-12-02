@@ -180,10 +180,14 @@ const ChatPage = () => {
   };
 
   const handleSendMessage = () => {
-    sendMessage(inputMessage, selectedImage || undefined, undefined, () => {
-      setInputMessage('');
-      clearImage();
-    });
+    // Clear input immediately for better UX
+    const messageToSend = inputMessage;
+    const imageToSend = selectedImage || undefined;
+    
+    setInputMessage('');
+    clearImage();
+    
+    sendMessage(messageToSend, imageToSend);
   };
 
   const showEmptyState = messages.length === 0;

@@ -28,6 +28,9 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
       setIsRetrying(false);
     };
 
+    const errorTitle = message.errorDetails?.errorTitle || 'Something went wrong';
+    const errorMsg = message.errorDetails?.errorMessage || 'We couldn\'t process your request. Please try again.';
+
     return (
       <motion.div
         className="flex justify-start mb-2"
@@ -44,10 +47,10 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
             </div>
             <div className="flex-1">
               <h4 className="font-roboto font-bold text-red-700 dark:text-red-400 mb-1">
-                Oops! Something went wrong
+                {errorTitle}
               </h4>
               <p className="font-inter text-sm text-red-600 dark:text-red-300 mb-3">
-                We couldn't process your request. This might be a temporary issue with our servers.
+                {errorMsg}
               </p>
               <Button
                 variant="outline"
