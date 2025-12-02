@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
@@ -34,9 +35,18 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-8">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-border">
-        <h1 className="text-xl md:text-2xl font-roboto font-bold text-center text-text-dark mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-gray-900 px-4 py-8">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8 border border-border dark:border-gray-700">
+        {/* Back Button */}
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-text-medium dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors mb-4"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span className="text-sm font-inter">Back</span>
+        </button>
+
+        <h1 className="text-xl md:text-2xl font-roboto font-bold text-center text-text-dark dark:text-white mb-6">
           Log In to StyleFinder AI
         </h1>
 
@@ -74,7 +84,7 @@ const LoginPage = () => {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm md:text-base font-inter text-text-medium">
+        <p className="mt-6 text-center text-sm md:text-base font-inter text-text-medium dark:text-gray-400">
           Don't have an account?{' '}
           <Link to="/signup" className="text-primary font-bold hover:underline">
             Sign Up
