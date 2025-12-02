@@ -73,7 +73,13 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <BrowserRouter>
-            <Toaster position="top-right" reverseOrder={false} />
+            <Toaster
+              position="top-right"
+              reverseOrder={false}
+              containerStyle={{
+                top: 80, // Avoid overlap with header
+              }}
+            />
             <AnimatedRoutes />
           </BrowserRouter>
         </AuthProvider>
