@@ -98,12 +98,15 @@ describe('authService', () => {
         });
     });
 
-    it('changePassword calls api put', async () => {
-        const putSpy = vi.spyOn(api, 'put').mockResolvedValue({ data: { success: true } });
+    it('changePassword calls api post', async () => {
+        const postSpy = vi.spyOn(api, 'post').mockResolvedValue({ data: { success: true } });
 
         const result = await authService.changePassword({ current: 'old', new: 'new' });
 
-        expect(putSpy).toHaveBeenCalledWith('/user/password', { current: 'old', new: 'new' });
+        expect(postSpy).toHaveBeenCalledWith('/user/change-password', { 
+            current_password: 'old', 
+            new_password: 'new' 
+        });
         expect(result).toBe(true);
     });
 

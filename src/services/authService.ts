@@ -101,9 +101,12 @@ export const authService = {
   },
 
   // Change password
-  // Backend endpoint: PUT /user/password
+  // Backend endpoint: POST /user/change-password
   changePassword: async (data: { current: string; new: string }): Promise<boolean> => {
-    const response = await api.put<{ success: boolean }>('/user/password', data);
+    const response = await api.post<{ success: boolean }>('/user/change-password', {
+      current_password: data.current,
+      new_password: data.new,
+    });
     return response.data.success;
   },
 
