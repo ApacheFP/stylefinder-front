@@ -24,8 +24,8 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 overflow-hidden hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-300 w-[160px] flex-shrink-0 group cursor-pointer relative"
-      whileHover={{ y: -4 }}
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 overflow-hidden hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-300 w-full flex-shrink-0 group cursor-pointer relative"
+      whileHover={{}}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
@@ -53,7 +53,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               referrerPolicy="no-referrer"
               className="max-w-[90%] max-h-[90%] object-contain transition-all duration-300 mix-blend-multiply dark:mix-blend-normal"
               initial={{ opacity: 0 }}
-              animate={{ 
+              animate={{
                 opacity: imageLoaded ? (isHovered ? 0.4 : 1) : 0,
                 scale: isHovered ? 1.05 : 1
               }}
@@ -61,7 +61,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               onLoad={() => setImageLoaded(true)}
               onError={() => setImageError(true)}
             />
-            
+
             {/* Centered Expand overlay on hover */}
             <AnimatePresence>
               {isHovered && imageLoaded && (
@@ -98,7 +98,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
             </span>
           </div>
         )}
-        
+
         {/* Product name */}
         <h3 className="font-medium text-[11px] text-gray-800 dark:text-gray-100 line-clamp-2 leading-tight min-h-[2.2em]">
           {item.name}
@@ -106,7 +106,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
 
         {/* Price and Shop */}
         <div className="flex items-center justify-between pt-1">
-          <span className="text-primary dark:text-primary-light font-bold text-sm">
+          <span className="text-primary dark:text-primary-light font-bold text-[13.5px]">
             ${item.price.toFixed(2)}
           </span>
 
@@ -115,14 +115,14 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               onClick={handleShopClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-2.5 py-1 bg-primary text-white text-[10px] font-semibold rounded-lg flex items-center gap-1 hover:bg-primary-hover transition-colors"
+              className="px-2 py-0.5 bg-primary text-white text-[10px] font-semibold rounded-md flex items-center gap-1 hover:bg-primary-hover transition-colors"
               aria-label={`Shop ${item.name}`}
             >
-              <ShoppingBag className="w-3 h-3" />
+              <ShoppingBag className="w-2.5 h-2.5" />
               <span>Shop</span>
             </motion.button>
           ) : (
-            <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-400 text-[10px] font-medium rounded-lg">
+            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-400 text-[10px] font-medium rounded-md">
               N/A
             </span>
           )}

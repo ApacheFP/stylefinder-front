@@ -104,9 +104,13 @@ describe('useChatMessages', () => {
             await result.current.sendMessage('Fail me');
         });
 
-        expect(showToast.error).toHaveBeenCalled();
-        // Message should be removed
-        expect(result.current.messages).toHaveLength(0);
+        // Should NOT show toast for this error (handled in-chat)
+        expect(showToast.error).not.toHaveBeenCalled();
+
+        // Message should NOT be removed, but an error message added
+        expect(result.current.messages).toHaveLength(2);
+        expect(result.current.messages[0].content).toBe('Fail me');
+        expect(result.current.messages[1].isError).toBe(true);
     });
     it('uses cached messages if available', async () => {
         const { result } = renderHook(() => useChatMessages());

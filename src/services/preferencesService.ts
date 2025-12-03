@@ -31,9 +31,24 @@ export const preferencesService = {
   // Get all available preferences con i loro valori possibili
   getAllPreferences: async (): Promise<AllPreferencesResponse> => {
     try {
-      const response = await api.get<AllPreferencesResponse>('/preferences/all');
+      const response = await api.get<any>('/preferences/all');
       console.log('Raw all preferences response:', response.data);
-      return response.data;
+
+      // Handle response format { success: true, preferences: [...] }
+      let prefsData = response.data;
+      if (response.data.preferences) {
+        prefsData = response.data.preferences;
+      }
+
+      // If it's an array, convert to Record
+      if (Array.isArray(prefsData)) {
+        return prefsData.reduce((acc, pref) => {
+          acc[pref.id] = pref;
+          return acc;
+        }, {} as AllPreferencesResponse);
+      }
+
+      return prefsData;
     } catch (error) {
       console.error('Error loading all preferences:', error);
       return {};

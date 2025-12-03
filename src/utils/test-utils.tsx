@@ -1,10 +1,54 @@
-/* eslint-disable react-refresh/only-export-components */
 import React, { type ReactElement } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '../context/ThemeContext';
 import { AuthProvider } from '../context/AuthContext';
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: vi.fn().mockImplementation(query => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(), // deprecated
+        removeListener: vi.fn(), // deprecated
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+    })),
+});
+
+// Mock framer-motion
+vi.mock('framer-motion', async () => {
+    const actual = await vi.importActual('framer-motion');
+    const filterProps = (props: any) => {
+        const {
+            whileHover, whileTap, whileInView,
+            initial, animate, exit, transition, variants,
+            layout, layoutId,
+            drag, dragConstraints, dragElastic,
+            onTap,
+            ...validProps
+        } = props;
+        return validProps;
+    };
+
+    return {
+        ...actual as any,
+        motion: {
+            div: ({ children, ...props }: any) => <div {...filterProps(props)}>{children}</div>,
+            button: ({ children, ...props }: any) => <button {...filterProps(props)}>{children}</button>,
+            span: ({ children, ...props }: any) => <span {...filterProps(props)}>{children}</span>,
+            img: ({ ...props }: any) => <img {...filterProps(props)} />,
+            textarea: ({ ...props }: any) => <textarea {...filterProps(props)} />,
+            // Add other elements as needed
+        },
+        AnimatePresence: ({ children }: any) => <>{children}</>,
+    };
+});
 
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
     return (

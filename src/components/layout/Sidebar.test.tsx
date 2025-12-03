@@ -32,6 +32,8 @@ describe('Sidebar', () => {
     const mockOnSelectChat = vi.fn();
     const mockOnNewChat = vi.fn();
     const mockOnClose = vi.fn();
+    const mockOnRenameChat = vi.fn();
+    const mockOnDeleteChat = vi.fn();
 
     const mockChatHistory = [
         { id: '1', title: 'Chat 1', lastMessage: new Date() },
@@ -51,6 +53,8 @@ describe('Sidebar', () => {
                     chatHistory={[]}
                     onSelectChat={mockOnSelectChat}
                     onNewChat={mockOnNewChat}
+                    onRenameChat={mockOnRenameChat}
+                    onDeleteChat={mockOnDeleteChat}
                     onClose={mockOnClose}
                 />
             </BrowserRouter>
@@ -70,6 +74,8 @@ describe('Sidebar', () => {
                     chatHistory={mockChatHistory}
                     onSelectChat={mockOnSelectChat}
                     onNewChat={mockOnNewChat}
+                    onRenameChat={mockOnRenameChat}
+                    onDeleteChat={mockOnDeleteChat}
                     onClose={mockOnClose}
                 />
             </BrowserRouter>
@@ -89,6 +95,8 @@ describe('Sidebar', () => {
                     chatHistory={[]}
                     onSelectChat={mockOnSelectChat}
                     onNewChat={mockOnNewChat}
+                    onRenameChat={mockOnRenameChat}
+                    onDeleteChat={mockOnDeleteChat}
                     onClose={mockOnClose}
                 />
             </BrowserRouter>
@@ -106,6 +114,8 @@ describe('Sidebar', () => {
                     chatHistory={[]}
                     onSelectChat={mockOnSelectChat}
                     onNewChat={mockOnNewChat}
+                    onRenameChat={mockOnRenameChat}
+                    onDeleteChat={mockOnDeleteChat}
                     onClose={mockOnClose}
                 />
             </BrowserRouter>
@@ -124,6 +134,8 @@ describe('Sidebar', () => {
                     chatHistory={mockChatHistory}
                     onSelectChat={mockOnSelectChat}
                     onNewChat={mockOnNewChat}
+                    onRenameChat={mockOnRenameChat}
+                    onDeleteChat={mockOnDeleteChat}
                     onClose={mockOnClose}
                 />
             </BrowserRouter>
@@ -143,6 +155,8 @@ describe('Sidebar', () => {
                     currentChatId="1"
                     onSelectChat={mockOnSelectChat}
                     onNewChat={mockOnNewChat}
+                    onRenameChat={mockOnRenameChat}
+                    onDeleteChat={mockOnDeleteChat}
                     onClose={mockOnClose}
                 />
             </BrowserRouter>

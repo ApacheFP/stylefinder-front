@@ -16,12 +16,9 @@ import TypingIndicator from '../components/ui/TypingIndicator';
 import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
 import KeyboardShortcutsHelper from '../components/ui/KeyboardShortcutsHelper';
 import { chatService } from '../services/chatService';
+import { beautifyUsername } from '../utils/stringUtils';
 import type { ChatHistory } from '../types';
 
-function beautifyUsername(name: string) {
-  const lower = name.trim().toLowerCase();
-  return lower.charAt(0).toUpperCase() + lower.slice(1);
-}
 const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
@@ -31,7 +28,7 @@ const ChatPage = () => {
   const { isAuthenticated, user } = useAuth();
   const isLoggedIn = isAuthenticated;
   let userName = user?.name || 'Guest';
-  userName = beautifyUsername(userName)
+  userName = beautifyUsername(userName);
 
   // Custom hooks
   const {
@@ -185,10 +182,10 @@ const ChatPage = () => {
     // Clear input immediately for better UX
     const messageToSend = inputMessage;
     const imageToSend = selectedImage || undefined;
-    
+
     setInputMessage('');
     clearImage();
-    
+
     sendMessage(messageToSend, imageToSend);
   };
 
@@ -223,6 +220,39 @@ const ChatPage = () => {
         }}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
+        onRenameChat={async (chatId, newTitle) => {
+          try {
+            const success = await chatService.renameConversation(chatId, newTitle);
+            if (success) {
+              setChatHistory((prev) =>
+                prev.map((chat) =>
+                  chat.id === chatId ? { ...chat, title: newTitle } : chat
+                )
+              );
+              // Update current chat title if it's the active one
+              if (currentChatId === chatId) {
+                // We might need a way to update the title in useChatMessages or just rely on history
+              }
+            }
+          } catch (error) {
+            console.error('Failed to rename chat:', error);
+          }
+        }}
+        onDeleteChat={async (chatId) => {
+          try {
+            const success = await chatService.deleteConversation(chatId);
+            if (success) {
+              setChatHistory((prev) => prev.filter((chat) => chat.id !== chatId));
+
+              // If deleted chat was active, switch to new chat
+              if (currentChatId === chatId) {
+                handleNewChat();
+              }
+            }
+          } catch (error) {
+            console.error('Failed to delete chat:', error);
+          }
+        }}
       />
 
       {/* Main Content */}

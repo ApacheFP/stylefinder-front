@@ -49,6 +49,7 @@ interface BackendMessage {
   image_id?: string | null;
   explanation?: string;
   outfit?: BackendOutfitItem[];
+  outfits?: BackendOutfitItem[]; // Backend sometimes sends 'outfits' instead of 'outfit'
   created_at?: string;  // Backend uses 'created_at', not 'timestamp'
 }
 
@@ -142,7 +143,8 @@ export const chatService = {
     const seenIds = new Set<string>();
     const parsedMessages = response.data.map((msg, index) => {
       const messageType = msg.type ?? 0; // Default to 0 (outfit) if not provided
-      const hasOutfit = messageType === 0 && msg.outfit && msg.outfit.length > 0;
+      const outfitData = msg.outfit || msg.outfits;
+      const hasOutfit = messageType === 0 && outfitData && outfitData.length > 0;
 
       let id = msg.message_id?.toString() || `msg-${index}-${Date.now()}`;
       if (seenIds.has(id)) {
@@ -158,14 +160,14 @@ export const chatService = {
         imageUrl: msg.image_id || undefined,
         outfit: hasOutfit ? {
           id: `outfit-${id}`, // Use message ID to ensure outfit ID is also unique and related
-          items: transformOutfitItems(msg.outfit!),
-          totalPrice: calculateTotalPrice(msg.outfit!),
+          items: transformOutfitItems(outfitData!),
+          totalPrice: calculateTotalPrice(outfitData!),
           explanation: msg.explanation,
         } : undefined,
       };
     });
 
-    console.log('DEBUG: Parsed messages:', response.data.map(m => ({ id: m.message_id, hasOutfit: m.outfit && m.outfit.length > 0 })));
+    console.log('DEBUG: Parsed messages:', response.data.map(m => ({ id: m.message_id, hasOutfit: (m.outfit || m.outfits) && (m.outfit || m.outfits)!.length > 0 })));
     return parsedMessages;
   },
 

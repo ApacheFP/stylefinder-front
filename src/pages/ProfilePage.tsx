@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Lock, Save, ArrowLeft, Trash2 } from 'lucide-react';
-import Modal from '../components/ui/Modal';
+import { User, Lock, Save, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
@@ -9,7 +8,8 @@ import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import { showToast } from '../utils/toast';
 import { fadeInUp } from '../utils/animations';
-import Skeleton from '../components/ui/Skeleton';
+import ProfileSkeleton from '../components/ui/ProfileSkeleton';
+import DeleteAccountModal from '../components/ui/DeleteAccountModal';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -18,7 +18,6 @@ const ProfilePage = () => {
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
-    const [deleteConfirmation, setDeleteConfirmation] = useState('');
     const [name, setName] = useState(user?.name || '');
 
     // Update local state when user data loads
@@ -27,8 +26,6 @@ const ProfilePage = () => {
             setName(user.name);
         }
     }, [user]);
-
-    // ... (handlers remain same)
 
     const handleProfileUpdate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,12 +38,7 @@ const ProfilePage = () => {
         setIsUpdatingProfile(true);
 
         try {
-            // Call actual backend service
             await authService.updateProfile({ name });
-            // We should ideally update the user context here, but for now a page reload or re-fetch would happen
-            // Since authService.updateProfile returns the updated user, we could update context if exposed
-            // For now, we rely on the fact that the backend is updated.
-            // To make it perfect, we'd need a setUser method from useAuth, but let's just show success.
             showToast.success('Profile updated successfully');
         } catch {
             showToast.error('Failed to update profile');
@@ -95,7 +87,6 @@ const ProfilePage = () => {
         try {
             await authService.deleteAccount();
             showToast.success('Account deleted. Bye bye! 👋');
-            // Small delay to let the user see the toast
             setTimeout(() => {
                 window.location.href = '/login';
             }, 1500);
@@ -106,67 +97,7 @@ const ProfilePage = () => {
     };
 
     if (isAuthLoading) {
-        return (
-            <div className="min-h-screen bg-background dark:bg-gray-900 p-6 md:p-12">
-                <div className="max-w-2xl mx-auto">
-                    {/* Header Skeleton */}
-                    <div className="flex items-center gap-4 mb-8">
-                        <Skeleton variant="circular" className="w-10 h-10" />
-                        <Skeleton variant="text" className="w-48 h-8" />
-                    </div>
-
-                    <div className="space-y-6">
-                        {/* User Info Card Skeleton */}
-                        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl">
-                            <div className="flex items-center gap-3 mb-6">
-                                <Skeleton variant="rectangular" className="w-9 h-9 rounded-lg" />
-                                <Skeleton variant="text" className="w-40 h-6" />
-                            </div>
-                            <div className="grid gap-6 md:grid-cols-2 mb-6">
-                                <div className="space-y-2">
-                                    <Skeleton variant="text" className="w-20 h-4" />
-                                    <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Skeleton variant="text" className="w-20 h-4" />
-                                    <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
-                                </div>
-                            </div>
-                            <div className="flex justify-end">
-                                <Skeleton variant="rectangular" className="w-32 h-10 rounded-xl" />
-                            </div>
-                        </div>
-
-                        {/* Password Card Skeleton */}
-                        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl">
-                            <div className="flex items-center gap-3 mb-6">
-                                <Skeleton variant="rectangular" className="w-9 h-9 rounded-lg" />
-                                <Skeleton variant="text" className="w-40 h-6" />
-                            </div>
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Skeleton variant="text" className="w-32 h-4" />
-                                    <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
-                                </div>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Skeleton variant="text" className="w-32 h-4" />
-                                        <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Skeleton variant="text" className="w-32 h-4" />
-                                        <Skeleton variant="rectangular" className="w-full h-12 rounded-xl" />
-                                    </div>
-                                </div>
-                                <div className="flex justify-end pt-4">
-                                    <Skeleton variant="rectangular" className="w-32 h-10 rounded-xl" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
+        return <ProfileSkeleton />;
     }
 
     if (!user) {
@@ -356,72 +287,12 @@ const ProfilePage = () => {
             </div>
 
             {/* Delete Confirmation Modal */}
-            <Modal
+            <DeleteAccountModal
                 isOpen={isDeleteModalOpen}
-                onClose={() => {
-                    if (!isDeleting) {
-                        setIsDeleteModalOpen(false);
-                        setDeleteConfirmation('');
-                    }
-                }}
-                className="max-w-md w-full p-6"
-            >
-                <div className="text-center">
-                    <motion.div
-                        className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6"
-                        animate={{
-                            rotate: [0, -10, 10, -10, 10, 0],
-                            scale: [1, 1.1, 1]
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            delay: 0.2,
-                            ease: "easeInOut"
-                        }}
-                    >
-                        <Trash2 className="w-8 h-8 text-red-500" />
-                    </motion.div>
-
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                        Are you sure?
-                    </h3>
-
-                    <p className="text-gray-500 dark:text-gray-400 mb-6">
-                        This action is irreversible. To confirm, please type <span className="font-mono font-bold text-red-500 dark:text-red-400">DELETE</span> below.
-                    </p>
-
-                    <div className="mb-6">
-                        <Input
-                            value={deleteConfirmation}
-                            onChange={(e) => setDeleteConfirmation(e.target.value)}
-                            placeholder="Type DELETE to confirm"
-                            className="text-center uppercase tracking-widest border-red-200 dark:border-red-900/50 focus:border-red-500 dark:focus:border-red-500 focus:ring-red-500/20"
-                        />
-                    </div>
-
-                    <div className="flex gap-3 justify-center">
-                        <Button
-                            variant="outline"
-                            onClick={() => {
-                                setIsDeleteModalOpen(false);
-                                setDeleteConfirmation('');
-                            }}
-                            disabled={isDeleting}
-                            className="flex-1"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="primary"
-                            onClick={handleDeleteAccount}
-                            disabled={isDeleting || deleteConfirmation !== 'DELETE'}
-                            className="flex-1 bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 border-transparent transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                        >
-                            {isDeleting ? 'Deleting...' : 'Delete Account'}
-                        </Button>
-                    </div>
-                </div>
-            </Modal>
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDeleteAccount}
+                isDeleting={isDeleting}
+            />
         </div>
     );
 };

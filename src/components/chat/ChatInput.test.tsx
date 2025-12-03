@@ -98,14 +98,16 @@ describe('ChatInput', () => {
     });
 
     it('shows image preview when imagePreview is provided', () => {
-        render(<ChatInput {...defaultProps} imagePreview="preview.jpg" />);
+        const file = new File(['(⌐□_□)'], 'preview.jpg', { type: 'image/jpeg' });
+        render(<ChatInput {...defaultProps} imagePreview="preview.jpg" selectedImage={file} />);
 
         expect(screen.getByAltText('Preview')).toBeInTheDocument();
         expect(screen.getByAltText('Preview')).toHaveAttribute('src', 'preview.jpg');
     });
 
     it('calls onRemoveImage when remove button is clicked', () => {
-        render(<ChatInput {...defaultProps} imagePreview="preview.jpg" />);
+        const file = new File(['(⌐□_□)'], 'preview.jpg', { type: 'image/jpeg' });
+        render(<ChatInput {...defaultProps} imagePreview="preview.jpg" selectedImage={file} />);
 
         // Find the remove button (it has an X icon, but no text)
         // We can find it by looking for the button inside the preview container

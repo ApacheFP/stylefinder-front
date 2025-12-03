@@ -11,6 +11,11 @@ vi.mock('framer-motion', () => ({
     },
 }));
 
+// Mock react-markdown
+vi.mock('react-markdown', () => ({
+    default: ({ children }: any) => <div>{children}</div>,
+}));
+
 // Mock child components
 vi.mock('../ui/ProductCard', () => ({
     default: ({ item, onImageClick }: any) => (
@@ -44,6 +49,12 @@ vi.mock('../ui/Button', () => ({
         <button onClick={onClick} disabled={disabled} {...props}>
             {children}
         </button>
+    ),
+}));
+
+vi.mock('./OutfitExplanation', () => ({
+    default: ({ explanation, isVisible }: any) => (
+        isVisible ? <div data-testid="outfit-explanation">{explanation}</div> : null
     ),
 }));
 
@@ -207,7 +218,7 @@ describe('ChatMessage', () => {
         );
 
         fireEvent.click(screen.getByText('Explain this outfit'));
-        expect(mockOnExplainOutfit).toHaveBeenCalledWith('2', 'o1');
+        expect(mockOnExplainOutfit).toHaveBeenCalledWith('2');
     });
 
     it('shows loading state for explanation', () => {
@@ -231,7 +242,7 @@ describe('ChatMessage', () => {
             />
         );
 
-        expect(screen.getByText('Generating explanation')).toBeInTheDocument();
+        expect(screen.getByText('Generating')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Explain this outfit' })).toBeDisabled();
     });
 
@@ -256,13 +267,13 @@ describe('ChatMessage', () => {
             />
         );
 
-        expect(screen.getByText('Why this outfit works:')).toBeInTheDocument();
-        expect(screen.getByText('This looks great because...')).toBeInTheDocument();
-        expect(screen.getByText('Explanation shown below')).toBeInTheDocument();
+        // First click to toggle visibility
+        fireEvent.click(screen.getByText('Explain this outfit'));
+
+        expect(screen.getByTestId('outfit-explanation')).toHaveTextContent('This looks great because...');
     });
 
     it('displays total price and handles Shop All click', () => {
-        vi.useFakeTimers();
         const windowOpenSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
         const message: ChatMessageType = {
             id: '2',
@@ -294,16 +305,11 @@ describe('ChatMessage', () => {
         // Click Shop All
         fireEvent.click(screen.getByText('Shop All Items'));
 
-        // First link should open immediately
+        // Links should open immediately
         expect(windowOpenSpy).toHaveBeenCalledWith('http://shirt.com', '_blank', 'noopener,noreferrer');
-
-        // Fast-forward time to trigger second link (500ms)
-        vi.advanceTimersByTime(500);
-
         expect(windowOpenSpy).toHaveBeenCalledWith('http://pants.com', '_blank', 'noopener,noreferrer');
         expect(windowOpenSpy).toHaveBeenCalledTimes(2);
 
         windowOpenSpy.mockRestore();
-        vi.useRealTimers();
     });
 });

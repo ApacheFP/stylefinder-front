@@ -13,6 +13,8 @@ vi.mock('../services/preferencesService', () => ({
         getPreferences: vi.fn(),
         getAllPreferences: vi.fn(),
         updatePreferences: vi.fn(),
+        parseMultiValue: (val: string) => val ? val.split(',') : [],
+        joinMultiValue: (vals: string[]) => vals.join(','),
     },
 }));
 
@@ -40,6 +42,26 @@ vi.mock('../components/ui/Skeleton', () => ({
     default: () => <div data-testid="skeleton" />,
 }));
 
+vi.mock('../components/ui/PreferencesSkeleton', () => ({
+    default: () => <div data-testid="preferences-skeleton" />,
+}));
+
+vi.mock('../components/ui/SearchableMultiSelect', () => ({
+    default: ({ values, selectedValues, onToggle, placeholder }: any) => (
+        <div data-testid={`select-${placeholder}`}>
+            {values.map((value: string) => (
+                <button
+                    key={value}
+                    onClick={() => onToggle(value)}
+                    data-selected={selectedValues.includes(value)}
+                >
+                    {value.charAt(0).toUpperCase() + value.slice(1)}
+                </button>
+            ))}
+        </div>
+    ),
+}));
+
 // Mock navigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -51,18 +73,19 @@ vi.mock('react-router-dom', async () => {
 });
 
 describe('PreferencesPage', () => {
-    const mockAllPreferences = [
-        { id: 1, name: 'gender' },
-        { id: 2, name: 'style_casual' },
-        { id: 3, name: 'color_blue' },
-        { id: 4, name: 'brand_nike' },
-        { id: 5, name: 'other_pref' },
-    ];
+    const mockAllPreferences = {
+        '1': { id: 1, name: 'Gender', values: ['Man', 'Woman'] },
+        '2': { id: 2, name: 'Style', values: ['Casual', 'Formal'] },
+        '3': { id: 3, name: 'Color', values: ['Blue', 'Red'] },
+        '4': { id: 4, name: 'Brand', values: ['Nike', 'Adidas'] },
+        '5': { id: 5, name: 'Other', values: [] }, // No values -> Input
+    };
 
     const mockUserPreferences = {
-        gender: 'man',
-        style_casual: 'true',
-        color_blue: 'false',
+        Gender: 'Man',
+        Style: 'Casual',
+        Color: '',
+        Brand: '',
     };
 
     beforeEach(() => {
@@ -81,7 +104,7 @@ describe('PreferencesPage', () => {
             </BrowserRouter>
         );
 
-        expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
+        expect(screen.getByTestId('preferences-skeleton')).toBeInTheDocument();
     });
 
     it('renders preferences when loaded', async () => {
@@ -94,10 +117,10 @@ describe('PreferencesPage', () => {
         await waitFor(() => {
             expect(screen.getByText('Your Preferences')).toBeInTheDocument();
             expect(screen.getByText('Gender')).toBeInTheDocument();
-            expect(screen.getByText('Favorite Styles')).toBeInTheDocument();
-            expect(screen.getByText('Favorite Colors')).toBeInTheDocument();
-            expect(screen.getByText('Favorite Brands')).toBeInTheDocument();
-            expect(screen.getByText('Other Preferences')).toBeInTheDocument();
+            expect(screen.getByText('Style')).toBeInTheDocument();
+            expect(screen.getByText('Color')).toBeInTheDocument();
+            expect(screen.getByText('Brand')).toBeInTheDocument();
+            expect(screen.getByText('Other')).toBeInTheDocument();
         });
     });
 
@@ -111,7 +134,7 @@ describe('PreferencesPage', () => {
         );
 
         await waitFor(() => {
-            expect(screen.getByText('Unable to load preferences options. Please try again later.')).toBeInTheDocument();
+            expect(screen.getByText(/Unable to load preferences options/i)).toBeInTheDocument();
         });
     });
 
@@ -126,20 +149,20 @@ describe('PreferencesPage', () => {
             expect(screen.getByText('Casual')).toBeInTheDocument();
         });
 
-        // Toggle Style
+        // Toggle Style (Casual is already selected, clicking it should deselect/toggle)
         const casualBtn = screen.getByText('Casual');
         fireEvent.click(casualBtn);
 
-        // Toggle Color
+        // Toggle Color (Blue is not selected)
         const blueBtn = screen.getByText('Blue');
         fireEvent.click(blueBtn);
 
-        // Toggle Brand
+        // Toggle Brand (Nike is not selected)
         const nikeBtn = screen.getByText('Nike');
         fireEvent.click(nikeBtn);
 
         // Change Other
-        const otherInput = screen.getByDisplayValue(''); // other_pref is initially empty/undefined in mockUserPreferences
+        const otherInput = screen.getByPlaceholderText('Enter your preferred other');
         fireEvent.change(otherInput, { target: { value: 'Something' } });
 
         const saveBtn = screen.getByText('Save Preferences');
@@ -149,10 +172,10 @@ describe('PreferencesPage', () => {
 
         await waitFor(() => {
             expect(preferencesService.updatePreferences).toHaveBeenCalledWith(expect.objectContaining({
-                style_casual: 'false', // Toggled from true
-                color_blue: 'true',    // Toggled from false
-                brand_nike: 'true',    // Toggled from undefined (false)
-                other_pref: 'Something'
+                Style: '', // Toggled from Casual to empty
+                Color: expect.stringContaining('Blue'),
+                Brand: expect.stringContaining('Nike'),
+                Other: 'Something'
             }));
         });
     });

@@ -34,12 +34,11 @@ describe('ProductCard Component', () => {
         openSpy.mockRestore();
     });
 
-    it('disables shop button when no link is provided', () => {
+    it('shows N/A when no link is provided', () => {
         const itemWithoutLink = { ...mockProduct, link: undefined };
         render(<ProductCard item={itemWithoutLink} />);
 
-        const shopElement = screen.getByText('Shop').closest('div');
-        expect(shopElement).toHaveClass('opacity-50');
+        expect(screen.getByText('N/A')).toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /shop/i })).not.toBeInTheDocument();
     });
 });

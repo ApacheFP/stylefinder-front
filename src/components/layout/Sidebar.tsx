@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, MessageSquare, HelpCircle, Loader2 } from 'lucide-react';
+import { Plus, X, MessageSquare, HelpCircle, Loader2, MoreVertical, Edit2, Trash2, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import type { ChatHistory } from '../../types';
@@ -13,6 +13,8 @@ interface SidebarProps {
   isLoadingHistory?: boolean;
   onSelectChat: (chatId: string) => void;
   onNewChat: () => void;
+  onRenameChat: (chatId: string, newTitle: string) => Promise<void>;
+  onDeleteChat: (chatId: string) => Promise<void>;
   isOpen?: boolean;
   onClose?: () => void;
 }
@@ -23,11 +25,41 @@ const Sidebar = ({
   isLoadingHistory = false,
   onSelectChat,
   onNewChat,
+  onRenameChat,
+  onDeleteChat,
   isOpen = true,
   onClose
 }: SidebarProps) => {
 
   const { isAuthenticated } = useAuth();
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const renameInputRef = useRef<HTMLInputElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setActiveMenuId(null);
+        setDeleteConfirmId(null); // Also reset delete confirmation
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Focus input when renaming starts
+  useEffect(() => {
+    if (renamingId && renameInputRef.current) {
+      renameInputRef.current.focus();
+    }
+  }, [renamingId]);
 
   // Sort chat history by most recent first
   const sortedChatHistory = useMemo(() => {
@@ -37,6 +69,55 @@ const Sidebar = ({
       return dateB - dateA; // Most recent first
     });
   }, [chatHistory]);
+
+  const handleMenuClick = (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation();
+    if (activeMenuId === chatId) {
+      setActiveMenuId(null);
+      setDeleteConfirmId(null);
+    } else {
+      setActiveMenuId(chatId);
+      setDeleteConfirmId(null);
+    }
+  };
+
+  const handleRenameClick = (e: React.MouseEvent, chat: ChatHistory) => {
+    e.stopPropagation();
+    setRenamingId(chat.id);
+    setRenameValue(chat.title);
+    setActiveMenuId(null);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation();
+    setDeleteConfirmId(chatId);
+  };
+
+  const confirmDelete = async (e: React.MouseEvent, chatId: string) => {
+    e.stopPropagation();
+    await onDeleteChat(chatId);
+    setDeleteConfirmId(null);
+    setActiveMenuId(null);
+  };
+
+  const cancelDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleteConfirmId(null);
+    setActiveMenuId(null); // Close menu on cancel? Or just go back? Let's close for now.
+  };
+
+  const handleRenameSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (renamingId && renameValue.trim()) {
+      await onRenameChat(renamingId, renameValue.trim());
+      setRenamingId(null);
+    }
+  };
+
+  const handleRenameCancel = () => {
+    setRenamingId(null);
+    setRenameValue('');
+  };
 
   if (isAuthenticated) {
     // Logged in view
@@ -120,19 +201,112 @@ const Sidebar = ({
                   </div>
                 ) : (
                   sortedChatHistory.map((chat) => (
-                    <button
-                      key={chat.id}
-                      onClick={() => onSelectChat(chat.id)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-inter transition-all duration-200 ${currentChatId === chat.id
-                        ? 'bg-primary/5 text-primary font-medium border border-primary/10'
-                        : 'text-text-dark dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 border border-transparent'
-                        }`}
-                      title={chat.title}
-                      aria-label={`Open chat: ${chat.title}`}
-                      aria-current={currentChatId === chat.id ? 'page' : undefined}
-                    >
-                      <span className="block truncate">{chat.title}</span>
-                    </button>
+                    <div key={chat.id} className="relative group">
+                      {renamingId === chat.id ? (
+                        <form onSubmit={handleRenameSubmit} className="flex items-center gap-1 px-2 py-1">
+                          <input
+                            ref={renameInputRef}
+                            type="text"
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                            onBlur={handleRenameSubmit}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Escape') handleRenameCancel();
+                            }}
+                            className="flex-1 min-w-0 text-sm bg-white dark:bg-gray-800 border border-primary rounded px-2 py-1 outline-none text-text-dark dark:text-gray-200"
+                            autoFocus
+                          />
+                          <button
+                            type="submit"
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-green-600"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleRenameCancel}
+                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-red-500"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </form>
+                      ) : (
+                        <button
+                          onClick={() => onSelectChat(chat.id)}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm font-inter transition-all duration-200 flex items-center justify-between group ${currentChatId === chat.id
+                            ? 'bg-primary/5 text-primary font-medium border border-primary/10'
+                            : 'text-text-dark dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 border border-transparent'
+                            }`}
+                          title={chat.title}
+                          aria-label={`Open chat: ${chat.title}`}
+                          aria-current={currentChatId === chat.id ? 'page' : undefined}
+                        >
+                          <span className="block truncate flex-1 pr-2">{chat.title}</span>
+
+                          {/* Kebab Menu Trigger */}
+                          <div
+                            className={`opacity-0 group-hover:opacity-100 transition-opacity ${activeMenuId === chat.id ? 'opacity-100' : ''}`}
+                            onClick={(e) => handleMenuClick(e, chat.id)}
+                          >
+                            <div className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
+                              <MoreVertical className="w-4 h-4 text-gray-500" />
+                            </div>
+                          </div>
+                        </button>
+                      )}
+
+                      {/* Dropdown Menu / Delete Confirmation */}
+                      <AnimatePresence>
+                        {activeMenuId === chat.id && (
+                          <motion.div
+                            ref={menuRef}
+                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                            className="absolute right-2 top-8 z-50 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 overflow-hidden"
+                          >
+                            {deleteConfirmId === chat.id ? (
+                              <div className="p-2">
+                                <p className="text-xs text-center text-gray-600 dark:text-gray-300 mb-2">
+                                  Delete chat?
+                                </p>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={(e) => cancelDelete(e)}
+                                    className="flex-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
+                                  >
+                                    No
+                                  </button>
+                                  <button
+                                    onClick={(e) => confirmDelete(e, chat.id)}
+                                    className="flex-1 px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+                                  >
+                                    Yes
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={(e) => handleRenameClick(e, chat)}
+                                  className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                  Rename
+                                </button>
+                                <button
+                                  onClick={(e) => handleDeleteClick(e, chat.id)}
+                                  className="w-full text-left px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  Delete
+                                </button>
+                              </>
+                            )}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   ))
                 )}
               </motion.div>
