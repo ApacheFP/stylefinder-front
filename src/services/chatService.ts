@@ -22,6 +22,9 @@ interface BackendOutfitItem {
   brand?: string;
   material?: string;
   similarity?: number;
+  category?: string;
+  link?: string;
+  availability?: boolean;
 }
 
 // New response status types from backend
@@ -70,6 +73,17 @@ interface BackendConversation {
   updated_at?: string;
 }
 
+// Helper to map backend categories to frontend categories
+const mapCategory = (category: string): OutfitItem['category'] => {
+  const lowerCat = category.toLowerCase();
+  if (lowerCat.includes('jacket') || lowerCat.includes('coat') || lowerCat.includes('outerwear')) return 'jacket';
+  if (lowerCat.includes('blazer')) return 'blazer';
+  if (lowerCat.includes('shirt') || lowerCat.includes('top') || lowerCat.includes('sweater') || lowerCat.includes('t-shirt')) return 'shirt';
+  if (lowerCat.includes('pant') || lowerCat.includes('jeans') || lowerCat.includes('trousers') || lowerCat.includes('bottom')) return 'pants';
+  if (lowerCat.includes('shoe') || lowerCat.includes('boot') || lowerCat.includes('sneaker')) return 'shoes';
+  return 'accessories';
+};
+
 // Transform backend outfit items to frontend format
 const transformOutfitItems = (backendItems: BackendOutfitItem[]): OutfitItem[] => {
   const seenIds = new Set<string>();
@@ -85,9 +99,10 @@ const transformOutfitItems = (backendItems: BackendOutfitItem[]): OutfitItem[] =
       name: item.title,
       price: item.price,
       imageUrl: item.image_link,
-      category: 'accessories' as const, // Backend doesn't provide category, use default
+      category: mapCategory(item.category || 'unknown'),
       brand: item.brand,
-      link: item.url,
+      link: item.url || item.link, // Handle both url and link properties
+      available: item.availability !== false // Default to true if undefined, or strictly check false
     };
   });
 };

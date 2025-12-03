@@ -53,6 +53,7 @@ export interface OutfitItem {
   category: 'jacket' | 'blazer' | 'shirt' | 'pants' | 'shoes' | 'accessories';
   brand?: string;
   link?: string;
+  available?: boolean;
 }
 
 // Filter types

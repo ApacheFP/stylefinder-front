@@ -86,6 +86,18 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
             </div>
           </div>
         )}
+
+
+        {/* Availability Badge */}
+        {item.available === false ? (
+          <div className="absolute top-2 right-2 bg-red-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-10">
+            OUT OF STOCK
+          </div>
+        ) : (
+          <div className="absolute top-2 right-2 bg-green-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-10">
+            IN STOCK
+          </div>
+        )}
       </div>
 
       {/* Info */}
@@ -113,13 +125,17 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
           {hasLink ? (
             <motion.button
               onClick={handleShopClick}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-2 py-0.5 bg-primary text-white text-[10px] font-semibold rounded-md flex items-center gap-1 hover:bg-primary-hover transition-colors"
+              whileHover={item.available !== false ? { scale: 1.05 } : {}}
+              whileTap={item.available !== false ? { scale: 0.95 } : {}}
+              disabled={item.available === false}
+              className={`px-2 py-0.5 text-[10px] font-semibold rounded-md flex items-center gap-1 transition-colors ${item.available === false
+                ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 cursor-not-allowed'
+                : 'bg-primary text-white hover:bg-primary-hover'
+                }`}
               aria-label={`Shop ${item.name}`}
             >
               <ShoppingBag className="w-2.5 h-2.5" />
-              <span>Shop</span>
+              <span>{item.available === false ? 'Sold Out' : 'Shop'}</span>
             </motion.button>
           ) : (
             <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-400 text-[10px] font-medium rounded-md">
