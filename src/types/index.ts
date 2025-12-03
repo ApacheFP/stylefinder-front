@@ -28,6 +28,7 @@ export interface ChatMessage {
     errorTitle?: string;
     errorMessage?: string;
   };
+  outfits?: Outfit[]; // Support for multiple outfit options
 }
 
 export interface ChatHistory {

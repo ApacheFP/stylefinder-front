@@ -14,28 +14,41 @@ import { formatTime } from '../../utils/dateUtils';
 
 interface ChatMessageProps {
   message: ChatMessageType;
-  onExplainOutfit: (messageId: string) => void;
+  onExplainOutfit: (messageId: string, outfitId?: string) => void;
   isLoadingExplanation?: boolean;
   onRetry?: (messageId: string, originalMessage: string, originalImage?: File) => void;
 }
 
 const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }: ChatMessageProps) => {
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
+  const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
 
+  // Determine which outfit to show
+  const outfits = message.outfits && message.outfits.length > 0
+    ? message.outfits
+    : (message.outfit ? [message.outfit] : []);
+
+  const activeOutfit = outfits[activeOutfitIndex];
+
+  // Reset active index if message changes (though usually message prop is stable for a given ID)
+  useEffect(() => {
+    setActiveOutfitIndex(0);
+  }, [message.id]);
+
   // Track previous loading state to detect completion
   const prevIsLoadingRef = useRef(isLoadingExplanation);
 
   useEffect(() => {
-    // If we were loading and now we're not, and we have an explanation, show it
-    if (prevIsLoadingRef.current && !isLoadingExplanation && message.outfit?.explanation) {
+    // If we were loading and now we're not, and we have an explanation for the active outfit, show it
+    if (prevIsLoadingRef.current && !isLoadingExplanation && activeOutfit?.explanation) {
       setShowExplanation(true);
     }
     prevIsLoadingRef.current = isLoadingExplanation;
-  }, [isLoadingExplanation, message.outfit?.explanation]);
+  }, [isLoadingExplanation, activeOutfit?.explanation]);
 
   // Copy message to clipboard
   const handleCopy = async () => {
@@ -169,18 +182,18 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
 
   // Handle explanation toggle
   const handleExplainClick = () => {
-    if (message.outfit?.explanation) {
+    if (activeOutfit?.explanation) {
       setShowExplanation(!showExplanation);
-    } else {
-      onExplainOutfit(message.id);
+    } else if (activeOutfit) {
+      onExplainOutfit(message.id, activeOutfit.id);
     }
   };
 
   // Calculate total price for outfit
-  const totalPrice = message.outfit?.items.reduce((sum, item) => sum + item.price, 0) || 0;
+  const totalPrice = activeOutfit?.items.reduce((sum, item) => sum + item.price, 0) || 0;
 
   const handleShopAll = () => {
-    const itemsWithLinks = message.outfit?.items.filter(item => item.link) || [];
+    const itemsWithLinks = activeOutfit?.items.filter(item => item.link) || [];
 
     // Open all links simultaneously
     itemsWithLinks.forEach((item) => {
@@ -206,7 +219,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
 
       <div className={`flex-1 min-w-0 max-w-3xl relative group`}>
         {/* Text content */}
-        {!message.outfit ? (
+        {!activeOutfit ? (
           <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl rounded-tl-none px-5 py-4 shadow-sm max-w-lg relative">
             <div className="prose prose-sm max-w-none dark:prose-invert">
               <ReactMarkdown>{message.content}</ReactMarkdown>
@@ -236,6 +249,31 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
               </div>
             </div>
 
+            {/* Multiple Outfits Tabs */}
+            {outfits.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                {outfits.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setActiveOutfitIndex(index);
+                      setSelectedProductIndex(null); // Reset selected product when switching outfits
+                      setShowExplanation(false); // Hide explanation when switching
+                    }}
+                    className={`
+                      px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
+                      ${activeOutfitIndex === index
+                        ? 'bg-primary text-white shadow-md'
+                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }
+                    `}
+                  >
+                    Option {index + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Outfit card with products */}
             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-lg shadow-gray-100/50 dark:shadow-black/20 w-full">
               {/* Outfit Header & Gallery Toggle */}
@@ -243,7 +281,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-primary rounded-full"></div>
                   <h3 className="text-sm font-bold text-gray-800 dark:text-white uppercase tracking-wide">
-                    Recommended Outfit
+                    {outfits.length > 1 ? `Recommended Outfit #${activeOutfitIndex + 1}` : 'Recommended Outfit'}
                   </h3>
                 </div>
                 <button
@@ -258,7 +296,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
 
               {/* Product Cards - Responsive Grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
-                {message.outfit.items.map((item, index) => (
+                {activeOutfit.items.map((item, index) => (
                   <ProductCard
                     key={item.id}
                     item={item}
@@ -288,7 +326,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
               <ProductCarousel
                 isOpen={selectedProductIndex !== null}
                 onClose={() => setSelectedProductIndex(null)}
-                items={message.outfit.items}
+                items={activeOutfit.items}
                 initialIndex={selectedProductIndex || 0}
               />
 
@@ -298,7 +336,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
                   variant="outline"
                   size="sm"
                   onClick={handleExplainClick}
-                  disabled={isLoadingExplanation && !message.outfit.explanation}
+                  disabled={isLoadingExplanation && !activeOutfit.explanation}
                   className={`
                     transition-all duration-200 rounded-full px-4 py-2 font-semibold text-sm flex items-center gap-2 cursor-pointer hover:scale-105
                     ${showExplanation
@@ -308,7 +346,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
                   `}
                   aria-label={showExplanation ? "Hide explanation" : "Explain this outfit"}
                 >
-                  {isLoadingExplanation && !message.outfit.explanation ? (
+                  {isLoadingExplanation && !activeOutfit.explanation ? (
                     <>
                       <span>Generating</span>
                       <div className="flex gap-1">
@@ -325,7 +363,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
 
               {/* Explanation - Show if it exists and is toggled on */}
               <OutfitExplanation
-                explanation={message.outfit.explanation || ''}
+                explanation={activeOutfit.explanation || ''}
                 isVisible={showExplanation}
               />
             </div>

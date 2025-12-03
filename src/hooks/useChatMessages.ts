@@ -225,7 +225,8 @@ export const useChatMessages = () => {
         role: 'assistant',
         content: outfitData.message,
         timestamp: new Date(),
-        // Only include outfit if it's a COMPLETED response with items
+        // Include outfits if available
+        outfits: outfitData.outfits,
         outfit: outfitData.hasOutfit && outfitData.items.length > 0 ? {
           id: `outfit-${Date.now()}`,
           items: outfitData.items,
@@ -322,15 +323,25 @@ export const useChatMessages = () => {
     await sendMessage(originalMessage, originalImage, filters);
   };
 
-  const explainOutfit = async (messageId: string) => {
+  const explainOutfit = async (messageId: string, outfitId?: string) => {
     // Find the message
     const messageIndex = messages.findIndex((m) => m.id === messageId);
-    if (messageIndex === -1 || !messages[messageIndex].outfit) return;
+    if (messageIndex === -1) return;
+
+    const message = messages[messageIndex];
+    let targetOutfit = message.outfit;
+
+    // If outfitId is provided, try to find it in the outfits list
+    if (outfitId && message.outfits) {
+      targetOutfit = message.outfits.find(o => o.id === outfitId);
+    }
+
+    if (!targetOutfit) return;
 
     // Check if explanation already exists
-    if (messages[messageIndex].outfit.explanation) return;
+    if (targetOutfit.explanation) return;
 
-    setLoadingExplanationId(messageId);
+    setLoadingExplanationId(messageId); // We might want to track this per outfit ID in the future
     const loadingToastId = showToast.loading('Generating explanation...');
 
     try {
@@ -367,7 +378,7 @@ export const useChatMessages = () => {
       // Wait, backend `generate_explanation_only` expects `outfit_data` which is `List[Dict[str, Any]]`.
       // `explain_selected_outfit` uses this data.
       // Let's pass the items with their names/descriptions.
-      const outfitData = messages[messageIndex].outfit.items.map(item => ({
+      const outfitData = targetOutfit.items.map(item => ({
         category: item.category || 'unknown', // Frontend might not have category perfectly mapped
         description: item.name, // Use name as description
         brand: item.brand,
@@ -380,13 +391,27 @@ export const useChatMessages = () => {
       setMessages((prev) => {
         const updated = [...prev];
         const idx = updated.findIndex((m) => m.id === messageId);
-        if (idx !== -1 && updated[idx].outfit) {
+        if (idx !== -1) {
+          const msg = updated[idx];
+
+          // Update specific outfit in outfits list if it exists
+          let updatedOutfits = msg.outfits;
+          if (updatedOutfits && outfitId) {
+            updatedOutfits = updatedOutfits.map(o =>
+              o.id === outfitId ? { ...o, explanation } : o
+            );
+          }
+
+          // Update legacy outfit if it matches or if we just updated the main one
+          let updatedOutfit = msg.outfit;
+          if (updatedOutfit && (!outfitId || updatedOutfit.id === outfitId)) {
+            updatedOutfit = { ...updatedOutfit, explanation };
+          }
+
           updated[idx] = {
-            ...updated[idx],
-            outfit: {
-              ...updated[idx].outfit!,
-              explanation: explanation
-            }
+            ...msg,
+            outfits: updatedOutfits,
+            outfit: updatedOutfit
           };
         }
         // Update cache

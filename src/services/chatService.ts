@@ -27,8 +27,17 @@ interface BackendOutfitItem {
 // New response status types from backend
 type ResponseStatus = 'AWAITING_INPUT' | 'Guardrail' | 'COMPLETED';
 
-interface BackendOutfitResponse {
+interface BackendOutfitResult {
   outfit: BackendOutfitItem[];
+  cost: number;
+  remaining_budget: number;
+  message: string;
+  explanation?: string;
+}
+
+interface BackendOutfitResponse {
+  outfit?: BackendOutfitItem[]; // Legacy support
+  outfits?: BackendOutfitResult[]; // New multiple outfits support
   message: string;
   explanation?: string;
 }
@@ -49,7 +58,7 @@ interface BackendMessage {
   image_id?: string | null;
   explanation?: string;
   outfit?: BackendOutfitItem[];
-  outfits?: BackendOutfitItem[]; // Backend sometimes sends 'outfits' instead of 'outfit'
+  outfits?: BackendOutfitResult[]; // Backend sends 'outfits' list for multiple options
   created_at?: string;  // Backend uses 'created_at', not 'timestamp'
 }
 
@@ -151,9 +160,10 @@ export const chatService = {
 
     const seenIds = new Set<string>();
     const parsedMessages = response.data.map((msg, index) => {
-      const messageType = msg.type ?? 0; // Default to 0 (outfit) if not provided
-      const outfitData = msg.outfit || msg.outfits;
-      const hasOutfit = messageType === 0 && outfitData && outfitData.length > 0;
+
+      // Handle new multiple outfits structure
+      const outfitsData = msg.outfits;
+      const singleOutfitData = msg.outfit;
 
       let id = msg.message_id?.toString() || `msg-${index}-${Date.now()}`;
       if (seenIds.has(id)) {
@@ -161,18 +171,35 @@ export const chatService = {
       }
       seenIds.add(id);
 
+      let processedOutfits = undefined;
+
+      if (outfitsData && outfitsData.length > 0) {
+        processedOutfits = outfitsData.map((outfitResult, idx) => ({
+          id: `outfit-${id}-${idx}`,
+          items: transformOutfitItems(outfitResult.outfit),
+          totalPrice: outfitResult.cost || calculateTotalPrice(outfitResult.outfit),
+          explanation: outfitResult.explanation || msg.explanation,
+        }));
+      } else if (singleOutfitData && singleOutfitData.length > 0) {
+        // Legacy fallback
+        processedOutfits = [{
+          id: `outfit-${id}`,
+          items: transformOutfitItems(singleOutfitData),
+          totalPrice: calculateTotalPrice(singleOutfitData),
+          explanation: msg.explanation,
+        }];
+      }
+
       return {
         id,
         role: msg.role === 'model' ? 'assistant' as const : 'user' as const,
         content: msg.text,  // Backend uses 'text'
         timestamp: msg.created_at ? new Date(msg.created_at) : new Date(),  // Backend uses 'created_at'
         imageUrl: msg.image_id || undefined,
-        outfit: hasOutfit ? {
-          id: `outfit-${id}`, // Use message ID to ensure outfit ID is also unique and related
-          items: transformOutfitItems(outfitData!),
-          totalPrice: calculateTotalPrice(outfitData!),
-          explanation: msg.explanation,
-        } : undefined,
+        outfits: processedOutfits,
+        // Keep legacy outfit property for backward compatibility if needed, 
+        // but UI should prefer 'outfits'
+        outfit: processedOutfits ? processedOutfits[0] : undefined,
       };
     });
 
@@ -214,27 +241,58 @@ export const chatService = {
   // Transform backend response to frontend ChatMessage format
   // Status: COMPLETED = outfit response, AWAITING_INPUT = needs more info, Guardrail = blocked
   transformOutfitResponse: (backendResponse: BackendOutfitResponse, status: ResponseStatus) => {
-    const hasOutfit = backendResponse.outfit && backendResponse.outfit.length > 0;
+    // Check for multiple outfits first
+    if (backendResponse.outfits && backendResponse.outfits.length > 0) {
+      const outfits = backendResponse.outfits.map((outfitResult, idx) => ({
+        id: `outfit-${Date.now()}-${idx}`,
+        items: transformOutfitItems(outfitResult.outfit),
+        totalPrice: outfitResult.cost,
+        explanation: outfitResult.explanation || backendResponse.explanation,
+      }));
 
-    // AWAITING_INPUT or Guardrail: No outfit, just message
-    if (status !== 'COMPLETED' || !hasOutfit) {
       return {
         status,
-        hasOutfit: false,
+        hasOutfit: true,
+        outfits,
+        // Legacy support
+        items: outfits[0].items,
+        totalPrice: outfits[0].totalPrice,
+        explanation: outfits[0].explanation,
         message: backendResponse.message,
-        items: [],
-        totalPrice: 0,
-        explanation: '',
       };
     }
 
-    // COMPLETED with outfit
+    // Fallback to single outfit (legacy)
+    const legacyOutfit = backendResponse.outfit;
+    if (legacyOutfit && legacyOutfit.length > 0) {
+      const items = transformOutfitItems(legacyOutfit);
+      const totalPrice = calculateTotalPrice(legacyOutfit);
+      const explanation = backendResponse.explanation || '';
+
+      return {
+        status,
+        hasOutfit: true,
+        outfits: [{
+          id: `outfit-${Date.now()}`,
+          items,
+          totalPrice,
+          explanation
+        }],
+        items,
+        totalPrice,
+        explanation,
+        message: backendResponse.message,
+      };
+    }
+
+    // No outfit found
     return {
       status,
-      hasOutfit: true,
-      items: transformOutfitItems(backendResponse.outfit || []),
-      totalPrice: calculateTotalPrice(backendResponse.outfit || []),
-      explanation: backendResponse.explanation || '',
+      hasOutfit: false,
+      outfits: [],
+      items: [],
+      totalPrice: 0,
+      explanation: '',
       message: backendResponse.message,
     };
   },
