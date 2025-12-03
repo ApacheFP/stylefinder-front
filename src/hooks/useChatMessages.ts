@@ -42,6 +42,21 @@ const getErrorDetails = (error: unknown): { title: string; message: string } => 
           message: 'Please wait a moment before trying again.',
         };
       case 500:
+        // Check if this is a "no results" case, not a real server error
+        if (serverMessage && (
+          serverMessage.toLowerCase().includes('no candidates') ||
+          serverMessage.toLowerCase().includes('no matching products') ||
+          serverMessage.toLowerCase().includes('failed to find candidates') ||
+          serverMessage.toLowerCase().includes('could not find matching') ||
+          serverMessage.toLowerCase().includes('retrieval failed') ||
+          serverMessage.toLowerCase().includes('cannot form a full outfit') ||
+          serverMessage.toLowerCase().includes('cannot proceed with knapsack')
+        )) {
+          return {
+            title: 'No Results Found',
+            message: 'We couldn\'t find products matching your criteria. Try adjusting your preferences or broadening your request.',
+          };
+        }
         return {
           title: 'Server Error',
           message: 'Something went wrong on our end. Please try again later.',

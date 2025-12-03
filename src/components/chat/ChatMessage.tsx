@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Maximize2, ShoppingBag, AlertTriangle, RefreshCw, Copy, Check, Sparkles, User } from 'lucide-react';
+import { Maximize2, ShoppingBag, AlertTriangle, RefreshCw, Copy, Check, Sparkles, User, Search } from 'lucide-react';
 import type { ChatMessage as ChatMessageType } from '../../types';
 import ReactMarkdown from 'react-markdown';
 import ProductCard from '../ui/ProductCard';
@@ -48,6 +48,46 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
 
     const errorTitle = message.errorDetails?.errorTitle || 'Something went wrong';
     const errorMsg = message.errorDetails?.errorMessage || 'We couldn\'t process your request. Please try again.';
+    
+    // Check if this is a "no results" info message (not a real error)
+    const isNoResults = errorTitle === 'No Results Found';
+
+    if (isNoResults) {
+      // Show as informational message, not as error
+      return (
+        <motion.div
+          className="flex justify-start mb-6"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          role="status"
+          aria-label="No results message"
+        >
+          <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 mt-1 mr-3">
+            <Search className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          </div>
+
+          <div className="max-w-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl rounded-tl-none px-5 py-4 shadow-sm">
+            <h4 className="font-roboto font-bold text-amber-700 dark:text-amber-400 mb-1">
+              {errorTitle}
+            </h4>
+            <p className="font-inter text-sm text-amber-600 dark:text-amber-300 mb-3">
+              {errorMsg}
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRetry}
+              disabled={isRetrying}
+              className="border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
+              {isRetrying ? 'Searching...' : 'Try Different Request'}
+            </Button>
+          </div>
+        </motion.div>
+      );
+    }
 
     return (
       <motion.div
@@ -76,7 +116,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
             disabled={isRetrying}
             className="border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 gap-2"
           >
-            <RefreshCw className={`w - 4 h - 4 ${isRetrying ? 'animate-spin' : ''} `} />
+            <RefreshCw className={`w-4 h-4 ${isRetrying ? 'animate-spin' : ''}`} />
             {isRetrying ? 'Retrying...' : 'Try Again'}
           </Button>
         </div>
