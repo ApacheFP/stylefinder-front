@@ -42,10 +42,21 @@ export const preferencesService = {
 
       // If it's an array, convert to Record
       if (Array.isArray(prefsData)) {
-        return prefsData.reduce((acc, pref) => {
+        prefsData = prefsData.reduce((acc, pref) => {
           acc[pref.id] = pref;
           return acc;
         }, {} as AllPreferencesResponse);
+      }
+
+      // Assicurati che "Genere" esista sempre (id=4)
+      const hasGenere = Object.values(prefsData).some(
+        (p: any) => p.name === 'Genere' || p.name === 'gender'
+      );
+      if (!hasGenere) {
+        prefsData[4] = {
+          name: 'Genere',
+          values: ['male', 'female', 'non-binary']
+        };
       }
 
       return prefsData;

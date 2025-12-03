@@ -41,7 +41,13 @@ const PreferencesPage = () => {
           preferencesService.getAllPreferences()
         ]);
         if (existingPrefs) {
-          setPreferences(existingPrefs);
+          // Mappa "gender" → "Genere" per allinearlo con allPreferences
+          const mappedPrefs = { ...existingPrefs };
+          if (mappedPrefs['gender'] && !mappedPrefs['Genere']) {
+            mappedPrefs['Genere'] = mappedPrefs['gender'];
+            delete mappedPrefs['gender'];
+          }
+          setPreferences(mappedPrefs);
         }
         setAllPreferences(allPrefs);
       } catch (error) {
@@ -92,7 +98,22 @@ const PreferencesPage = () => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      const success = await preferencesService.updatePreferences(preferences);
+      // Costruisci l'oggetto completo con TUTTE le preferenze disponibili
+      // Se una preferenza non è selezionata, manda stringa vuota per cancellarla
+      const completePreferences: Record<string, string> = {};
+      
+      Object.values(allPreferences).forEach((pref) => {
+        completePreferences[pref.name] = preferences[pref.name] || '';
+      });
+
+      // Il backend richiede sempre "gender" (non "Genere")
+      // Mappa il valore da qualsiasi variante e assicurati che sia presente
+      const genderValue = preferences['gender'] || preferences['Genere'] || completePreferences['Genere'] || '';
+      completePreferences['gender'] = genderValue;
+      // Rimuovi "Genere" se esiste (il backend usa "gender")
+      delete completePreferences['Genere'];
+
+      const success = await preferencesService.updatePreferences(completePreferences);
       if (success) {
         triggerSuccessConfetti();
         showToast.success('Preferences saved!');
