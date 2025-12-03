@@ -244,15 +244,15 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
               {/* Explain Button */}
               <div className="flex justify-start">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={handleExplainClick}
                   disabled={isLoadingExplanation && !message.outfit.explanation}
                   className={`
-                    transition-all duration-300 border rounded-full px-4 py-1.5 font-medium text-xs flex items-center gap-2 group
+                    transition-all duration-200 rounded-full px-4 py-2 font-semibold text-sm flex items-center gap-2 cursor-pointer hover:scale-105
                     ${showExplanation
-                      ? 'bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:text-primary-light dark:border-primary/30'
-                      : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-primary/30 hover:text-primary dark:hover:text-primary-light hover:bg-primary/5 dark:hover:bg-primary/10'
+                      ? 'bg-primary text-white border-primary hover:bg-primary-hover'
+                      : 'text-primary dark:text-primary-light border-primary/50 hover:bg-primary/10 dark:hover:bg-primary/20'
                     }
                   `}
                   aria-label={showExplanation ? "Hide explanation" : "Explain this outfit"}
@@ -261,15 +261,13 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
                     <>
                       <span>Generating</span>
                       <div className="flex gap-1">
-                        <div className="w-1 h-1 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <div className="w-1 h-1 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <div className="w-1 h-1 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
                     </>
                   ) : (
-                    <>
-                      <span>{showExplanation ? 'Hide Explanation' : 'Explain this outfit'}</span>
-                    </>
+                    <span>{showExplanation ? 'Hide Explanation' : 'Why this outfit?'}</span>
                   )}
                 </Button>
               </div>
