@@ -38,6 +38,8 @@ export const useImageUpload = (fileReaderFactory = () => new FileReader()) => {
     if (file) {
       validateAndSetImage(file);
     }
+    // Reset the input value so the same file can be selected again if needed
+    event.target.value = '';
   };
 
   const handleRemoveImage = () => {
