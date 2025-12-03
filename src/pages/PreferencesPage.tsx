@@ -102,16 +102,35 @@ const PreferencesPage = () => {
       // Se una preferenza non è selezionata, manda stringa vuota per cancellarla
       const completePreferences: Record<string, string> = {};
       
+      // Prima, aggiungi tutte le preferenze esistenti dallo stato attuale
+      // Questo preserva i valori che l'utente ha già settato
+      Object.entries(preferences).forEach(([key, value]) => {
+        // Normalizza i nomi delle chiavi (ignora Genere, verrà gestito separatamente)
+        if (key !== 'Genere') {
+          completePreferences[key] = value;
+        }
+      });
+      
+      // Poi, assicurati che tutte le preferenze disponibili siano presenti
+      // Se non esistono nello stato, manda stringa vuota per cancellarle
       Object.values(allPreferences).forEach((pref) => {
-        completePreferences[pref.name] = preferences[pref.name] || '';
+        // Salta "Genere" perché verrà mappato a "gender"
+        if (pref.name === 'Genere') return;
+        
+        // Se la preferenza non è già stata aggiunta, aggiungi con valore corrente o vuoto
+        if (!(pref.name in completePreferences)) {
+          completePreferences[pref.name] = preferences[pref.name] || '';
+        }
       });
 
       // Il backend richiede sempre "gender" (non "Genere")
       // Mappa il valore da qualsiasi variante e assicurati che sia presente
-      const genderValue = preferences['gender'] || preferences['Genere'] || completePreferences['Genere'] || '';
+      const genderValue = preferences['Genere'] || preferences['gender'] || '';
       completePreferences['gender'] = genderValue;
-      // Rimuovi "Genere" se esiste (il backend usa "gender")
-      delete completePreferences['Genere'];
+
+      // Debug: log delle preferenze che verranno inviate
+      console.log('Preferences state before save:', preferences);
+      console.log('Complete preferences to send:', completePreferences);
 
       const success = await preferencesService.updatePreferences(completePreferences);
       if (success) {
