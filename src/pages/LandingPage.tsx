@@ -1,11 +1,19 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Sparkles, MessageSquare, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../components/ui/Button';
 import ParticleBackground from '../components/ui/ParticleBackground';
 import { staggerContainer, fadeInUp, staggerItem } from '../utils/animations';
+import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Se l'utente è già autenticato, redirect a /chat
+  if (!isLoading && isAuthenticated) {
+    return <Navigate to="/chat" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Particle Background */}
