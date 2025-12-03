@@ -4,12 +4,14 @@ import { User, Lock, Save, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
+import { chatService } from '../services/chatService';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import { showToast } from '../utils/toast';
 import { fadeInUp } from '../utils/animations';
 import ProfileSkeleton from '../components/ui/ProfileSkeleton';
 import DeleteAccountModal from '../components/ui/DeleteAccountModal';
+import DeleteAllChatsModal from '../components/ui/DeleteAllChatsModal';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -18,6 +20,8 @@ const ProfilePage = () => {
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isDeleteChatsModalOpen, setIsDeleteChatsModalOpen] = useState(false);
+    const [isDeletingChats, setIsDeletingChats] = useState(false);
     const [name, setName] = useState(user?.name || '');
 
     // Update local state when user data loads
@@ -93,6 +97,21 @@ const ProfilePage = () => {
         } catch {
             showToast.error('Failed to delete account');
             setIsDeleting(false);
+        }
+    };
+
+    const handleDeleteAllChats = async () => {
+        setIsDeletingChats(true);
+        try {
+            const result = await chatService.deleteAllConversations();
+            if (result.success) {
+                showToast.success(`${result.deletedCount} conversation${result.deletedCount !== 1 ? 's' : ''} deleted`);
+            }
+            setIsDeleteChatsModalOpen(false);
+        } catch {
+            showToast.error('Failed to delete chats');
+        } finally {
+            setIsDeletingChats(false);
         }
     };
 
@@ -258,6 +277,32 @@ const ProfilePage = () => {
                         </form>
                     </motion.div>
 
+                    {/* Delete All Chats Section - Modern & Minimalist */}
+                    <motion.div
+                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        <div className="group flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-orange-50/50 dark:hover:bg-orange-900/10 border border-transparent hover:border-orange-100 dark:hover:border-orange-900/30">
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-orange-700 dark:group-hover:text-orange-400 transition-colors">
+                                    Delete All Conversations
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Permanently remove all your chat history and conversations.
+                                </p>
+                            </div>
+                            <Button
+                                onClick={() => setIsDeleteChatsModalOpen(true)}
+                                variant="outline"
+                                className="text-orange-600 border-orange-200 bg-orange-50 hover:bg-orange-100 hover:text-orange-700 hover:border-orange-300 dark:bg-orange-900/20 dark:border-orange-900/50 dark:text-orange-400 dark:hover:bg-orange-900/30 transition-all duration-300"
+                            >
+                                Delete All Chats
+                            </Button>
+                        </div>
+                    </motion.div>
+
                     {/* Delete Account Section - Modern & Minimalist */}
                     <motion.div
                         className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
@@ -292,6 +337,14 @@ const ProfilePage = () => {
                 onClose={() => setIsDeleteModalOpen(false)}
                 onConfirm={handleDeleteAccount}
                 isDeleting={isDeleting}
+            />
+
+            {/* Delete All Chats Confirmation Modal */}
+            <DeleteAllChatsModal
+                isOpen={isDeleteChatsModalOpen}
+                onClose={() => setIsDeleteChatsModalOpen(false)}
+                onConfirm={handleDeleteAllChats}
+                isDeleting={isDeletingChats}
             />
         </div>
     );

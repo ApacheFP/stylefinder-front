@@ -193,6 +193,15 @@ export const chatService = {
     return response.data.success;
   },
 
+  // Delete all conversations for the current user
+  deleteAllConversations: async (): Promise<{ success: boolean; deletedCount: number }> => {
+    const response = await api.delete<{ success: boolean; deleted_count: number }>('/conversations/delete-all');
+    return {
+      success: response.data.success,
+      deletedCount: response.data.deleted_count,
+    };
+  },
+
   // Transform backend response to frontend ChatMessage format
   // Status: COMPLETED = outfit response, AWAITING_INPUT = needs more info, Guardrail = blocked
   transformOutfitResponse: (backendResponse: BackendOutfitResponse, status: ResponseStatus) => {
