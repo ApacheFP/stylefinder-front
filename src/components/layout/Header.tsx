@@ -1,51 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, Settings, User as UserIcon, Wifi, WifiOff, Server } from 'lucide-react';
+import { LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 import ThemeToggle from '../ui/ThemeToggle';
-import api from '../../services/api';
 
 function beautifyUsername(name: string) {
   const lower = name.trim().toLowerCase();
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
-type ServerStatus = 'checking' | 'online' | 'offline';
-
 const Header = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [serverStatus, setServerStatus] = useState<ServerStatus>('checking');
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
   let userName = user?.name || ""
   userName = beautifyUsername(userName)
-
-  const isDev = import.meta.env.DEV;
-
-  // Check server status
-  useEffect(() => {
-    if (!isDev) return;
-
-    const checkServerStatus = async () => {
-      try {
-        await api.get('/health', { timeout: 5000 });
-        setServerStatus('online');
-      } catch {
-        try {
-          await api.get('/conversations', { timeout: 5000 });
-          setServerStatus('online');
-        } catch {
-          setServerStatus('offline');
-        }
-      }
-    };
-
-    checkServerStatus();
-    const interval = setInterval(checkServerStatus, 30000);
-    return () => clearInterval(interval);
-  }, [isDev]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -77,30 +48,6 @@ const Header = () => {
           StyleFinder AI
         </h1>
       </Link>
-
-      {/* Server Status Indicator - Center (Dev Only) */}
-      {isDev && (
-        <div className="hidden sm:flex items-center gap-2">
-          {serverStatus === 'checking' && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700">
-              <Server className="w-3.5 h-3.5 text-yellow-500 animate-pulse" />
-              <span className="text-[11px] font-medium text-yellow-600 dark:text-yellow-400">Backend Server: Checking...</span>
-            </div>
-          )}
-          {serverStatus === 'online' && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700">
-              <Wifi className="w-3.5 h-3.5 text-green-500" />
-              <span className="text-[11px] font-medium text-green-600 dark:text-green-400">Backend Server: Online</span>
-            </div>
-          )}
-          {serverStatus === 'offline' && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700">
-              <WifiOff className="w-3.5 h-3.5 text-red-500" />
-              <span className="text-[11px] font-medium text-red-600 dark:text-red-400">Backend Server: Offline</span>
-            </div>
-          )}
-        </div>
-      )}
 
       <div className="flex items-center gap-2 md:gap-4">
         <ThemeToggle size="sm" />

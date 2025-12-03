@@ -25,7 +25,7 @@ const ChatPage = () => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
   // Auth context
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
   const isLoggedIn = isAuthenticated;
   let userName = user?.name || 'Guest';
   userName = beautifyUsername(userName);
@@ -65,8 +65,13 @@ const ChatPage = () => {
   // Sidebar state for mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Load chat history on mount (only if authenticated)
+  // Load chat history on mount (only if authenticated and auth check is complete)
   const loadChatHistory = useCallback(async () => {
+    // Wait for auth to finish loading
+    if (isAuthLoading) {
+      return;
+    }
+
     if (!isAuthenticated) {
       setChatHistory([]);
       setIsLoadingHistory(false);
@@ -83,7 +88,7 @@ const ChatPage = () => {
     } finally {
       setIsLoadingHistory(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isAuthLoading]);
 
   useEffect(() => {
     loadChatHistory();

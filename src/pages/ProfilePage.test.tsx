@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import ProfilePage from './ProfilePage';
-import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
 import { showToast } from '../utils/toast';
 
@@ -98,11 +97,14 @@ vi.mock('../context/AuthContext', () => ({
 import { useAuth } from '../context/AuthContext';
 
 describe('ProfilePage', () => {
+    const mockUpdateUser = vi.fn();
+
     beforeEach(() => {
         vi.clearAllMocks();
         (useAuth as any).mockReturnValue({
             user: mockUser,
             isLoading: false,
+            updateUser: mockUpdateUser,
         });
     });
 
@@ -110,6 +112,7 @@ describe('ProfilePage', () => {
         (useAuth as any).mockReturnValue({
             user: null,
             isLoading: true,
+            updateUser: mockUpdateUser,
         });
 
         renderWithAuth(<ProfilePage />);
@@ -120,6 +123,7 @@ describe('ProfilePage', () => {
         (useAuth as any).mockReturnValue({
             user: null,
             isLoading: false,
+            updateUser: mockUpdateUser,
         });
 
         renderWithAuth(<ProfilePage />);

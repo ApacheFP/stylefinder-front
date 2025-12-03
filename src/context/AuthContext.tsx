@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { User } from '../types';
 import { authService } from '../services/authService';
@@ -18,10 +18,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const authCheckedRef = useRef(false);
 
   // Check if user has an active session on mount
   useEffect(() => {
     const checkAuth = async () => {
+      // Prevent duplicate calls (React StrictMode in dev)
+      if (authCheckedRef.current) {
+        return;
+      }
+      authCheckedRef.current = true;
+
       try {
         // Try to get current user from session
         const userData = await authService.getCurrentUser();
