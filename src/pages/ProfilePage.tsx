@@ -15,7 +15,7 @@ import DeleteAllChatsModal from '../components/ui/DeleteAllChatsModal';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
-    const { user, isLoading: isAuthLoading } = useAuth();
+    const { user, isLoading: isAuthLoading, updateUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -42,7 +42,8 @@ const ProfilePage = () => {
         setIsUpdatingProfile(true);
 
         try {
-            await authService.updateProfile({ name });
+            const updatedUser = await authService.updateProfile({ name });
+            updateUser(updatedUser);
             showToast.success('Profile updated successfully');
         } catch {
             showToast.error('Failed to update profile');
