@@ -228,10 +228,8 @@ describe('ChatPage', () => {
     });
 
     it('sends message and clears input', () => {
-        // Mock sendMessage to call the callback
-        const sendMessageMock = vi.fn().mockImplementation((msg, img, id, cb) => {
-            cb();
-        });
+        // Mock sendMessage - note: ChatPage calls sendMessage(message, image) without a callback
+        const sendMessageMock = vi.fn();
         (useChatMessages as any).mockReturnValue({
             ...defaultChatMessages,
             sendMessage: sendMessageMock,
@@ -242,7 +240,6 @@ describe('ChatPage', () => {
         fireEvent.click(screen.getByText('Send'));
 
         expect(sendMessageMock).toHaveBeenCalled();
-        // We can't check setInputMessage directly, but we know callback was called.
     });
 
     it('toggles sidebar on hamburger click', () => {
