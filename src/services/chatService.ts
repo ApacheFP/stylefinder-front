@@ -122,6 +122,15 @@ export const chatService = {
     return response.data;
   },
 
+  // Generate explanation for an outfit
+  explainOutfit: async (userPrompt: string, outfitData: any[]): Promise<string> => {
+    const response = await api.post<{ success: boolean; explanation: string }>('/outfit/explain', {
+      user_prompt: userPrompt,
+      outfit_data: outfitData,
+    });
+    return response.data.explanation;
+  },
+
   // Get chat history (list of conversations)
   getChatHistory: async (): Promise<ChatHistory[]> => {
     const response = await api.get<{ success: boolean; conversations: BackendConversation[] }>('/conversations');

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Maximize2, ShoppingBag, AlertTriangle, RefreshCw, Copy, Check, Sparkles, User, Search } from 'lucide-react';
 import type { ChatMessage as ChatMessageType } from '../../types';
@@ -26,6 +26,17 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
   const [showActions, setShowActions] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
 
+  // Track previous loading state to detect completion
+  const prevIsLoadingRef = useRef(isLoadingExplanation);
+
+  useEffect(() => {
+    // If we were loading and now we're not, and we have an explanation, show it
+    if (prevIsLoadingRef.current && !isLoadingExplanation && message.outfit?.explanation) {
+      setShowExplanation(true);
+    }
+    prevIsLoadingRef.current = isLoadingExplanation;
+  }, [isLoadingExplanation, message.outfit?.explanation]);
+
   // Copy message to clipboard
   const handleCopy = async () => {
     try {
@@ -48,7 +59,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry }
 
     const errorTitle = message.errorDetails?.errorTitle || 'Something went wrong';
     const errorMsg = message.errorDetails?.errorMessage || 'We couldn\'t process your request. Please try again.';
-    
+
     // Check if this is a "no results" info message (not a real error)
     const isNoResults = errorTitle === 'No Results Found';
 

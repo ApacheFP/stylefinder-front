@@ -323,26 +323,89 @@ export const useChatMessages = () => {
   };
 
   const explainOutfit = async (messageId: string) => {
-    // The backend already returns explanation with the outfit
-    // This function now just reveals the existing explanation
+    // Find the message
+    const messageIndex = messages.findIndex((m) => m.id === messageId);
+    if (messageIndex === -1 || !messages[messageIndex].outfit) return;
+
+    // Check if explanation already exists
+    if (messages[messageIndex].outfit.explanation) return;
+
     setLoadingExplanationId(messageId);
+    const loadingToastId = showToast.loading('Generating explanation...');
 
-    const loadingToastId = showToast.loading('Loading explanation...');
+    try {
+      // Construct the full conversation history up to this point
+      // This ensures the backend understands context like budget, color refinements, etc.
+      let userPrompt = "";
 
-    // Simulate brief loading for UX
-    setTimeout(() => {
-      const messageIndex = messages.findIndex((m) => m.id === messageId);
-      if (messageIndex === -1 || !messages[messageIndex].outfit) {
-        showToast.dismiss(loadingToastId);
-        setLoadingExplanationId(null);
-        return;
+      // Iterate through messages up to the current one (exclusive of the current outfit message)
+      for (let i = 0; i < messageIndex; i++) {
+        const msg = messages[i];
+        const role = msg.role === 'user' ? 'User' : 'Assistant';
+        // Skip error messages or empty content
+        if (msg.isError || !msg.content) continue;
+
+        userPrompt += `${role}: ${msg.content}\n`;
       }
 
-      // Explanation is already in the outfit from backend
-      setLoadingExplanationId(null);
+      // Add a final instruction to be clear about what we want, although the backend prompt handles it.
+      // But passing the history as the "user_prompt" is the goal.
+      // We might want to append a specific request if the history doesn't end with a user question about this outfit
+      // (which it might not if there were intermediate steps).
+      // However, the backend logic `explain_selected_outfit` takes `user_prompt` and `retrieved_outfit`.
+      // It formats it as "*** USER REQUEST *** {user_prompt} *** OUTFIT RETRIEVED *** ...".
+      // So passing the history here is perfect.
+
+      if (!userPrompt) {
+        // Fallback if no history found (shouldn't happen usually)
+        userPrompt = "Please explain this outfit.";
+      }
+
+      // Prepare outfit data for backend
+      // We need to map frontend items back to a simple structure or just pass them as is if backend accepts
+      // Backend expects: { category: string, description: string } or similar?
+      // Wait, backend `generate_explanation_only` expects `outfit_data` which is `List[Dict[str, Any]]`.
+      // `explain_selected_outfit` uses this data.
+      // Let's pass the items with their names/descriptions.
+      const outfitData = messages[messageIndex].outfit.items.map(item => ({
+        category: item.category || 'unknown', // Frontend might not have category perfectly mapped
+        description: item.name, // Use name as description
+        brand: item.brand,
+        price: item.price
+      }));
+
+      const explanation = await chatService.explainOutfit(userPrompt, outfitData);
+
+      // Update message with explanation
+      setMessages((prev) => {
+        const updated = [...prev];
+        const idx = updated.findIndex((m) => m.id === messageId);
+        if (idx !== -1 && updated[idx].outfit) {
+          updated[idx] = {
+            ...updated[idx],
+            outfit: {
+              ...updated[idx].outfit!,
+              explanation: explanation
+            }
+          };
+        }
+        // Update cache
+        if (currentChatId) {
+          setMessageCache(cache => ({ ...cache, [currentChatId]: updated }));
+        }
+        return updated;
+      });
+
       showToast.dismiss(loadingToastId);
-      showToast.success('Explanation loaded!');
-    }, 500);
+      showToast.success('Explanation generated!');
+
+    } catch (error) {
+      console.error('Failed to generate explanation:', error);
+      showToast.dismiss(loadingToastId);
+      showToast.error('Failed to generate explanation');
+    } finally {
+      setLoadingExplanationId(null);
+    }
   };
 
   const clearMessages = () => {
