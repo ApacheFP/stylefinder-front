@@ -47,11 +47,9 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
     // If we were loading and now we're not, and we have an explanation for the active outfit, show it
     if (prevIsLoadingRef.current && !isLoadingExplanation && activeOutfit?.explanation) {
       setShowExplanation(true);
-      // Notify parent that content has changed (for scroll)
-      setTimeout(() => onContentChange?.(), 100);
     }
     prevIsLoadingRef.current = isLoadingExplanation;
-  }, [isLoadingExplanation, activeOutfit?.explanation, onContentChange]);
+  }, [isLoadingExplanation, activeOutfit?.explanation]);
 
   // Copy message to clipboard
   const handleCopy = async () => {
@@ -187,8 +185,6 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
   const handleExplainClick = () => {
     if (activeOutfit?.explanation) {
       setShowExplanation(!showExplanation);
-      // Notify parent that content has changed (for scroll)
-      setTimeout(() => onContentChange?.(), 100);
     } else if (activeOutfit) {
       onExplainOutfit(message.id, activeOutfit.id);
     }
@@ -370,6 +366,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
               <OutfitExplanation
                 explanation={activeOutfit.explanation || ''}
                 isVisible={showExplanation}
+                onAnimationComplete={onContentChange}
               />
             </div>
           </div>
