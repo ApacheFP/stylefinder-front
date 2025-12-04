@@ -43,8 +43,17 @@ const ChatPage = () => {
     sendMessage,
     retryMessage,
     explainOutfit,
-    clearMessages
+    clearMessages,
+    setOnNewMessage
   } = useChatMessages();
+
+  // Auto-scroll behavior
+  const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
+
+  // Set scroll callback after scrollToBottom is available
+  useEffect(() => {
+    setOnNewMessage(scrollToBottom);
+  }, [scrollToBottom, setOnNewMessage]);
 
   const {
     selectedImage,
@@ -58,9 +67,6 @@ const ChatPage = () => {
     handleDrop,
     clearImage,
   } = useImageUpload();
-
-  // Auto-scroll behavior
-  const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
 
   // Sidebar state for mobile
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -191,6 +197,9 @@ const ChatPage = () => {
     setInputMessage('');
     clearImage();
 
+    // Scroll to bottom when sending a message
+    scrollToBottom();
+
     sendMessage(messageToSend, imageToSend);
   };
 
@@ -299,6 +308,7 @@ const ChatPage = () => {
                     onExplainOutfit={explainOutfit}
                     isLoadingExplanation={loadingExplanationId === message.id}
                     onRetry={(msgId, originalMsg, originalImg) => retryMessage(msgId, originalMsg, originalImg)}
+                    onContentChange={scrollToBottom}
                   />
                 ))
               )}

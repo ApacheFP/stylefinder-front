@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import type { ChatMessage, OutfitFilters } from '../types';
 import { chatService } from '../services/chatService';
 import { showToast } from '../utils/toast';
@@ -102,8 +102,13 @@ export const useChatMessages = () => {
   const [currentChatTitle, setCurrentChatTitle] = useState<string | undefined>();
   const [loadingExplanationId, setLoadingExplanationId] = useState<string | null>(null);
   const [messageCache, setMessageCache] = useState<Record<string, ChatMessage[]>>({});
+  const onNewMessageRef = useRef<(() => void) | null>(null);
 
   const [isFetching, setIsFetching] = useState(false);
+
+  const setOnNewMessage = useCallback((callback: () => void) => {
+    onNewMessageRef.current = callback;
+  }, []);
 
   const loadChatMessages = async (chatId: string, preloadedMessages?: ChatMessage[]) => {
     setIsFetching(true);
@@ -244,6 +249,11 @@ export const useChatMessages = () => {
         return updated;
       });
 
+      // Scroll to bottom when receiving a message (with small delay to ensure DOM is updated)
+      setTimeout(() => {
+        onNewMessageRef.current?.();
+      }, 100);
+
       // Show appropriate toast based on response status
       if (outfitData.status === 'COMPLETED' && outfitData.hasOutfit) {
         showToast.success('Outfit recommendations ready!');
@@ -283,6 +293,11 @@ export const useChatMessages = () => {
         }
         return updated;
       });
+
+      // Scroll to bottom when error message is added (with small delay to ensure DOM is updated)
+      setTimeout(() => {
+        onNewMessageRef.current?.();
+      }, 100);
     } finally {
       setIsLoading(false);
       setLoadingStatus('');
@@ -342,7 +357,6 @@ export const useChatMessages = () => {
     if (targetOutfit.explanation) return;
 
     setLoadingExplanationId(messageId); // We might want to track this per outfit ID in the future
-    const loadingToastId = showToast.loading('Generating explanation...');
 
     try {
       // Construct the full conversation history up to this point
@@ -421,12 +435,15 @@ export const useChatMessages = () => {
         return updated;
       });
 
-      showToast.dismiss(loadingToastId);
+      // Scroll to bottom when explanation is generated (with small delay to ensure DOM is updated)
+      setTimeout(() => {
+        onNewMessageRef.current?.();
+      }, 100);
+
       showToast.success('Explanation generated!');
 
     } catch (error) {
       console.error('Failed to generate explanation:', error);
-      showToast.dismiss(loadingToastId);
       showToast.error('Failed to generate explanation');
     } finally {
       setLoadingExplanationId(null);
@@ -453,5 +470,6 @@ export const useChatMessages = () => {
     clearMessages,
     isFetching,
     setCurrentChatId,
+    setOnNewMessage,
   };
 };
