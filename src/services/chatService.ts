@@ -193,6 +193,7 @@ export const chatService = {
           id: `outfit-${id}-${idx}`,
           items: transformOutfitItems(outfitResult.outfit),
           totalPrice: outfitResult.cost || calculateTotalPrice(outfitResult.outfit),
+          remainingBudget: outfitResult.remaining_budget,
           explanation: outfitResult.explanation || msg.explanation,
         }));
       } else if (singleOutfitData && singleOutfitData.length > 0) {
@@ -262,6 +263,7 @@ export const chatService = {
         id: `outfit-${Date.now()}-${idx}`,
         items: transformOutfitItems(outfitResult.outfit),
         totalPrice: outfitResult.cost,
+        remainingBudget: outfitResult.remaining_budget,
         explanation: outfitResult.explanation || backendResponse.explanation,
       }));
 

@@ -42,6 +42,7 @@ export interface Outfit {
   id: string;
   items: OutfitItem[];
   totalPrice: number;
+  remainingBudget?: number;
   explanation?: string;
 }
 
