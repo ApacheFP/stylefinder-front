@@ -230,8 +230,13 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         className="space-y-4"
                     >
                         <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-light">
-                            Elevate your style with this premium piece from <span className="font-medium text-gray-900 dark:text-white">{currentItem.brand || 'our collection'}</span>. Designed for comfort and versatility, it's the perfect addition to your modern wardrobe.
+                            {currentItem.description || (
+                                <>
+                                    Elevate your style with this premium piece from <span className="font-medium text-gray-900 dark:text-white">{currentItem.brand || 'our collection'}</span>. Designed for comfort and versatility, it's the perfect addition to your modern wardrobe.
+                                </>
+                            )}
                         </p>
+
                     </motion.div>
                 </div>
 

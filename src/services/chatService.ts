@@ -25,6 +25,7 @@ interface BackendOutfitItem {
   category?: string;
   link?: string;
   availability?: boolean;
+  description?: string;
 }
 
 // New response status types from backend
@@ -102,7 +103,8 @@ const transformOutfitItems = (backendItems: BackendOutfitItem[]): OutfitItem[] =
       category: mapCategory(item.category || 'unknown'),
       brand: item.brand,
       link: item.url || item.link, // Handle both url and link properties
-      available: item.availability !== false // Default to true if undefined, or strictly check false
+      available: item.availability !== false, // Default to true if undefined, or strictly check false
+      description: item.description
     };
   });
 };
