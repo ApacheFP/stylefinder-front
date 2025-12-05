@@ -313,7 +313,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
                     <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Estimated Total</span>
                     <span className="text-xl font-bold text-gray-900 dark:text-white">${totalPrice.toFixed(2)}</span>
                   </div>
-                  {activeOutfit.remainingBudget !== undefined && (
+                  {activeOutfit.remainingBudget != null && (
                     <div className="flex flex-col border-l border-gray-200 dark:border-gray-600 pl-6">
                       <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Remaining Budget</span>
                       <span className={`text-xl font-bold ${activeOutfit.remainingBudget >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>

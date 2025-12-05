@@ -33,7 +33,7 @@ type ResponseStatus = 'AWAITING_INPUT' | 'Guardrail' | 'COMPLETED';
 interface BackendOutfitResult {
   outfit: BackendOutfitItem[];
   cost: number;
-  remaining_budget: number;
+  remaining_budget: number | null;
   message: string;
   explanation?: string;
 }
