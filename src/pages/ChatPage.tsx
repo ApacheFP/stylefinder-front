@@ -13,6 +13,7 @@ import ChatMessageSkeleton from '../components/chat/ChatMessageSkeleton';
 import ChatMessage from '../components/chat/ChatMessage';
 import ChatInput from '../components/chat/ChatInput';
 import DragDropOverlay from '../components/chat/DragDropOverlay';
+import GenderSelector from '../components/chat/GenderSelector';
 import TypingIndicator from '../components/ui/TypingIndicator';
 import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
 import KeyboardShortcutsHelper from '../components/ui/KeyboardShortcutsHelper';
@@ -20,10 +21,18 @@ import { chatService } from '../services/chatService';
 import { beautifyUsername } from '../utils/stringUtils';
 import type { ChatHistory } from '../types';
 
+type GuestGender = 'male' | 'female' | 'non-binary';
+
 const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  
+  // Guest gender for non-authenticated users (persisted in localStorage)
+  const [guestGender, setGuestGender] = useState<GuestGender | null>(() => {
+    const saved = localStorage.getItem('stylefinder_guest_gender');
+    return saved as GuestGender | null;
+  });
 
   // React Router hooks
   const { chatId } = useParams<{ chatId?: string }>();
@@ -35,7 +44,13 @@ const ChatPage = () => {
   let userName = user?.name || 'Guest';
   userName = beautifyUsername(userName);
 
-  // Custom hooks
+  // Handle guest gender selection
+  const handleGuestGenderSelect = (gender: GuestGender) => {
+    setGuestGender(gender);
+    localStorage.setItem('stylefinder_guest_gender', gender);
+  };
+
+  // Custom hooks - pass guestGender for non-authenticated users
   const {
     messages,
     isLoading,
@@ -53,7 +68,7 @@ const ChatPage = () => {
     selectOutfit,
     selectedOutfitIndex,
     selectedMessageId
-  } = useChatMessages();
+  } = useChatMessages(!isAuthenticated ? guestGender ?? undefined : undefined);
 
   // Auto-scroll behavior
   const { scrollRef, showScrollButton, scrollToBottom, scrollToBottomIfNotScrolledUp, handleScroll } = useScrollToBottom(messages.length);
@@ -109,23 +124,47 @@ const ChatPage = () => {
     loadChatHistory();
   }, [loadChatHistory]);
 
+  // Track the previous chatId from URL to detect actual navigation changes
+  const prevChatIdRef = useRef<string | undefined>(chatId);
+  
+  // Track if we're in a guest session with an active conversation
+  const guestSessionActiveRef = useRef(false);
+
   // Load conversation when chatId from URL changes
   useEffect(() => {
+    const prevChatId = prevChatIdRef.current;
+    prevChatIdRef.current = chatId;
+    
     // If there's a chatId in the URL and it's different from current
     if (chatId && chatId !== currentChatId) {
       setInputMessage('');
       clearImage();
+      guestSessionActiveRef.current = false;
       loadChatMessages(chatId).catch((error) => {
         console.error('Failed to load chat from URL:', error);
       });
+      return;
     }
+    
+    // Guest flow: if currentChatId is set but URL has no chatId
+    // Mark the session as active so we don't clear messages
+    if (!chatId && currentChatId && !isAuthenticated) {
+      guestSessionActiveRef.current = true;
+      return;
+    }
+    
     // If there's no chatId in URL but we have a currentChatId, reset to new chat state
-    if (!chatId && currentChatId) {
-      clearMessages();
-      setInputMessage('');
-      clearImage();
+    // This happens when user navigates back or to /chat directly
+    // BUT: Don't reset if this is an active guest session
+    if (!chatId && currentChatId && !guestSessionActiveRef.current) {
+      // Only reset if the URL actually changed (user navigated), not just a state update
+      if (prevChatId !== chatId || prevChatId === undefined) {
+        clearMessages();
+        setInputMessage('');
+        clearImage();
+      }
     }
-  }, [chatId, currentChatId, loadChatMessages, clearImage, clearMessages]);
+  }, [chatId, currentChatId, loadChatMessages, clearImage, clearMessages, isAuthenticated]);
 
   // Add new conversation to history when created
   useEffect(() => {
@@ -196,9 +235,15 @@ const ChatPage = () => {
   ]);
 
   const handleNewChat = () => {
+    guestSessionActiveRef.current = false;
     clearMessages();
     setInputMessage('');
     clearImage();
+    // Reset guest gender for a fresh start (optional: remove from localStorage too)
+    if (!isAuthenticated) {
+      setGuestGender(null);
+      localStorage.removeItem('stylefinder_guest_gender');
+    }
     navigate('/chat');
   };
 
@@ -283,6 +328,15 @@ const ChatPage = () => {
 
         <Header />
 
+        {/* Gender Selector for non-authenticated users */}
+        {!isAuthenticated && (
+          <GenderSelector
+            selectedGender={guestGender}
+            onSelectGender={handleGuestGenderSelect}
+            disabled={messages.length > 0}
+          />
+        )}
+
         {/* Messages Area */}
         <div
           ref={scrollRef}
@@ -344,6 +398,8 @@ const ChatPage = () => {
           onRemoveImage={handleRemoveImage}
           onSendMessage={handleSendMessage}
           isLoading={isLoading}
+          disabled={!isAuthenticated && !guestGender}
+          disabledMessage={!isAuthenticated && !guestGender ? "Please select your style preference above to start chatting" : undefined}
         />
 
         {/* Accessibility: Announce new messages to screen readers */}

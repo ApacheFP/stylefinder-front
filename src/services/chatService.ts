@@ -142,7 +142,8 @@ export const chatService = {
     convId?: string,
     imageFile?: File,
     selectedOutfitIndex?: number | null,
-    selectedMessageId?: string | null
+    selectedMessageId?: string | null,
+    guestGender?: string // Gender for non-authenticated users
   ): Promise<SendMessageResponse> => {
     // If there's an image, use FormData
     if (imageFile) {
@@ -158,7 +159,9 @@ export const chatService = {
       if (selectedMessageId) {
         formData.append('selected_message_id', selectedMessageId);
       }
-      // Note: filters are not used by current backend, but we include message
+      if (guestGender) {
+        formData.append('gender', guestGender);
+      }
 
       const response = await api.post<SendMessageResponse>('/messages/send', formData, {
         headers: {
@@ -173,7 +176,8 @@ export const chatService = {
       message,
       conv_id: convId,
       selected_outfit_index: selectedOutfitIndex,
-      selected_message_id: selectedMessageId
+      selected_message_id: selectedMessageId,
+      ...(guestGender && { gender: guestGender }),
     });
     return response.data;
   },

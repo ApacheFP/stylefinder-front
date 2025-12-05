@@ -11,6 +11,8 @@ interface ChatInputProps {
   onRemoveImage: () => void;
   onSendMessage: () => void;
   isLoading: boolean;
+  disabled?: boolean;
+  disabledMessage?: string;
 }
 
 const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
@@ -24,6 +26,8 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
       onRemoveImage,
       onSendMessage,
       isLoading,
+      disabled = false,
+      disabledMessage,
     },
     ref
   ) => {
@@ -99,7 +103,7 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
           </AnimatePresence>
 
           {/* Input Box */}
-          <div className="flex gap-3 items-end bg-cream-100 dark:bg-surface-darker border border-cream-400 dark:border-surface-border rounded-2xl shadow-sm hover:shadow-md transition-shadow p-2 pl-4 focus-within:ring-4 focus-within:ring-primary/20 focus-within:border-primary">
+          <div className={`flex gap-3 items-end bg-cream-100 dark:bg-surface-darker border border-cream-400 dark:border-surface-border rounded-2xl shadow-sm hover:shadow-md transition-shadow p-2 pl-4 focus-within:ring-4 focus-within:ring-primary/20 focus-within:border-primary ${disabled ? 'opacity-60' : ''}`}>
             <input
               type="file"
               ref={fileInputRef}
@@ -107,13 +111,15 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
               onChange={onImageSelect}
               className="hidden"
               aria-label="Upload image file"
+              disabled={disabled}
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="mb-2 text-primary/70 hover:text-primary transition-colors cursor-pointer p-1.5 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-full border border-primary/20 hover:border-primary/40"
+              className="mb-2 text-primary/70 hover:text-primary transition-colors cursor-pointer p-1.5 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-full border border-primary/20 hover:border-primary/40 disabled:opacity-50 disabled:cursor-not-allowed"
               title="Upload image"
               type="button"
               aria-label="Upload image"
+              disabled={disabled}
             >
               <Plus className="w-5 h-5" />
             </button>
@@ -132,8 +138,9 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                 }
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Describe your ideal outfit or upload a photo..."
+              placeholder={disabledMessage || "Describe your ideal outfit or upload a photo..."}
               rows={1}
+              disabled={disabled}
               className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-stone-500 bg-transparent resize-none scrollbar-hide placeholder-shimmer"
               style={{ 
                 minHeight: '44px', 
@@ -148,15 +155,15 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
 
             <motion.button
               onClick={onSendMessage}
-              disabled={(!inputMessage.trim() && !selectedImage) || isLoading}
+              disabled={disabled || (!inputMessage.trim() && !selectedImage) || isLoading}
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{
-                scale: (!inputMessage.trim() && !selectedImage) ? 0.8 : 1,
-                opacity: (!inputMessage.trim() && !selectedImage) ? 0.5 : 1
+                scale: (disabled || (!inputMessage.trim() && !selectedImage)) ? 0.8 : 1,
+                opacity: (disabled || (!inputMessage.trim() && !selectedImage)) ? 0.5 : 1
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`rounded-full w-10 h-10 p-0 flex items-center justify-center mb-1 transition-colors shadow-sm ${(!inputMessage.trim() && !selectedImage) || isLoading
+              whileHover={{ scale: disabled ? 1 : 1.05 }}
+              whileTap={{ scale: disabled ? 1 : 0.95 }}
+              className={`rounded-full w-10 h-10 p-0 flex items-center justify-center mb-1 transition-colors shadow-sm ${disabled || (!inputMessage.trim() && !selectedImage) || isLoading
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-primary text-white shadow-md hover:shadow-lg hover:bg-primary-hover'
                 }`}

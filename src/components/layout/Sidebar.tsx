@@ -389,7 +389,12 @@ const Sidebar = ({
         <div className="p-4">
           <Button
             onClick={() => {
-              navigate('/chat');
+              // Use the callback if provided, otherwise just navigate
+              if (onNewChat) {
+                onNewChat();
+              } else {
+                navigate('/chat');
+              }
               // Close sidebar on mobile after creating new chat
               if (window.innerWidth < 1024) {
                 onClose?.();

@@ -94,7 +94,7 @@ const getErrorDetails = (error: unknown): { title: string; message: string } => 
   };
 };
 
-export const useChatMessages = () => {
+export const useChatMessages = (guestGender?: string) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState<string>('');
@@ -108,6 +108,10 @@ export const useChatMessages = () => {
 
   const [selectedOutfitIndex, setSelectedOutfitIndex] = useState<number | null>(null);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+
+  // Store guestGender in a ref so it's always current
+  const guestGenderRef = useRef(guestGender);
+  guestGenderRef.current = guestGender;
 
   const setOnNewMessage = useCallback((callback: () => void) => {
     onNewMessageRef.current = callback;
@@ -210,7 +214,8 @@ export const useChatMessages = () => {
         currentChatId,
         imageFile,
         outfitIndexToSend,
-        messageIdToSend
+        messageIdToSend,
+        guestGenderRef.current // Pass guest gender for non-authenticated users
       );
 
       // Clear selection after sending
