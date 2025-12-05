@@ -217,8 +217,8 @@ describe('ChatMessage', () => {
             />
         );
 
-        fireEvent.click(screen.getByText('Explain this outfit'));
-        expect(mockOnExplainOutfit).toHaveBeenCalledWith('2');
+        fireEvent.click(screen.getByText('Why this outfit?'));
+        expect(mockOnExplainOutfit).toHaveBeenCalledWith('2', 'o1');
     });
 
     it('shows loading state for explanation', () => {
@@ -268,7 +268,7 @@ describe('ChatMessage', () => {
         );
 
         // First click to toggle visibility
-        fireEvent.click(screen.getByText('Explain this outfit'));
+        fireEvent.click(screen.getByText('Why this outfit?'));
 
         expect(screen.getByTestId('outfit-explanation')).toHaveTextContent('This looks great because...');
     });

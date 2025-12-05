@@ -35,7 +35,7 @@ describe('ChatInput', () => {
     it('renders correctly', () => {
         render(<ChatInput {...defaultProps} />);
 
-        expect(screen.getByPlaceholderText('Ask me for a style tip...')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Describe your ideal outfit or upload a photo...')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Upload image' })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Send message' })).toBeInTheDocument();
     });
@@ -43,7 +43,7 @@ describe('ChatInput', () => {
     it('updates input message on change', () => {
         render(<ChatInput {...defaultProps} />);
 
-        const textarea = screen.getByPlaceholderText('Ask me for a style tip...');
+        const textarea = screen.getByPlaceholderText('Describe your ideal outfit or upload a photo...');
         fireEvent.change(textarea, { target: { value: 'Hello' } });
 
         expect(defaultProps.setInputMessage).toHaveBeenCalledWith('Hello');
@@ -61,7 +61,7 @@ describe('ChatInput', () => {
     it('calls onSendMessage when Enter is pressed', () => {
         render(<ChatInput {...defaultProps} inputMessage="Hello" />);
 
-        const textarea = screen.getByPlaceholderText('Ask me for a style tip...');
+        const textarea = screen.getByPlaceholderText('Describe your ideal outfit or upload a photo...');
         fireEvent.keyDown(textarea, { key: 'Enter' });
 
         expect(defaultProps.onSendMessage).toHaveBeenCalled();
@@ -70,7 +70,7 @@ describe('ChatInput', () => {
     it('does not call onSendMessage when Shift+Enter is pressed', () => {
         render(<ChatInput {...defaultProps} inputMessage="Hello" />);
 
-        const textarea = screen.getByPlaceholderText('Ask me for a style tip...');
+        const textarea = screen.getByPlaceholderText('Describe your ideal outfit or upload a photo...');
         fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: true });
 
         expect(defaultProps.onSendMessage).not.toHaveBeenCalled();
@@ -162,7 +162,7 @@ describe('ChatInput', () => {
     it('auto-resizes textarea on input change', () => {
         const { rerender } = render(<ChatInput {...defaultProps} />);
 
-        const textarea = screen.getByPlaceholderText('Ask me for a style tip...');
+        const textarea = screen.getByPlaceholderText('Describe your ideal outfit or upload a photo...');
 
         // Mock scrollHeight
         Object.defineProperty(textarea, 'scrollHeight', { value: 100, configurable: true });

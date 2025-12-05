@@ -64,7 +64,8 @@ describe('preferencesService', () => {
     it('getAllPreferences handles array format', async () => {
         const mockPrefs = [
             { id: 1, name: 'Style' },
-            { id: 2, name: 'Color' }
+            { id: 2, name: 'Color' },
+            { id: 4, name: 'Genere', values: ['male', 'female'] } // Include Genere to prevent auto-add
         ];
         vi.spyOn(api, 'get').mockResolvedValue({
             data: { success: true, preferences: mockPrefs }
@@ -73,7 +74,7 @@ describe('preferencesService', () => {
         const result = await preferencesService.getAllPreferences();
 
         // Result is converted to Record
-        expect(Object.keys(result)).toHaveLength(2);
+        expect(Object.keys(result)).toHaveLength(3);
         expect(result['1']).toEqual({ id: 1, name: 'Style' });
     });
 
