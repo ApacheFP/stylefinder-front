@@ -55,6 +55,7 @@ export interface OutfitItem {
   brand?: string;
   link?: string;
   available?: boolean;
+  description?: string;
 }
 
 // Filter types
