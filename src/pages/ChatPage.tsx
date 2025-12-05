@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
 import { useImageUpload } from '../hooks/useImageUpload';
@@ -23,6 +24,10 @@ const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+
+  // React Router hooks
+  const { chatId } = useParams<{ chatId?: string }>();
+  const navigate = useNavigate();
 
   // Auth context
   const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
@@ -100,6 +105,19 @@ const ChatPage = () => {
     loadChatHistory();
   }, [loadChatHistory]);
 
+  // Load conversation when chatId from URL changes
+  useEffect(() => {
+    // If there's a chatId in the URL and it's different from current
+    if (chatId && chatId !== currentChatId) {
+      setInputMessage('');
+      clearImage();
+      loadChatMessages(chatId).catch((error) => {
+        console.error('Failed to load chat from URL:', error);
+      });
+    }
+    // Note: If chatId === currentChatId, we're already showing the right chat, so do nothing
+  }, [chatId, currentChatId, loadChatMessages, clearImage, navigate]);
+
   // Add new conversation to history when created
   useEffect(() => {
     if (currentChatId && currentChatTitle) {
@@ -172,21 +190,7 @@ const ChatPage = () => {
     clearMessages();
     setInputMessage('');
     clearImage();
-  };
-
-  const handleSelectChat = async (chatId: string) => {
-    // Don't reload if already on this chat
-    if (chatId === currentChatId) return;
-
-    setInputMessage('');
-    clearImage();
-
-    try {
-      await loadChatMessages(chatId);
-      console.log('Loaded chat:', chatId);
-    } catch (error) {
-      console.error('Failed to load chat:', error);
-    }
+    navigate('/chat');
   };
 
   const handleSendMessage = () => {
@@ -218,20 +222,6 @@ const ChatPage = () => {
         chatHistory={chatHistory}
         currentChatId={currentChatId}
         isLoadingHistory={isLoadingHistory}
-        onSelectChat={(chatId) => {
-          handleSelectChat(chatId);
-          // Close sidebar on mobile after selection
-          if (window.innerWidth < 1024) {
-            setIsSidebarOpen(false);
-          }
-        }}
-        onNewChat={() => {
-          handleNewChat();
-          // Close sidebar on mobile after creating new chat
-          if (window.innerWidth < 1024) {
-            setIsSidebarOpen(false);
-          }
-        }}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         onRenameChat={async (chatId, newTitle) => {

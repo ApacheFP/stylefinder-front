@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X, MessageSquare, HelpCircle, Loader2, MoreVertical, Edit2, Trash2, Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMemo, useState, useRef, useEffect } from 'react';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
@@ -11,8 +11,6 @@ interface SidebarProps {
   chatHistory: ChatHistory[];
   currentChatId?: string;
   isLoadingHistory?: boolean;
-  onSelectChat: (chatId: string) => void;
-  onNewChat: () => void;
   onRenameChat: (chatId: string, newTitle: string) => Promise<void>;
   onDeleteChat: (chatId: string) => Promise<void>;
   isOpen?: boolean;
@@ -23,8 +21,6 @@ const Sidebar = ({
   chatHistory,
   currentChatId,
   isLoadingHistory = false,
-  onSelectChat,
-  onNewChat,
   onRenameChat,
   onDeleteChat,
   isOpen = true,
@@ -32,6 +28,7 @@ const Sidebar = ({
 }: SidebarProps) => {
 
   const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
@@ -159,7 +156,13 @@ const Sidebar = ({
           {/* New Chat Button */}
           <div className="p-4">
             <Button
-              onClick={onNewChat}
+              onClick={() => {
+                navigate('/chat');
+                // Close sidebar on mobile after creating new chat
+                if (window.innerWidth < 1024) {
+                  onClose?.();
+                }
+              }}
               variant="outline"
               className="w-full justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
               aria-label="Start new chat"
@@ -232,7 +235,13 @@ const Sidebar = ({
                         </form>
                       ) : (
                         <button
-                          onClick={() => onSelectChat(chat.id)}
+                          onClick={() => {
+                            navigate(`/chat/${chat.id}`);
+                            // Close sidebar on mobile after selection
+                            if (window.innerWidth < 1024) {
+                              onClose?.();
+                            }
+                          }}
                           className={`w-full text-left px-3 py-2 rounded-lg text-sm font-inter transition-all duration-200 flex items-center justify-between group ${currentChatId === chat.id
                             ? 'bg-primary/5 text-primary font-medium border border-primary/10'
                             : 'text-text-dark dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 border border-transparent'
@@ -364,7 +373,13 @@ const Sidebar = ({
         {/* New Chat Button */}
         <div className="p-4">
           <Button
-            onClick={onNewChat}
+            onClick={() => {
+              navigate('/chat');
+              // Close sidebar on mobile after creating new chat
+              if (window.innerWidth < 1024) {
+                onClose?.();
+              }
+            }}
             variant="outline"
             className="w-full justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
             aria-label="Start new chat"
