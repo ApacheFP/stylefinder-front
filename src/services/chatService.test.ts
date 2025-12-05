@@ -98,15 +98,20 @@ describe('chatService', () => {
                 type: 0,
                 outfits: [
                     {
-                        id: 'item1',
-                        title: 'Cool Jacket',
-                        url: 'http://shop.com/jacket',
-                        image_link: 'http://img.com/jacket.jpg',
-                        price: 100,
-                        brand: 'BrandX'
+                        outfit: [
+                            {
+                                id: 'item1',
+                                title: 'Cool Jacket',
+                                url: 'http://shop.com/jacket',
+                                image_link: 'http://img.com/jacket.jpg',
+                                price: 100,
+                                brand: 'BrandX'
+                            }
+                        ],
+                        cost: 100,
+                        explanation: 'It fits you well'
                     }
                 ],
-                explanation: 'It fits you well',
                 created_at: '2023-01-01T10:00:05Z'
             }
         ];

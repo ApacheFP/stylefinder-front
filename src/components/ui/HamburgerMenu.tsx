@@ -9,7 +9,7 @@ const HamburgerMenu = ({ isOpen, onClick }: HamburgerMenuProps) => {
   return (
     <button
       onClick={onClick}
-      className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-white rounded-lg shadow-lg border border-border hover:bg-gray-50 transition-colors"
+      className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-cream-100 rounded-lg shadow-lg border border-cream-300 hover:bg-cream-200 transition-colors"
       aria-label="Toggle menu"
     >
       <div className="w-6 h-5 flex flex-col justify-between">

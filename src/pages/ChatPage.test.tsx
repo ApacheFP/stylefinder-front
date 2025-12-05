@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import ChatPage from './ChatPage';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
@@ -38,9 +39,8 @@ vi.mock('../services/chatService', () => ({
 
 // Mock child components
 vi.mock('../components/layout/Sidebar', () => ({
-    default: ({ onSelectChat, onNewChat, onClose }: any) => (
+    default: ({ onNewChat, onClose }: any) => (
         <div data-testid="sidebar">
-            <button onClick={() => onSelectChat('1')}>Select Chat 1</button>
             <button onClick={onNewChat}>New Chat</button>
             <button onClick={onClose}>Close Sidebar</button>
         </div>
@@ -92,6 +92,15 @@ vi.mock('../components/ui/ScrollToBottomButton', () => ({
     default: ({ onClick }: any) => <button data-testid="scroll-button" onClick={onClick} />,
 }));
 
+// Helper function to render with router
+const renderWithRouter = (ui: React.ReactElement) => {
+    return render(
+        <MemoryRouter>
+            {ui}
+        </MemoryRouter>
+    );
+};
+
 describe('ChatPage', () => {
     const mockMessages = [
         { id: '1', role: 'user', content: 'Hello' },
@@ -109,6 +118,7 @@ describe('ChatPage', () => {
         sendMessage: vi.fn(),
         explainOutfit: vi.fn(),
         clearMessages: vi.fn(),
+        setOnNewMessage: vi.fn(),
     };
 
     const defaultImageUpload = {
@@ -146,7 +156,7 @@ describe('ChatPage', () => {
     });
 
     it('renders empty state initially', () => {
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     });
 
@@ -156,7 +166,7 @@ describe('ChatPage', () => {
             messages: mockMessages,
         });
 
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         expect(screen.getAllByTestId('message')).toHaveLength(2);
         expect(screen.queryByTestId('empty-state')).not.toBeInTheDocument();
     });
@@ -167,7 +177,7 @@ describe('ChatPage', () => {
             isFetching: true,
         });
 
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         expect(screen.getByTestId('skeleton')).toBeInTheDocument();
     });
 
@@ -178,12 +188,12 @@ describe('ChatPage', () => {
             isLoading: true,
         });
 
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         expect(screen.getByTestId('typing-indicator')).toBeInTheDocument();
     });
 
     it('handles suggestion click', () => {
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
 
         // Suggestion click updates input message state. 
         // We can verify this by checking if ChatInput receives the value, 
@@ -206,12 +216,12 @@ describe('ChatPage', () => {
     });
 
     it('loads chat history on mount', async () => {
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         expect(chatService.getChatHistory).toHaveBeenCalled();
     });
 
     it('handles new chat', () => {
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
 
         fireEvent.click(screen.getByText('New Chat'));
 
@@ -219,13 +229,8 @@ describe('ChatPage', () => {
         expect(defaultImageUpload.clearImage).toHaveBeenCalled();
     });
 
-    it('handles select chat', async () => {
-        render(<ChatPage />);
-
-        fireEvent.click(screen.getByText('Select Chat 1'));
-
-        expect(defaultChatMessages.loadChatMessages).toHaveBeenCalledWith('1');
-    });
+    // Note: Select chat functionality is now handled via router navigation in Sidebar,
+    // so we only test the sidebar close functionality and new chat here
 
     it('sends message and clears input', () => {
         // Mock sendMessage - note: ChatPage calls sendMessage(message, image) without a callback
@@ -235,7 +240,7 @@ describe('ChatPage', () => {
             sendMessage: sendMessageMock,
         });
 
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
 
         fireEvent.click(screen.getByText('Send'));
 
@@ -243,35 +248,19 @@ describe('ChatPage', () => {
     });
 
     it('toggles sidebar on hamburger click', () => {
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         fireEvent.click(screen.getByTestId('hamburger'));
         // Again, internal state, but we cover the line.
     });
 
     it('closes sidebar when Sidebar triggers onClose', () => {
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         fireEvent.click(screen.getByText('Close Sidebar'));
-    });
-
-    it('closes sidebar on mobile when selecting chat', () => {
-        // Mock window.innerWidth
-        Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
-
-        render(<ChatPage />);
-
-        // Open sidebar first (assuming hamburger click opens it, but we can just trigger onSelectChat)
-        // The Sidebar mock exposes onSelectChat via button click
-        fireEvent.click(screen.getByText('Select Chat 1'));
-
-        // We can't easily check setIsSidebarOpen state directly as it is internal.
-        // But we can check if Sidebar receives isOpen=false?
-        // My Sidebar mock doesn't use isOpen to render differently.
-        // I should update Sidebar mock to show something when open.
     });
 
     it('closes sidebar on mobile when creating new chat', () => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
         fireEvent.click(screen.getByText('New Chat'));
     });
 
@@ -283,7 +272,7 @@ describe('ChatPage', () => {
             scrollToBottom: scrollToBottomMock,
         });
 
-        render(<ChatPage />);
+        renderWithRouter(<ChatPage />);
 
         fireEvent.click(screen.getByTestId('scroll-button'));
         expect(scrollToBottomMock).toHaveBeenCalled();

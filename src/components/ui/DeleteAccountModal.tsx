@@ -48,7 +48,7 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, isDeleting }: DeleteAc
                     Are you sure?
                 </h3>
 
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                <p className="text-gray-500 dark:text-stone-400 mb-6">
                     This action is irreversible. To confirm, please type <span className="font-mono font-bold text-red-500 dark:text-red-400">DELETE</span> below.
                 </p>
 

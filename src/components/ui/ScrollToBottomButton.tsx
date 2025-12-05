@@ -15,7 +15,7 @@ const ScrollToBottomButton = ({ show, onClick }: ScrollToBottomButtonProps) => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.8 }}
           onClick={onClick}
-          className="fixed bottom-32 right-8 bg-white dark:bg-gray-800 border-2 border-primary text-primary dark:text-primary-light rounded-full p-3 shadow-lg dark:shadow-primary/10 hover:bg-primary hover:text-white dark:hover:bg-primary-light dark:hover:text-white transition-colors z-10"
+          className="fixed bottom-32 right-8 bg-cream-100 dark:bg-surface-darker border-2 border-primary text-primary dark:text-primary-light rounded-full p-3 shadow-lg dark:shadow-primary/10 hover:bg-primary hover:text-white dark:hover:bg-primary-light dark:hover:text-white transition-colors z-10"
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           aria-label="Scroll to bottom"

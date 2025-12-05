@@ -4,27 +4,46 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#0D6EFD',
-          hover: '#0B5ED7',
-          light: '#3D8BFD', // For dark mode
+          DEFAULT: '#A67C52',  // Warm bronze/tan - elegant and earthy
+          hover: '#8B6844',    // Darker for hover
+          light: '#C4A484',    // Lighter for dark mode
+          dark: '#7A5C3E',     // Darker variant
+        },
+        // Warm dark mode background colors that complement bronze
+        surface: {
+          dark: '#1C1917',      // stone-900 - main dark bg
+          darker: '#292524',    // stone-800 - secondary dark bg
+          muted: '#44403C',     // stone-700 - hover/borders
+          border: '#57534E',    // stone-600 - borders
+        },
+        // Warm light mode colors - sandy/cream palette
+        cream: {
+          50: '#FEFDFB',        // Very light cream - main background
+          100: '#FBF9F5',       // Light cream - cards/surfaces
+          200: '#F5F1EA',       // Slightly darker - hover states
+          300: '#EDE7DC',       // Borders/dividers
+          400: '#DDD4C4',       // Muted text backgrounds
+          500: '#C9BBA6',       // Placeholder/muted elements
         },
         text: {
-          dark: '#212529',
-          medium: '#495057',
-          light: '#ADB5BD',
-          muted: '#757575',
+          dark: '#3D3229',      // Warm dark brown for text
+          medium: '#5C4D3C',    // Medium brown
+          light: '#8B7355',     // Light brown
+          muted: '#A69580',     // Muted brown
         },
         background: {
-          DEFAULT: '#F4F7F6',
-          white: '#FFFFFF',
+          DEFAULT: '#FEFDFB',  // Warm cream background
+          card: '#FBF9F5',     // Card background
+          hover: '#F5F1EA',    // Hover state
         },
         border: {
-          DEFAULT: '#E5E7EB',
-          input: '#94979A',
+          DEFAULT: '#EDE7DC',  // Warm border
+          input: '#DDD4C4',    // Input border
         },
       },
       fontFamily: {
@@ -73,8 +92,8 @@ export default {
           '50%': { transform: 'translateY(-2px)' },
         },
         'glow-pulse': {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(13, 110, 253, 0.3)' },
-          '50%': { boxShadow: '0 0 20px rgba(13, 110, 253, 0.6)' },
+          '0%, 100%': { boxShadow: '0 0 5px rgba(166, 124, 82, 0.3)' },
+          '50%': { boxShadow: '0 0 20px rgba(166, 124, 82, 0.6)' },
         },
       },
       animation: {

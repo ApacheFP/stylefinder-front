@@ -9,6 +9,8 @@ export const useScrollToBottom = (dependency: unknown) => {
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const scrollTimeoutRef = useRef<number | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const lastScrollTopRef = useRef<number>(0);
+  const userScrolledUpRef = useRef<boolean>(false);
 
   // Animated scroll to bottom with custom easing
   const animatedScrollToBottom = useCallback((duration: number = 400) => {
@@ -46,7 +48,11 @@ export const useScrollToBottom = (dependency: unknown) => {
   }, []);
 
   // Scroll to bottom (can use native smooth or custom animation)
+  // This is for EXPLICIT user action (like clicking button or sending message)
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
+    // Reset the userScrolledUp flag when explicitly scrolling to bottom
+    userScrolledUpRef.current = false;
+    
     if (behavior === 'smooth') {
       animatedScrollToBottom(500); // 500ms for a nice smooth animation
     } else {
@@ -60,19 +66,39 @@ export const useScrollToBottom = (dependency: unknown) => {
     }
   }, [animatedScrollToBottom]);
 
-  // Check if user is near bottom
-  const isNearBottom = useCallback(() => {
-    if (!scrollRef.current) return true;
-    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-    return scrollHeight - scrollTop - clientHeight < 100;
-  }, []);
+  // Scroll to bottom only if user hasn't scrolled up
+  // This is for AUTOMATIC scroll (like content change, new messages)
+  const scrollToBottomIfNotScrolledUp = useCallback(() => {
+    if (!userScrolledUpRef.current) {
+      animatedScrollToBottom(300);
+    }
+  }, [animatedScrollToBottom]);
 
   // Handle scroll event
   const handleScroll = useCallback(() => {
     if (!scrollRef.current) return;
 
-    const isAtBottom = isNearBottom();
-    setShowScrollButton(!isAtBottom);
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    const isAtBottom = distanceFromBottom < 50; // Reduced threshold
+    
+    // Detect scroll direction with a minimum delta to avoid micro-scrolls
+    const scrollDelta = scrollTop - lastScrollTopRef.current;
+    const scrolledUp = scrollDelta < -5; // At least 5px up to count as intentional
+    const scrolledDown = scrollDelta > 5;
+    lastScrollTopRef.current = scrollTop;
+    
+    // If user scrolled up significantly and is not at bottom, lock the position
+    if (scrolledUp && distanceFromBottom > 30) {
+      userScrolledUpRef.current = true;
+    }
+    
+    // Only reset when user actively scrolls DOWN to the bottom
+    if (scrolledDown && isAtBottom) {
+      userScrolledUpRef.current = false;
+    }
+
+    setShowScrollButton(distanceFromBottom > 200);
 
     // Clear previous timeout
     if (scrollTimeoutRef.current) {
@@ -82,20 +108,24 @@ export const useScrollToBottom = (dependency: unknown) => {
     // Set user as scrolling
     setIsUserScrolling(true);
 
-    // After 150ms of no scrolling, check if we're at bottom
+    // After scrolling stops, update state
     scrollTimeoutRef.current = setTimeout(() => {
-      if (isAtBottom) {
-        setIsUserScrolling(false);
-      }
-    }, 150);
-  }, [isNearBottom]);
+      setIsUserScrolling(false);
+    }, 200);
+  }, []);
 
-  // Auto-scroll on new messages (only if user is not scrolling up)
+  // Auto-scroll on new messages (only if user hasn't intentionally scrolled up)
   useEffect(() => {
-    if (!isUserScrolling && dependency) {
-      scrollToBottom('smooth');
+    // Don't auto-scroll if user has intentionally scrolled up
+    if (userScrolledUpRef.current) {
+      return;
     }
-  }, [dependency, isUserScrolling, scrollToBottom]);
+    
+    if (!isUserScrolling && dependency) {
+      // Use the conditional version that respects user's scroll position
+      scrollToBottomIfNotScrolledUp();
+    }
+  }, [dependency, isUserScrolling, scrollToBottomIfNotScrolledUp]);
 
   // Cleanup
   useEffect(() => {
@@ -113,6 +143,7 @@ export const useScrollToBottom = (dependency: unknown) => {
     scrollRef,
     showScrollButton,
     scrollToBottom,
+    scrollToBottomIfNotScrolledUp,
     handleScroll,
   };
 };

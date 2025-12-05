@@ -2,7 +2,7 @@ import Skeleton from './Skeleton';
 
 const ProfileSkeleton = () => {
     return (
-        <div className="min-h-screen bg-background dark:bg-gray-900 p-6 md:p-12">
+        <div className="min-h-screen bg-background dark:bg-surface-dark p-6 md:p-12">
             <div className="max-w-2xl mx-auto">
                 {/* Header Skeleton */}
                 <div className="flex items-center gap-4 mb-8">
@@ -12,7 +12,7 @@ const ProfileSkeleton = () => {
 
                 <div className="space-y-6">
                     {/* User Info Card Skeleton */}
-                    <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl">
+                    <div className="bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-xl rounded-2xl p-6 border border-cream-300 dark:border-surface-muted shadow-xl">
                         <div className="flex items-center gap-3 mb-6">
                             <Skeleton variant="rectangular" className="w-9 h-9 rounded-lg" />
                             <Skeleton variant="text" className="w-40 h-6" />
@@ -33,7 +33,7 @@ const ProfileSkeleton = () => {
                     </div>
 
                     {/* Password Card Skeleton */}
-                    <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl">
+                    <div className="bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-xl rounded-2xl p-6 border border-cream-300 dark:border-surface-muted shadow-xl">
                         <div className="flex items-center gap-3 mb-6">
                             <Skeleton variant="rectangular" className="w-9 h-9 rounded-lg" />
                             <Skeleton variant="text" className="w-40 h-6" />

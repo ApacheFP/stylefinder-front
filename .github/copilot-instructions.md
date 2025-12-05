@@ -40,7 +40,7 @@ src/
 6. **API**: Prepare for future API integration. All API calls should go through services layer.
 
 ## Design System (From Figma)
-- **Primary Color**: Blue (#0D6EFD)
+- **Primary Color**: Ochre Gold (#C9A227)
 - **Text Colors**: 
   - Dark: #212529
   - Medium: #495057

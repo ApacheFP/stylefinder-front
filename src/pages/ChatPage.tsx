@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
 import { useImageUpload } from '../hooks/useImageUpload';
@@ -23,6 +24,10 @@ const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+
+  // React Router hooks
+  const { chatId } = useParams<{ chatId?: string }>();
+  const navigate = useNavigate();
 
   // Auth context
   const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
@@ -51,12 +56,13 @@ const ChatPage = () => {
   } = useChatMessages();
 
   // Auto-scroll behavior
-  const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
+  const { scrollRef, showScrollButton, scrollToBottom, scrollToBottomIfNotScrolledUp, handleScroll } = useScrollToBottom(messages.length);
 
   // Set scroll callback after scrollToBottom is available
+  // Use the conditional scroll for automatic scrolling (respects user's scroll position)
   useEffect(() => {
-    setOnNewMessage(scrollToBottom);
-  }, [scrollToBottom, setOnNewMessage]);
+    setOnNewMessage(scrollToBottomIfNotScrolledUp);
+  }, [scrollToBottomIfNotScrolledUp, setOnNewMessage]);
 
   const {
     selectedImage,
@@ -102,6 +108,24 @@ const ChatPage = () => {
   useEffect(() => {
     loadChatHistory();
   }, [loadChatHistory]);
+
+  // Load conversation when chatId from URL changes
+  useEffect(() => {
+    // If there's a chatId in the URL and it's different from current
+    if (chatId && chatId !== currentChatId) {
+      setInputMessage('');
+      clearImage();
+      loadChatMessages(chatId).catch((error) => {
+        console.error('Failed to load chat from URL:', error);
+      });
+    }
+    // If there's no chatId in URL but we have a currentChatId, reset to new chat state
+    if (!chatId && currentChatId) {
+      clearMessages();
+      setInputMessage('');
+      clearImage();
+    }
+  }, [chatId, currentChatId, loadChatMessages, clearImage, clearMessages]);
 
   // Add new conversation to history when created
   useEffect(() => {
@@ -175,21 +199,7 @@ const ChatPage = () => {
     clearMessages();
     setInputMessage('');
     clearImage();
-  };
-
-  const handleSelectChat = async (chatId: string) => {
-    // Don't reload if already on this chat
-    if (chatId === currentChatId) return;
-
-    setInputMessage('');
-    clearImage();
-
-    try {
-      await loadChatMessages(chatId);
-      console.log('Loaded chat:', chatId);
-    } catch (error) {
-      console.error('Failed to load chat:', error);
-    }
+    navigate('/chat');
   };
 
   const handleSendMessage = () => {
@@ -209,7 +219,7 @@ const ChatPage = () => {
   const showEmptyState = messages.length === 0;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background dark:bg-gray-900">
+    <div className="flex h-screen overflow-hidden bg-background dark:bg-surface-dark">
       {/* Hamburger Menu - Mobile Only */}
       <HamburgerMenu
         isOpen={isSidebarOpen}
@@ -220,23 +230,11 @@ const ChatPage = () => {
       <Sidebar
         chatHistory={chatHistory}
         currentChatId={currentChatId}
+        isNewChat={!chatId && messages.length === 0}
         isLoadingHistory={isLoadingHistory}
-        onSelectChat={(chatId) => {
-          handleSelectChat(chatId);
-          // Close sidebar on mobile after selection
-          if (window.innerWidth < 1024) {
-            setIsSidebarOpen(false);
-          }
-        }}
-        onNewChat={() => {
-          handleNewChat();
-          // Close sidebar on mobile after creating new chat
-          if (window.innerWidth < 1024) {
-            setIsSidebarOpen(false);
-          }
-        }}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
+        onNewChat={handleNewChat}
         onRenameChat={async (chatId, newTitle) => {
           try {
             const success = await chatService.renameConversation(chatId, newTitle);
@@ -320,8 +318,8 @@ const ChatPage = () => {
 
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-50 dark:bg-gray-800 border border-border dark:border-gray-700 px-6 py-4 rounded-2xl flex items-center gap-3">
-                    <span className="text-sm font-inter text-text-medium dark:text-gray-300">
+                  <div className="bg-gray-50 dark:bg-surface-darker border border-border dark:border-surface-muted px-6 py-4 rounded-2xl flex items-center gap-3">
+                    <span className="text-sm font-inter text-text-medium dark:text-stone-300">
                       {loadingStatus || 'AI is thinking'}
                     </span>
                     <TypingIndicator />

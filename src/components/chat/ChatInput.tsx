@@ -57,7 +57,7 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
     };
 
     return (
-      <div className="px-4 sm:px-8 py-4 sm:py-6 bg-background dark:bg-gray-900 border-t border-border dark:border-gray-800">
+      <div className="px-4 sm:px-8 py-4 sm:py-6 bg-background dark:bg-surface-dark border-t border-border dark:border-surface-muted">
         <div className="max-w-[992px] mx-auto">
           {/* Image Preview */}
           <AnimatePresence mode="wait">
@@ -70,7 +70,7 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                 transition={{ duration: 0.15 }}
                 className="mb-3 overflow-hidden"
               >
-                <div className="inline-flex items-center gap-2 px-2 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg max-w-[200px]">
+                <div className="inline-flex items-center gap-2 px-2 py-1.5 bg-stone-100 dark:bg-surface-darker rounded-lg max-w-[200px]">
                   <img
                     src={imagePreview}
                     alt="Preview"
@@ -82,16 +82,16 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                         {selectedImage.name}
                       </span>
                     </div>
-                    <span className="text-xs text-text-light dark:text-gray-400">
+                    <span className="text-xs text-text-light dark:text-stone-400">
                       {(selectedImage.size / 1024).toFixed(0)} KB
                     </span>
                   </div>
                   <button
                     onClick={onRemoveImage}
-                    className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors flex-shrink-0"
+                    className="p-1.5 hover:bg-stone-200 dark:hover:bg-surface-muted rounded-full transition-colors flex-shrink-0"
                     type="button"
                   >
-                    <X className="w-4 h-4 text-text-medium dark:text-gray-400" />
+                    <X className="w-4 h-4 text-text-medium dark:text-stone-400" />
                   </button>
                 </div>
               </motion.div>
@@ -99,7 +99,7 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
           </AnimatePresence>
 
           {/* Input Box */}
-          <div className="flex gap-3 items-end bg-white dark:bg-gray-800 border border-[#CED4DA] dark:border-gray-600 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-2 pl-4 focus-within:ring-4 focus-within:ring-primary/20 focus-within:border-primary">
+          <div className="flex gap-3 items-end bg-cream-100 dark:bg-surface-darker border border-cream-400 dark:border-surface-border rounded-2xl shadow-sm hover:shadow-md transition-shadow p-2 pl-4 focus-within:ring-4 focus-within:ring-primary/20 focus-within:border-primary">
             <input
               type="file"
               ref={fileInputRef}
@@ -110,7 +110,7 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
             />
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="mb-2 text-text-medium hover:text-primary transition-colors cursor-pointer p-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-full"
+              className="mb-2 text-primary/70 hover:text-primary transition-colors cursor-pointer p-1.5 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-full border border-primary/20 hover:border-primary/40"
               title="Upload image"
               type="button"
               aria-label="Upload image"
@@ -132,9 +132,9 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
                 }
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Ask me for a style tip..."
+              placeholder="Describe your ideal outfit or upload a photo..."
               rows={1}
-              className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-gray-400 bg-transparent resize-none scrollbar-hide placeholder-shimmer"
+              className="flex-1 py-3 font-inter text-[15px] text-text-dark dark:text-white placeholder:text-text-light dark:placeholder-stone-500 bg-transparent resize-none scrollbar-hide placeholder-shimmer"
               style={{ 
                 minHeight: '44px', 
                 maxHeight: `${MAX_HEIGHT}px`,
@@ -171,11 +171,11 @@ const ChatInput = forwardRef<HTMLTextAreaElement, ChatInputProps>(
           </div>
 
           <div className="text-center mt-2 flex items-center justify-center gap-2">
-            <p className="text-[11px] text-text-light dark:text-gray-500">
+            <p className="text-[11px] text-text-light dark:text-stone-500">
               AI can make mistakes. Check important info.
             </p>
             {inputMessage.length > 0 && (
-              <span className={`text-[10px] font-medium ${inputMessage.length > 500 ? 'text-amber-500' : 'text-text-light dark:text-gray-500'}`}>
+              <span className={`text-[10px] font-medium ${inputMessage.length > 500 ? 'text-amber-500' : 'text-text-light dark:text-stone-500'}`}>
                 {inputMessage.length}/1000
               </span>
             )}

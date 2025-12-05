@@ -17,7 +17,7 @@ const ChatMessageSkeleton = () => {
       <div className="flex justify-start">
         <div className="max-w-4xl w-full">
           {/* Text bubble skeleton */}
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl rounded-bl-md px-5 py-3 shadow-md mb-3 max-w-lg">
+          <div className="bg-gray-100 dark:bg-surface-muted rounded-2xl rounded-bl-md px-5 py-3 shadow-md mb-3 max-w-lg">
             <div className="space-y-2">
               <Skeleton className="w-full h-4" />
               <Skeleton className="w-4/5 h-4" />
@@ -25,7 +25,7 @@ const ChatMessageSkeleton = () => {
           </div>
 
           {/* Outfit card skeleton */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl p-5 shadow-md">
+          <div className="bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-border rounded-xl p-5 shadow-md">
             {/* Header skeleton */}
             <div className="flex items-center justify-between mb-3 px-1">
               <Skeleton className="w-32 h-3" />
@@ -37,7 +37,7 @@ const ChatMessageSkeleton = () => {
               {[1, 2, 3, 4].map((i) => (
                 <div 
                   key={i} 
-                  className="bg-gray-50 dark:bg-gray-700/50 rounded-xl overflow-hidden flex-shrink-0"
+                  className="bg-gray-50 dark:bg-surface-muted/50 rounded-xl overflow-hidden flex-shrink-0"
                   style={{ width: '140px' }}
                 >
                   {/* Image skeleton with aspect ratio */}
@@ -55,7 +55,7 @@ const ChatMessageSkeleton = () => {
             </div>
 
             {/* Summary box skeleton */}
-            <div className="flex items-center justify-between mb-4 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4 p-4 bg-gray-50 dark:bg-surface-muted/30 rounded-xl border border-gray-200 dark:border-surface-muted">
               <div className="space-y-1">
                 <Skeleton className="w-20 h-2" />
                 <Skeleton className="w-16 h-6" />

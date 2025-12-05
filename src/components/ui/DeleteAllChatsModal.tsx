@@ -43,7 +43,7 @@ const DeleteAllChatsModal = ({ isOpen, onClose, onConfirm, isDeleting }: DeleteA
                     Delete All Conversations?
                 </h3>
 
-                <p className="text-gray-500 dark:text-gray-400 mb-6">
+                <p className="text-gray-500 dark:text-stone-400 mb-6">
                     This will permanently delete all your chat history and conversations. This action cannot be undone.
                 </p>
 

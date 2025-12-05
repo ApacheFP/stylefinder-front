@@ -27,9 +27,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary: 'bg-primary text-white hover:bg-primary-hover hover:brightness-110 focus:ring-primary/30 active:brightness-90 shadow-sm hover:shadow-md',
-      secondary: 'bg-gray-200 dark:bg-gray-700 text-text-dark dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 hover:brightness-95 focus:ring-gray-500/30 active:brightness-90',
-      outline: 'border-2 border-border-input dark:border-gray-600 text-text-dark dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500 focus:ring-gray-500/30 active:bg-gray-100 dark:active:bg-gray-600',
-      ghost: 'text-text-medium dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-text-dark dark:hover:text-white focus:ring-gray-500/30 active:bg-gray-100 dark:active:bg-gray-700',
+      secondary: 'bg-cream-300 dark:bg-surface-muted text-text-dark dark:text-white hover:bg-cream-400 dark:hover:bg-surface-border hover:brightness-95 focus:ring-primary/30 active:brightness-90',
+      outline: 'border-2 border-cream-400 dark:border-surface-border text-text-dark dark:text-stone-200 hover:bg-cream-200 dark:hover:bg-surface-muted hover:border-primary/50 dark:hover:border-gray-500 focus:ring-primary/30 active:bg-cream-300 dark:active:bg-gray-600',
+      ghost: 'text-text-medium dark:text-stone-300 hover:bg-cream-200 dark:hover:bg-surface-darker hover:text-text-dark dark:hover:text-white focus:ring-primary/30 active:bg-cream-300 dark:active:bg-gray-700',
     };
 
     const sizes = {

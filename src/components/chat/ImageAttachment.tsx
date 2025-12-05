@@ -23,14 +23,14 @@ const ImageAttachment = ({ imageUrl, altText = 'Attached image' }: ImageAttachme
             >
                 {/* Loading State */}
                 {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 z-10">
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-surface-darker z-10">
                         <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                     </div>
                 )}
 
                 {/* Error State */}
                 {hasError && (
-                    <div className="w-full h-48 bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center text-gray-400 gap-2 p-4">
+                    <div className="w-full h-48 bg-gray-100 dark:bg-surface-darker flex flex-col items-center justify-center text-gray-400 gap-2 p-4">
                         <ImageIcon className="w-8 h-8" />
                         <span className="text-xs text-center">Failed to load image</span>
                     </div>

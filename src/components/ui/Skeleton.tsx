@@ -11,7 +11,7 @@ const Skeleton = ({
   variant = 'text',
   animation = 'wave'
 }: SkeletonProps) => {
-  const baseStyles = 'bg-gray-200 dark:bg-gray-700';
+  const baseStyles = 'bg-gray-200 dark:bg-surface-muted';
 
   const variants = {
     text: 'h-4 rounded',

@@ -35,12 +35,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-gray-900 px-4 py-8">
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8 border border-border dark:border-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-surface-dark px-4 py-8">
+      <div className="max-w-md w-full bg-cream-100 dark:bg-surface-darker rounded-2xl shadow-lg p-6 md:p-8 border border-cream-300 dark:border-surface-muted">
         {/* Back Button */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-text-medium dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors mb-4"
+          className="flex items-center gap-2 text-text-medium dark:text-stone-300 hover:text-primary dark:hover:text-primary transition-colors mb-4"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="text-sm font-inter">Back</span>
@@ -84,7 +84,7 @@ const LoginPage = () => {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm md:text-base font-inter text-text-medium dark:text-gray-400">
+        <p className="mt-6 text-center text-sm md:text-base font-inter text-text-medium dark:text-stone-400">
           Don't have an account?{' '}
           <Link to="/signup" className="text-primary font-bold hover:underline">
             Sign Up
