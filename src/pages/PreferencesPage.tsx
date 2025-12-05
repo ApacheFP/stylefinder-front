@@ -163,18 +163,18 @@ const PreferencesPage = () => {
   const sortedPreferences = Object.entries(allPreferences).sort(([idA], [idB]) => Number(idA) - Number(idB));
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-8">
-      <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-surface-dark px-4 py-8">
+      <div className="max-w-2xl w-full bg-cream-100 dark:bg-surface-darker rounded-2xl shadow-lg p-6 md:p-8">
         <h1 className="text-xl md:text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
           Your Preferences
         </h1>
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+        <p className="text-center text-sm text-gray-500 dark:text-stone-400 mb-6">
           Personalize your StyleFinder experience
         </p>
 
         {!isLoadingPrefs && sortedPreferences.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-500 dark:text-stone-400">
               Unable to load preferences options. Please try again later.
             </p>
             <Button
@@ -206,7 +206,7 @@ const PreferencesPage = () => {
 
           return (
             <div key={prefId} className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 capitalize">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-stone-200 mb-4 capitalize">
                 {pref.name}
               </h2>
 
@@ -230,7 +230,7 @@ const PreferencesPage = () => {
                           onClick={() => handleSingleSelect(pref.name, value)}
                           className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-all duration-200 border-2 ${isSelected
                               ? 'bg-primary/10 border-primary text-primary dark:text-primary-light'
-                              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700'
+                              : 'bg-cream-100 dark:bg-surface-darker border-cream-300 dark:border-surface-muted text-gray-600 dark:text-stone-400 hover:border-primary/50 hover:bg-cream-200 dark:hover:bg-surface-muted'
                             }`}
                         >
                           <span className="capitalize">{value}</span>
@@ -249,7 +249,7 @@ const PreferencesPage = () => {
                           onClick={() => handleToggleValue(pref.name, value)}
                           className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-all duration-200 border-2 ${isSelected
                               ? 'bg-primary/10 border-primary text-primary dark:text-primary-light'
-                              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700'
+                              : 'bg-cream-100 dark:bg-surface-darker border-cream-300 dark:border-surface-muted text-gray-600 dark:text-stone-400 hover:border-primary/50 hover:bg-cream-200 dark:hover:bg-surface-muted'
                             }`}
                         >
                           <span className="capitalize">{value}</span>
@@ -265,7 +265,7 @@ const PreferencesPage = () => {
                   value={preferences[pref.name] || ''}
                   onChange={(e) => handleTextChange(pref.name, e.target.value)}
                   placeholder={`Enter your preferred ${pref.name.toLowerCase()}`}
-                  className="border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-3 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none"
+                  className="border border-cream-400 dark:border-surface-border rounded-xl px-4 py-3 w-full bg-cream-100 dark:bg-surface-muted text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 outline-none"
                 />
               )}
             </div>

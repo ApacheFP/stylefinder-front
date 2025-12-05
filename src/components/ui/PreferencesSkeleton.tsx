@@ -2,8 +2,8 @@ import Skeleton from './Skeleton';
 
 const PreferencesSkeleton = () => {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-            <div className="max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 md:p-8">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-surface-dark px-4">
+            <div className="max-w-2xl w-full bg-cream-100 dark:bg-surface-darker rounded-2xl shadow-lg p-6 md:p-8">
                 <div className="text-center mb-8">
                     <Skeleton className="w-48 h-8 mx-auto mb-4" />
                 </div>

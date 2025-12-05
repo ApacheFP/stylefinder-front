@@ -122,13 +122,13 @@ const ProfilePage = () => {
 
     if (!user) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background dark:bg-gray-900 p-6">
+            <div className="min-h-screen flex items-center justify-center bg-background dark:bg-surface-dark p-6">
                 <div className="text-center max-w-md">
                     <div className="p-4 bg-red-100 dark:bg-red-900/20 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                         <User className="w-8 h-8 text-red-500 dark:text-red-400" />
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Profile Not Found</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mb-6">
+                    <p className="text-gray-500 dark:text-stone-400 mb-6">
                         We couldn't load your profile information. Please try logging in again.
                     </p>
                     <Button onClick={() => navigate('/login')} variant="primary">
@@ -140,7 +140,7 @@ const ProfilePage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background dark:bg-gray-900 p-6 md:p-12">
+        <div className="min-h-screen bg-background dark:bg-surface-dark p-6 md:p-12">
             <div className="max-w-2xl mx-auto">
                 {/* Header */}
                 <motion.div
@@ -151,7 +151,7 @@ const ProfilePage = () => {
                 >
                     <button
                         onClick={() => navigate(-1)}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-surface-darker rounded-full transition-colors"
                     >
                         <ArrowLeft className="w-6 h-6 text-text-dark dark:text-white" />
                     </button>
@@ -163,7 +163,7 @@ const ProfilePage = () => {
                 <div className="space-y-6">
                     {/* User Info Card */}
                     <motion.div
-                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
+                        className="bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-xl rounded-2xl p-6 border border-cream-300 dark:border-surface-muted shadow-xl"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
@@ -182,14 +182,14 @@ const ProfilePage = () => {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Enter your name"
-                                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    className="dark:bg-surface-muted dark:border-surface-border dark:text-white"
                                     required
                                 />
                                 <Input
                                     label="Email Address"
                                     value={user?.email || ''}
                                     disabled
-                                    className="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 cursor-not-allowed border-gray-200 dark:border-gray-700"
+                                    className="bg-gray-50 dark:bg-surface-muted/50 text-gray-500 dark:text-stone-400 cursor-not-allowed border-gray-200 dark:border-surface-muted"
                                 />
                             </div>
 
@@ -215,7 +215,7 @@ const ProfilePage = () => {
 
                     {/* Password Change Card */}
                     <motion.div
-                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
+                        className="bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-xl rounded-2xl p-6 border border-cream-300 dark:border-surface-muted shadow-xl"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
@@ -234,7 +234,7 @@ const ProfilePage = () => {
                                 value={passwords.current}
                                 onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
                                 placeholder="Enter current password"
-                                className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="dark:bg-surface-muted dark:border-surface-border dark:text-white"
                                 required
                             />
 
@@ -245,7 +245,7 @@ const ProfilePage = () => {
                                     value={passwords.new}
                                     onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
                                     placeholder="Min. 6 characters"
-                                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    className="dark:bg-surface-muted dark:border-surface-border dark:text-white"
                                     required
                                 />
                                 <Input
@@ -254,7 +254,7 @@ const ProfilePage = () => {
                                     value={passwords.confirm}
                                     onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
                                     placeholder="Re-enter new password"
-                                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                    className="dark:bg-surface-muted dark:border-surface-border dark:text-white"
                                     required
                                 />
                             </div>
@@ -280,7 +280,7 @@ const ProfilePage = () => {
 
                     {/* Delete All Chats Section - Modern & Minimalist */}
                     <motion.div
-                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
+                        className="bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-xl rounded-2xl p-6 border border-cream-300 dark:border-surface-muted shadow-xl"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
@@ -290,7 +290,7 @@ const ProfilePage = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-orange-700 dark:group-hover:text-orange-400 transition-colors">
                                     Delete All Conversations
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                <p className="text-sm text-gray-500 dark:text-stone-400">
                                     Permanently remove all your chat history and conversations.
                                 </p>
                             </div>
@@ -306,7 +306,7 @@ const ProfilePage = () => {
 
                     {/* Delete Account Section - Modern & Minimalist */}
                     <motion.div
-                        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700 shadow-xl"
+                        className="bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-xl rounded-2xl p-6 border border-cream-300 dark:border-surface-muted shadow-xl"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
@@ -316,7 +316,7 @@ const ProfilePage = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-red-700 dark:group-hover:text-red-400 transition-colors">
                                     Delete Account
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                <p className="text-sm text-gray-500 dark:text-stone-400">
                                     Permanently remove your account and all of its contents.
                                 </p>
                             </div>

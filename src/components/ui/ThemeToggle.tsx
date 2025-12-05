@@ -62,7 +62,7 @@ const ThemeToggle = ({ size = 'md' }: ThemeToggleProps) => {
       <div
         className={`
           ${knobSizeClasses[size]} rounded-full
-          bg-white shadow-md
+          bg-cream-100 shadow-md
           transform transition-all duration-300 ease-out
           flex items-center justify-center
           ${isDark ? translateClasses[size] : 'translate-x-0'}

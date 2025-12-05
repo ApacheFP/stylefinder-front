@@ -170,12 +170,12 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
             )}
             {message.content}
           </div>
-          <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 mr-1">
+          <span className="text-[10px] text-gray-400 dark:text-stone-500 mt-1 mr-1">
             {formatTime(message.timestamp)}
           </span>
         </div>
-        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0 mt-1 ml-3">
-          <User className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+        <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-surface-muted flex items-center justify-center flex-shrink-0 mt-1 ml-3">
+          <User className="w-5 h-5 text-gray-500 dark:text-stone-400" />
         </div>
       </motion.div>
     );
@@ -214,14 +214,14 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
       onMouseLeave={() => setShowActions(false)}
     >
       {/* Avatar */}
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center flex-shrink-0 mt-1 mr-3 shadow-md">
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center flex-shrink-0 mt-1 mr-3 shadow-md">
         <Sparkles className="w-4 h-4 text-white" />
       </div>
 
       <div className={`flex-1 min-w-0 max-w-3xl relative group`}>
         {/* Text content */}
         {!activeOutfit ? (
-          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl rounded-tl-none px-5 py-4 shadow-sm max-w-lg relative">
+          <div className="bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-muted rounded-2xl rounded-tl-none px-5 py-4 shadow-sm max-w-lg relative">
             <div className="prose prose-sm max-w-none dark:prose-invert">
               <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
@@ -230,13 +230,13 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
             {showActions && message.content && (
               <button
                 onClick={handleCopy}
-                className="absolute -right-10 top-2 p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors opacity-0 group-hover:opacity-100"
+                className="absolute -right-10 top-2 p-1.5 rounded-lg bg-gray-100 dark:bg-surface-muted hover:bg-gray-200 dark:hover:bg-surface-border transition-colors opacity-0 group-hover:opacity-100"
                 title="Copy message"
               >
                 {copied ? (
                   <Check className="w-4 h-4 text-green-500" />
                 ) : (
-                  <Copy className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <Copy className="w-4 h-4 text-gray-500 dark:text-stone-400" />
                 )}
               </button>
             )}
@@ -244,7 +244,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
         ) : (
           <div className="space-y-3">
             {/* Text bubble for messages with outfit - Full width to match outfit card */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl rounded-tl-none px-5 py-4 shadow-sm w-full">
+            <div className="bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-muted rounded-2xl rounded-tl-none px-5 py-4 shadow-sm w-full">
               <div className="prose prose-sm max-w-none dark:prose-invert">
                 <ReactMarkdown>{message.content}</ReactMarkdown>
               </div>
@@ -265,7 +265,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
                       px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
                       ${activeOutfitIndex === index
                         ? 'bg-primary text-white shadow-md'
-                        : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        : 'bg-cream-100 dark:bg-surface-darker text-text-medium dark:text-stone-300 border border-cream-300 dark:border-surface-muted hover:bg-cream-200 dark:hover:bg-surface-muted'
                       }
                     `}
                   >
@@ -276,7 +276,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
             )}
 
             {/* Outfit card with products */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-lg shadow-gray-100/50 dark:shadow-black/20 w-full">
+            <div className="bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-muted rounded-2xl p-5 shadow-lg shadow-gray-100/50 dark:shadow-black/20 w-full">
               {/* Outfit Header & Gallery Toggle */}
               <div className="flex items-center justify-between mb-4 px-1">
                 <div className="flex items-center gap-2">
@@ -307,15 +307,15 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
               </div>
 
               {/* Outfit Summary Box */}
-              <div className="flex items-center justify-between mb-5 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-5 p-4 bg-gray-50 dark:bg-surface-muted/30 rounded-xl border border-gray-100 dark:border-surface-muted">
                 <div className="flex items-center gap-6">
                   <div className="flex flex-col">
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Estimated Total</span>
+                    <span className="text-[10px] text-gray-500 dark:text-stone-400 font-bold uppercase tracking-wider mb-0.5">Estimated Total</span>
                     <span className="text-xl font-bold text-gray-900 dark:text-white">${totalPrice.toFixed(2)}</span>
                   </div>
                   {activeOutfit.remainingBudget != null && (
-                    <div className="flex flex-col border-l border-gray-200 dark:border-gray-600 pl-6">
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Remaining Budget</span>
+                    <div className="flex flex-col border-l border-gray-200 dark:border-surface-border pl-6">
+                      <span className="text-[10px] text-gray-500 dark:text-stone-400 font-bold uppercase tracking-wider mb-0.5">Remaining Budget</span>
                       <span className={`text-xl font-bold ${activeOutfit.remainingBudget >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                         ${activeOutfit.remainingBudget.toFixed(2)}
                       </span>
@@ -383,7 +383,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
         )}
 
         {/* Timestamp for assistant messages */}
-        <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-1 ml-1 block">
+        <span className="text-[10px] text-gray-400 dark:text-stone-500 mt-1 ml-1 block">
           {formatTime(message.timestamp)}
         </span>
       </div>

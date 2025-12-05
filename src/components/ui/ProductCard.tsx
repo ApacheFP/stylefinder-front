@@ -24,7 +24,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 overflow-hidden hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-300 w-full flex-shrink-0 group cursor-pointer relative"
+      className="bg-cream-100 dark:bg-surface-darker rounded-xl shadow-sm border border-cream-300 dark:border-surface-border overflow-hidden hover:shadow-lg hover:shadow-black/10 dark:hover:shadow-black/30 transition-all duration-300 w-full flex-shrink-0 group cursor-pointer relative"
       whileHover={{}}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -34,13 +34,13 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image with gradient background */}
-      <div className="w-full h-[130px] bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 flex items-center justify-center overflow-hidden relative">
+      <div className="w-full h-[130px] bg-gradient-to-b from-cream-100 to-cream-50 dark:from-surface-darker dark:to-surface-dark flex items-center justify-center overflow-hidden relative">
         {item.imageUrl && !imageError ? (
           <>
             {!imageLoaded && (
-              <div className="absolute inset-0 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700">
+              <div className="absolute inset-0 bg-gradient-to-r from-cream-200 via-cream-100 to-cream-200 dark:from-surface-muted dark:via-surface-darker dark:to-surface-muted">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
                 />
@@ -51,7 +51,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               alt={item.name}
               loading="lazy"
               referrerPolicy="no-referrer"
-              className="max-w-[90%] max-h-[90%] object-contain transition-all duration-300 mix-blend-multiply dark:mix-blend-normal"
+              className="max-w-[90%] max-h-[90%] object-contain transition-all duration-300 rounded-lg bg-white p-1 shadow-sm"
               initial={{ opacity: 0 }}
               animate={{
                 opacity: imageLoaded ? (isHovered ? 0.4 : 1) : 0,
@@ -72,7 +72,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
                   transition={{ duration: 0.2 }}
                   className="absolute inset-0 flex items-center justify-center"
                 >
-                  <div className="p-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 dark:border-gray-700/50">
+                  <div className="p-3 bg-cream-100/80 dark:bg-surface-dark/80 backdrop-blur-md rounded-full shadow-lg border border-white/50 dark:border-surface-muted/50">
                     <Maximize2 className="w-5 h-5 text-primary dark:text-primary-light" />
                   </div>
                 </motion.div>
@@ -81,8 +81,8 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center p-4 text-center">
-            <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-full">
-              <ImageOff className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+            <div className="p-2.5 bg-cream-200 dark:bg-surface-muted rounded-full">
+              <ImageOff className="w-5 h-5 text-text-muted dark:text-stone-500" />
             </div>
           </div>
         )}
@@ -90,11 +90,11 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
 
         {/* Availability Badge */}
         {item.available === false ? (
-          <div className="absolute top-2 right-2 bg-red-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-10">
+          <div className="absolute top-2 right-2 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-sm border-2 border-red-500 text-red-600 dark:text-red-400 text-[9px] font-bold px-2 py-1 rounded-full shadow-sm z-10 flex items-center justify-center leading-none">
             OUT OF STOCK
           </div>
         ) : (
-          <div className="absolute top-2 right-2 bg-green-500/90 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-sm z-10">
+          <div className="absolute top-2 right-2 bg-white/90 dark:bg-surface-dark/90 backdrop-blur-sm border-2 border-green-500 text-green-600 dark:text-green-400 text-[9px] font-bold px-2 py-1 rounded-full shadow-sm z-10 flex items-center justify-center leading-none">
             IN STOCK
           </div>
         )}
@@ -112,7 +112,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
         )}
 
         {/* Product name */}
-        <h3 className="font-medium text-[11px] text-gray-800 dark:text-gray-100 line-clamp-2 leading-tight min-h-[2.2em]">
+        <h3 className="font-medium text-[11px] text-gray-800 dark:text-stone-100 line-clamp-2 leading-tight min-h-[2.2em]">
           {item.name}
         </h3>
 
@@ -138,7 +138,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               <span>{item.available === false ? 'Sold Out' : 'Shop'}</span>
             </motion.button>
           ) : (
-            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-400 text-[10px] font-medium rounded-md">
+            <span className="px-2 py-0.5 bg-gray-100 dark:bg-surface-muted text-gray-400 text-[10px] font-medium rounded-md">
               N/A
             </span>
           )}

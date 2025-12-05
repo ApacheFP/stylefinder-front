@@ -53,12 +53,13 @@ const ChatPage = () => {
   } = useChatMessages();
 
   // Auto-scroll behavior
-  const { scrollRef, showScrollButton, scrollToBottom, handleScroll } = useScrollToBottom(messages.length);
+  const { scrollRef, showScrollButton, scrollToBottom, scrollToBottomIfNotScrolledUp, handleScroll } = useScrollToBottom(messages.length);
 
   // Set scroll callback after scrollToBottom is available
+  // Use the conditional scroll for automatic scrolling (respects user's scroll position)
   useEffect(() => {
-    setOnNewMessage(scrollToBottom);
-  }, [scrollToBottom, setOnNewMessage]);
+    setOnNewMessage(scrollToBottomIfNotScrolledUp);
+  }, [scrollToBottomIfNotScrolledUp, setOnNewMessage]);
 
   const {
     selectedImage,
@@ -115,8 +116,13 @@ const ChatPage = () => {
         console.error('Failed to load chat from URL:', error);
       });
     }
-    // Note: If chatId === currentChatId, we're already showing the right chat, so do nothing
-  }, [chatId, currentChatId, loadChatMessages, clearImage, navigate]);
+    // If there's no chatId in URL but we have a currentChatId, reset to new chat state
+    if (!chatId && currentChatId) {
+      clearMessages();
+      setInputMessage('');
+      clearImage();
+    }
+  }, [chatId, currentChatId, loadChatMessages, clearImage, clearMessages]);
 
   // Add new conversation to history when created
   useEffect(() => {
@@ -210,7 +216,7 @@ const ChatPage = () => {
   const showEmptyState = messages.length === 0;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background dark:bg-gray-900">
+    <div className="flex h-screen overflow-hidden bg-background dark:bg-surface-dark">
       {/* Hamburger Menu - Mobile Only */}
       <HamburgerMenu
         isOpen={isSidebarOpen}
@@ -221,9 +227,11 @@ const ChatPage = () => {
       <Sidebar
         chatHistory={chatHistory}
         currentChatId={currentChatId}
+        isNewChat={!chatId && messages.length === 0}
         isLoadingHistory={isLoadingHistory}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
+        onNewChat={handleNewChat}
         onRenameChat={async (chatId, newTitle) => {
           try {
             const success = await chatService.renameConversation(chatId, newTitle);
@@ -298,15 +306,15 @@ const ChatPage = () => {
                     onExplainOutfit={explainOutfit}
                     isLoadingExplanation={loadingExplanationId === message.id}
                     onRetry={(msgId, originalMsg, originalImg) => retryMessage(msgId, originalMsg, originalImg)}
-                    onContentChange={scrollToBottom}
+                    onContentChange={scrollToBottomIfNotScrolledUp}
                   />
                 ))
               )}
 
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-50 dark:bg-gray-800 border border-border dark:border-gray-700 px-6 py-4 rounded-2xl flex items-center gap-3">
-                    <span className="text-sm font-inter text-text-medium dark:text-gray-300">
+                  <div className="bg-gray-50 dark:bg-surface-darker border border-border dark:border-surface-muted px-6 py-4 rounded-2xl flex items-center gap-3">
+                    <span className="text-sm font-inter text-text-medium dark:text-stone-300">
                       {loadingStatus || 'AI is thinking'}
                     </span>
                     <TypingIndicator />

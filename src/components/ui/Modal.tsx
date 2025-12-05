@@ -41,11 +41,11 @@ const Modal = ({ isOpen, onClose, children, className = '' }: ModalProps) => {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             onClick={(e) => e.stopPropagation()}
-                            className={`bg-white dark:bg-gray-900 rounded-2xl shadow-2xl relative overflow-hidden ${className}`}
+                            className={`bg-cream-50 dark:bg-surface-dark rounded-2xl shadow-2xl relative overflow-hidden ${className}`}
                         >
                             <button
                                 onClick={onClose}
-                                className="absolute top-4 right-4 p-2 bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white transition-colors z-10"
+                                className="absolute top-4 right-4 p-2 bg-cream-100/80 dark:bg-surface-darker/80 hover:bg-cream-200 dark:hover:bg-surface-darker rounded-full text-text-medium dark:text-stone-400 hover:text-text-dark dark:hover:text-white transition-colors z-10"
                             >
                                 <X className="w-5 h-5" />
                             </button>

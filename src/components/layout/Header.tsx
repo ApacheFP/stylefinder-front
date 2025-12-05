@@ -42,7 +42,7 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-900 dark:border-gray-800 border-b border-border px-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
+    <header className="bg-cream-100 dark:bg-surface-dark dark:border-surface-muted border-b border-cream-300 px-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
       <Link to="/">
         <h1 className="text-lg md:text-xl lg:text-[22px] font-roboto font-bold text-text-dark dark:text-white hover:text-primary transition-colors">
           StyleFinder AI
@@ -61,42 +61,42 @@ const Header = () => {
               <span className="hidden sm:block text-sm font-inter text-text-medium dark:text-white">
                 {userName}
               </span>
-              <div className="w-9 h-9 md:w-10 md:h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold font-inter cursor-pointer hover:bg-blue-600 transition-colors">
+              <div className="w-9 h-9 md:w-10 md:h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold font-inter cursor-pointer hover:bg-primary-hover transition-colors">
                 {userName?.charAt(0).toUpperCase()}
               </div>
             </button>
 
             {/* User Dropdown Menu */}
             {showUserMenu && (
-              <div className="absolute right-0 top-full mt-2 w-52 md:w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-border dark:border-gray-700 py-2 z-50">
-                <div className="px-4 py-2 md:py-3 border-b border-border dark:border-gray-700">
+              <div className="absolute right-0 top-full mt-2 w-52 md:w-56 bg-cream-100 dark:bg-surface-darker rounded-xl shadow-lg border border-cream-300 dark:border-surface-muted py-2 z-50">
+                <div className="px-4 py-2 md:py-3 border-b border-cream-300 dark:border-surface-muted">
                   <p className="text-sm font-roboto font-bold text-text-dark dark:text-white">{userName}</p>
-                  <p className="text-xs font-inter text-text-light dark:text-gray-400 truncate">{user?.email}</p>
+                  <p className="text-xs font-inter text-text-light dark:text-stone-400 truncate">{user?.email}</p>
                 </div>
 
                 <Link
                   to="/preferences"
                   onClick={() => setShowUserMenu(false)}
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex items-center gap-3 px-4 py-2 hover:bg-cream-200 dark:hover:bg-surface-muted transition-colors"
                 >
-                  <Settings className="w-4 h-4 text-text-medium dark:text-gray-400" />
-                  <span className="text-sm font-inter text-text-dark dark:text-gray-200">Preferences</span>
+                  <Settings className="w-4 h-4 text-text-medium dark:text-stone-400" />
+                  <span className="text-sm font-inter text-text-dark dark:text-stone-200">Preferences</span>
                 </Link>
 
                 <Link
                   to="/profile"
                   onClick={() => setShowUserMenu(false)}
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="flex items-center gap-3 px-4 py-2 hover:bg-cream-200 dark:hover:bg-surface-muted transition-colors"
                 >
-                  <UserIcon className="w-4 h-4 text-text-medium dark:text-gray-400" />
-                  <span className="text-sm font-inter text-text-dark dark:text-gray-200">Profile</span>
+                  <UserIcon className="w-4 h-4 text-text-medium dark:text-stone-400" />
+                  <span className="text-sm font-inter text-text-dark dark:text-stone-200">Profile</span>
                 </Link>
 
-                <div className="border-t border-border dark:border-gray-700 my-2"></div>
+                <div className="border-t border-border dark:border-surface-muted my-2"></div>
 
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors w-full text-left"
+                  className="flex items-center gap-3 px-4 py-2 hover:bg-cream-200 dark:hover:bg-surface-muted transition-colors w-full text-left"
                 >
                   <LogOut className="w-4 h-4 text-red-500" />
                   <span className="text-sm font-inter text-red-500">Logout</span>
@@ -107,7 +107,7 @@ const Header = () => {
         ) : (
           <div className="flex items-center gap-2 md:gap-3">
             <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-xs md:text-sm px-3 md:px-4 border border-gray-200 dark:border-gray-700">Log In</Button>
+              <Button variant="ghost" size="sm" className="text-xs md:text-sm px-3 md:px-4 border border-stone-200 dark:border-surface-muted">Log In</Button>
             </Link>
             <Link to="/signup">
               <Button variant="primary" size="sm" className="text-xs md:text-sm px-3 md:px-4">Sign Up</Button>

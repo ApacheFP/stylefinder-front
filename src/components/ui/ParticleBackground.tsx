@@ -36,12 +36,12 @@ const ParticleBackground = () => {
                 this.speedX = Math.random() * 0.5 - 0.25; // Random speed
                 this.speedY = Math.random() * 0.5 - 0.25;
 
-                // Theme-aware colors - Celeste/Primary
+                // Theme-aware colors - Warm bronze/tan
                 const isDark = document.documentElement.classList.contains('dark');
-                // Using a light blue/cyan color (celeste)
+                // Using warm bronze colors
                 this.color = isDark
-                    ? `rgba(56, 189, 248, ${Math.random() * 0.3 + 0.1})` // Sky blue for dark mode
-                    : `rgba(14, 165, 233, ${Math.random() * 0.2 + 0.05})`; // Sky blue for light mode
+                    ? `rgba(196, 164, 132, ${Math.random() * 0.3 + 0.1})` // Light bronze for dark mode
+                    : `rgba(166, 124, 82, ${Math.random() * 0.2 + 0.05})`; // Bronze for light mode
             }
 
             update() {

@@ -52,7 +52,7 @@ const Tooltip = ({ children, content, position = 'top', delay = 300 }: TooltipPr
                         role="tooltip"
                         aria-live="polite"
                     >
-                        <div className="bg-gray-900 dark:bg-gray-700 text-white text-xs font-inter px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                        <div className="bg-gray-900 dark:bg-surface-muted text-white text-xs font-inter px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
                             {content}
                         </div>
                     </motion.div>

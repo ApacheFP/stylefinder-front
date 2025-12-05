@@ -15,7 +15,7 @@ describe('Skeleton', () => {
         const { container } = render(<Skeleton />);
         const skeleton = container.firstChild;
 
-        expect(skeleton).toHaveClass('bg-gray-200', 'dark:bg-gray-700', 'h-4', 'rounded');
+        expect(skeleton).toHaveClass('bg-gray-200', 'dark:bg-surface-muted', 'h-4', 'rounded');
     });
 
     it('renders circular variant', () => {

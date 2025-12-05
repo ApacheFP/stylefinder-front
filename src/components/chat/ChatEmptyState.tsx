@@ -49,7 +49,7 @@ const ChatEmptyState = ({ isLoggedIn, userName, onSuggestionClick }: ChatEmptySt
               <h2 className="text-[32px] font-roboto font-bold text-text-dark dark:text-white mb-2">
                 Hi {userName}!
               </h2>
-              <p className="font-inter text-[16px] text-text-light dark:text-gray-400 max-w-md mx-auto">
+              <p className="font-inter text-[16px] text-text-light dark:text-stone-400 max-w-md mx-auto">
                 {showSuggestions ? 'Ready to find your perfect look? Choose a style below or type your own.' : 'How can I help you today?'}
               </p>
             </>
@@ -58,7 +58,7 @@ const ChatEmptyState = ({ isLoggedIn, userName, onSuggestionClick }: ChatEmptySt
               <h2 className="text-[32px] font-roboto font-bold text-text-medium dark:text-white mb-2">
                 StyleFinder AI
               </h2>
-              <p className="text-sm md:text-base font-inter text-text-medium dark:text-gray-300 mb-3">
+              <p className="text-sm md:text-base font-inter text-text-medium dark:text-stone-300 mb-3">
                 What would you like to find today?
               </p>
             </>
@@ -77,7 +77,7 @@ const ChatEmptyState = ({ isLoggedIn, userName, onSuggestionClick }: ChatEmptySt
                 <motion.button
                   key={index}
                   onClick={() => onSuggestionClick?.(suggestion.prompt)}
-                  className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-gray-100 dark:border-gray-700 rounded-xl p-4 md:p-5 text-center transition-all duration-300 hover:border-primary dark:hover:border-primary-light hover:shadow-xl dark:hover:shadow-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/30 overflow-hidden"
+                  className="group relative bg-cream-100/90 dark:bg-surface-darker/90 backdrop-blur-sm border-2 border-cream-300 dark:border-surface-muted rounded-xl p-4 md:p-5 text-center transition-all duration-300 hover:border-primary dark:hover:border-primary-light hover:shadow-xl dark:hover:shadow-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/30 overflow-hidden"
                   whileHover={{
                     scale: 1.05,
                     y: -5,
@@ -99,7 +99,7 @@ const ChatEmptyState = ({ isLoggedIn, userName, onSuggestionClick }: ChatEmptySt
                     <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-lg group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
                       <Icon className="w-5 h-5 text-primary dark:text-primary-light group-hover:text-white transition-colors duration-300" />
                     </div>
-                    <p className="font-inter text-sm font-medium text-text-dark dark:text-gray-100 group-hover:text-primary dark:group-hover:text-primary-light transition-colors duration-300">
+                    <p className="font-inter text-sm font-medium text-text-dark dark:text-stone-100 group-hover:text-primary dark:group-hover:text-primary-light transition-colors duration-300">
                       {suggestion.text}
                     </p>
                   </div>
@@ -122,35 +122,35 @@ const ChatEmptyState = ({ isLoggedIn, userName, onSuggestionClick }: ChatEmptySt
           >
             {/* Divider with "or" */}
             <div className="flex items-center gap-3 mb-6 justify-center">
-              <span className="h-px flex-1 bg-gray-300 dark:bg-gray-700"></span>
-              <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400">OR UPLOAD A PHOTO TO</span>
-              <span className="h-px flex-1 bg-gray-300 dark:bg-gray-700"></span>
+              <span className="h-px flex-1 bg-stone-300 dark:bg-surface-muted"></span>
+              <span className="text-xs font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400">OR UPLOAD A PHOTO TO</span>
+              <span className="h-px flex-1 bg-stone-300 dark:bg-surface-muted"></span>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <motion.div
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-default"
+                className="bg-cream-100/90 dark:bg-surface-darker/90 backdrop-blur-sm border border-cream-300 dark:border-surface-muted p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-default"
                 whileHover={{ scale: 1.03 }}
               >
-                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-500 dark:text-blue-400">
+                <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-xl text-primary dark:text-primary-light">
                   <Search className="w-5 h-5" />
                 </div>
                 <div className="text-center">
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">Find Similar</h4>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">Discover items matching your photo</p>
+                  <h4 className="text-sm font-bold text-stone-900 dark:text-white">Find Similar</h4>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-tight mt-0.5">Discover items matching your photo</p>
                 </div>
               </motion.div>
 
               <motion.div
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-100 dark:border-gray-700 p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-default"
+                className="bg-cream-100/90 dark:bg-surface-darker/90 backdrop-blur-sm border border-cream-300 dark:border-surface-muted p-4 rounded-2xl flex flex-col items-center gap-2 shadow-sm hover:shadow-md transition-all cursor-default"
                 whileHover={{ scale: 1.03 }}
               >
-                <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-500 dark:text-purple-400">
+                <div className="p-2 bg-primary/10 dark:bg-primary/20 rounded-xl text-primary dark:text-primary-light">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div className="text-center">
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white">Complete Outfit</h4>
-                  <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-tight mt-0.5">Get matching pieces for your item</p>
+                  <h4 className="text-sm font-bold text-stone-900 dark:text-white">Complete Outfit</h4>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-tight mt-0.5">Get matching pieces for your item</p>
                 </div>
               </motion.div>
             </div>

@@ -10,9 +10,11 @@ import { staggerContainer } from '../../utils/animations';
 interface SidebarProps {
   chatHistory: ChatHistory[];
   currentChatId?: string;
+  isNewChat?: boolean;
   isLoadingHistory?: boolean;
   onRenameChat: (chatId: string, newTitle: string) => Promise<void>;
   onDeleteChat: (chatId: string) => Promise<void>;
+  onNewChat?: () => void;
   isOpen?: boolean;
   onClose?: () => void;
 }
@@ -20,9 +22,11 @@ interface SidebarProps {
 const Sidebar = ({
   chatHistory,
   currentChatId,
+  isNewChat = false,
   isLoadingHistory = false,
   onRenameChat,
   onDeleteChat,
+  onNewChat,
   isOpen = true,
   onClose
 }: SidebarProps) => {
@@ -41,7 +45,7 @@ const Sidebar = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setActiveMenuId(null);
-        setDeleteConfirmId(null); // Also reset delete confirmation
+        setDeleteConfirmId(null);
       }
     };
 
@@ -141,30 +145,41 @@ const Sidebar = ({
             x: isOpen ? 0 : -280,
           }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="fixed lg:static top-0 left-0 w-64 lg:w-64 bg-white dark:bg-gray-900 border-r border-border dark:border-gray-700 flex flex-col h-screen z-50"
+          className="fixed lg:static top-0 left-0 w-64 lg:w-64 bg-cream-100 dark:bg-surface-dark border-r border-cream-300 dark:border-surface-muted flex flex-col h-screen z-50"
           role="navigation"
           aria-label="Chat history sidebar"
         >
           {/* Close button - only on mobile */}
           <button
             onClick={onClose}
-            className="lg:hidden absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="lg:hidden absolute top-4 right-4 p-2 hover:bg-cream-200 dark:hover:bg-surface-muted rounded-lg transition-colors"
             aria-label="Close sidebar"
           >
-            <X className="w-5 h-5 text-text-dark dark:text-gray-200" />
+            <X className="w-5 h-5 text-text-dark dark:text-stone-200" />
           </button>
           {/* New Chat Button */}
           <div className="p-4">
             <Button
               onClick={() => {
-                navigate('/chat');
+                // Don't do anything if already in new chat
+                if (isNewChat) return;
+                
+                // Use the callback if provided, otherwise just navigate
+                if (onNewChat) {
+                  onNewChat();
+                } else {
+                  navigate('/chat');
+                }
                 // Close sidebar on mobile after creating new chat
                 if (window.innerWidth < 1024) {
                   onClose?.();
                 }
               }}
               variant="outline"
-              className="w-full justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              disabled={isNewChat}
+              className={`w-full justify-center gap-2 ${isNewChat 
+                ? 'bg-primary/10 border-primary/30 text-primary cursor-default' 
+                : 'bg-cream-100 dark:bg-surface-darker hover:bg-cream-200 dark:hover:bg-surface-muted'}`}
               aria-label="Start new chat"
             >
               <Plus className="w-4 h-4" />
@@ -175,7 +190,7 @@ const Sidebar = ({
           {/* History Section */}
           <div className="flex-1 overflow-y-auto">
             <div className="px-4 py-2">
-              <h3 className="text-xs font-roboto font-bold text-text-medium dark:text-gray-300 uppercase tracking-wide mb-3">
+              <h3 className="text-xs font-roboto font-bold text-text-medium dark:text-stone-400 uppercase tracking-wide mb-3">
                 HISTORY
               </h3>
               <motion.div
@@ -186,19 +201,19 @@ const Sidebar = ({
                 {isLoadingHistory ? (
                   <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
                     <Loader2 className="w-6 h-6 text-primary animate-spin mb-3" />
-                    <p className="text-sm font-inter text-text-light dark:text-gray-400">
+                    <p className="text-sm font-inter text-text-light dark:text-stone-500">
                       Loading history...
                     </p>
                   </div>
                 ) : sortedChatHistory.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
-                    <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full mb-3">
-                      <MessageSquare className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                    <div className="p-3 bg-stone-100 dark:bg-surface-muted rounded-full mb-3">
+                      <MessageSquare className="w-6 h-6 text-stone-400 dark:text-stone-500" />
                     </div>
-                    <p className="text-sm font-inter text-text-light dark:text-gray-400 mb-1">
+                    <p className="text-sm font-inter text-text-light dark:text-stone-500 mb-1">
                       No conversations yet
                     </p>
-                    <p className="text-xs font-inter text-text-light dark:text-gray-500">
+                    <p className="text-xs font-inter text-text-light dark:text-stone-600">
                       Start chatting to see your history here
                     </p>
                   </div>
@@ -216,19 +231,19 @@ const Sidebar = ({
                             onKeyDown={(e) => {
                               if (e.key === 'Escape') handleRenameCancel();
                             }}
-                            className="flex-1 min-w-0 text-sm bg-white dark:bg-gray-800 border border-primary rounded px-2 py-1 outline-none text-text-dark dark:text-gray-200"
+                            className="flex-1 min-w-0 text-sm bg-cream-100 dark:bg-surface-darker border border-primary rounded px-2 py-1 outline-none text-text-dark dark:text-stone-200"
                             autoFocus
                           />
                           <button
                             type="submit"
-                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-green-600"
+                            className="p-1 hover:bg-cream-200 dark:hover:bg-surface-muted rounded text-green-600"
                           >
                             <Check className="w-4 h-4" />
                           </button>
                           <button
                             type="button"
                             onClick={handleRenameCancel}
-                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-red-500"
+                            className="p-1 hover:bg-cream-200 dark:hover:bg-surface-muted rounded text-red-500"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -243,8 +258,8 @@ const Sidebar = ({
                             }
                           }}
                           className={`w-full text-left px-3 py-2 rounded-lg text-sm font-inter transition-all duration-200 flex items-center justify-between group ${currentChatId === chat.id
-                            ? 'bg-primary/5 text-primary font-medium border border-primary/10'
-                            : 'text-text-dark dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 border border-transparent'
+                            ? 'bg-primary/10 text-primary font-medium border border-primary/20 shadow-sm'
+                            : 'text-text-dark dark:text-stone-200 hover:bg-primary/5 dark:hover:bg-surface-muted hover:border-primary/10 border border-transparent'
                             }`}
                           title={chat.title}
                           aria-label={`Open chat: ${chat.title}`}
@@ -257,8 +272,8 @@ const Sidebar = ({
                             className={`opacity-0 group-hover:opacity-100 transition-opacity ${activeMenuId === chat.id ? 'opacity-100' : ''}`}
                             onClick={(e) => handleMenuClick(e, chat.id)}
                           >
-                            <div className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">
-                              <MoreVertical className="w-4 h-4 text-gray-500" />
+                            <div className="p-1 hover:bg-stone-200 dark:hover:bg-surface-border rounded-md">
+                              <MoreVertical className="w-4 h-4 text-stone-500" />
                             </div>
                           </div>
                         </button>
@@ -272,17 +287,17 @@ const Sidebar = ({
                             initial={{ opacity: 0, scale: 0.95, y: -10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                            className="absolute right-2 top-8 z-50 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 overflow-hidden"
+                            className="absolute right-2 top-8 z-50 w-40 bg-cream-100 dark:bg-surface-darker rounded-lg shadow-lg border border-cream-300 dark:border-surface-muted py-1 overflow-hidden"
                           >
                             {deleteConfirmId === chat.id ? (
                               <div className="p-2">
-                                <p className="text-xs text-center text-gray-600 dark:text-gray-300 mb-2">
+                                <p className="text-xs text-center text-stone-600 dark:text-stone-300 mb-2">
                                   Delete chat?
                                 </p>
                                 <div className="flex gap-2">
                                   <button
                                     onClick={(e) => cancelDelete(e)}
-                                    className="flex-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
+                                    className="flex-1 px-2 py-1 text-xs bg-stone-100 dark:bg-surface-muted rounded hover:bg-stone-200 dark:hover:bg-surface-border text-stone-700 dark:text-stone-200"
                                   >
                                     No
                                   </button>
@@ -298,7 +313,7 @@ const Sidebar = ({
                               <>
                                 <button
                                   onClick={(e) => handleRenameClick(e, chat)}
-                                  className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
+                                  className="w-full text-left px-3 py-2 text-sm text-stone-700 dark:text-stone-200 hover:bg-cream-200 dark:hover:bg-surface-muted flex items-center gap-2"
                                 >
                                   <Edit2 className="w-3 h-3" />
                                   Rename
@@ -324,8 +339,8 @@ const Sidebar = ({
 
 
           {/* Footer - How to Use */}
-          <div className="p-4 border-t border-border dark:border-gray-700">
-            <Link to="/how-to-use" className="flex items-center gap-3 px-2 py-2 text-text-medium dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+          <div className="p-4 border-t border-border dark:border-surface-muted">
+            <Link to="/how-to-use" className="flex items-center gap-3 px-2 py-2 text-text-medium dark:text-stone-400 hover:text-primary dark:hover:text-white transition-colors">
               <HelpCircle className="w-5 h-5" />
               <span className="text-sm font-medium">How to use</span>
             </Link>
@@ -358,17 +373,17 @@ const Sidebar = ({
           x: isOpen ? 0 : -280,
         }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-        className="fixed lg:static top-0 left-0 w-64 lg:w-64 bg-white dark:bg-gray-900 border-r border-border dark:border-gray-700 flex flex-col h-screen z-50"
+        className="fixed lg:static top-0 left-0 w-64 lg:w-64 bg-cream-100 dark:bg-surface-dark border-r border-cream-300 dark:border-surface-muted flex flex-col h-screen z-50"
         role="navigation"
         aria-label="Sidebar"
       >
         {/* Close button - only on mobile */}
         <button
           onClick={onClose}
-          className="lg:hidden absolute top-4 right-4 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          className="lg:hidden absolute top-4 right-4 p-2 hover:bg-cream-200 dark:hover:bg-surface-muted rounded-lg transition-colors"
           aria-label="Close sidebar"
         >
-          <X className="w-5 h-5 text-text-dark dark:text-gray-200" />
+          <X className="w-5 h-5 text-text-dark dark:text-stone-200" />
         </button>
         {/* New Chat Button */}
         <div className="p-4">
@@ -381,7 +396,7 @@ const Sidebar = ({
               }
             }}
             variant="outline"
-            className="w-full justify-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="w-full justify-center gap-2 bg-cream-100 dark:bg-surface-darker hover:bg-cream-200 dark:hover:bg-surface-muted"
             aria-label="Start new chat"
           >
             <Plus className="w-4 h-4" />
@@ -393,20 +408,20 @@ const Sidebar = ({
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full px-6">
             {/* Chat History Title - centered */}
-            <h3 className="text-lg font-roboto font-bold text-text-dark dark:text-gray-100 text-center mb-4">
+            <h3 className="text-lg font-roboto font-bold text-text-dark dark:text-stone-100 text-center mb-4">
               Chat History
             </h3>
 
             {/* Auth Note - directly under Chat History */}
-            <p className="text-center text-xs font-inter text-text-medium dark:text-gray-300 leading-relaxed mb-4">
+            <p className="text-center text-xs font-inter text-text-medium dark:text-stone-400 leading-relaxed mb-4">
               Log in or sign up to save your conversations.
             </p>
           </div>
         </div>
 
         {/* Footer - How to Use */}
-        <div className="p-4 border-t border-border dark:border-gray-700">
-          <Link to="/how-to-use" className="flex items-center gap-3 px-2 py-2 text-text-medium dark:text-gray-400 hover:text-primary dark:hover:text-white transition-colors">
+        <div className="p-4 border-t border-border dark:border-surface-muted">
+          <Link to="/how-to-use" className="flex items-center gap-3 px-2 py-2 text-text-medium dark:text-stone-400 hover:text-primary dark:hover:text-white transition-colors">
             <HelpCircle className="w-5 h-5" />
             <span className="text-sm font-medium">How to use</span>
           </Link>

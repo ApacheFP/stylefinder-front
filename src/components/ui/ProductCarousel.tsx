@@ -86,25 +86,36 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
     if (!currentItem) return null;
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-5xl overflow-hidden flex flex-col md:flex-row h-[85vh] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700">
+        <Modal isOpen={isOpen} onClose={onClose} className="w-full max-w-5xl overflow-hidden flex flex-col md:flex-row h-[85vh] bg-cream-50 dark:bg-surface-dark rounded-2xl shadow-2xl border border-white/20 dark:border-surface-muted">
             {/* Image Section */}
-            <div className="w-full md:w-[60%] bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 relative flex flex-col items-center justify-center p-0 overflow-hidden group">
+            <div className="w-full md:w-[60%] bg-gradient-to-b from-cream-100 to-cream-50 dark:from-surface-darker dark:to-surface-dark relative flex flex-col items-center justify-center p-0 overflow-hidden group">
 
                 {/* Counter - Glassmorphism */}
-                <div className="absolute top-6 left-6 bg-white/60 dark:bg-black/60 backdrop-blur-xl px-4 py-2 rounded-full text-xs font-bold text-gray-800 dark:text-white/90 shadow-sm z-20 border border-white/40 dark:border-white/10 tracking-wider">
+                <div className="absolute top-6 left-6 bg-cream-100/80 dark:bg-black/60 backdrop-blur-xl px-4 py-2 rounded-full text-xs font-bold text-text-dark dark:text-white/90 shadow-sm z-20 border border-cream-300/60 dark:border-white/10 tracking-wider">
                     {currentIndex + 1} / {items.length}
                 </div>
 
                 {/* Zoom Toggle - Glassmorphism */}
                 <button
                     onClick={handleZoomToggle}
-                    className="absolute top-6 right-6 p-2.5 bg-white/60 dark:bg-black/60 backdrop-blur-xl rounded-full text-gray-800 dark:text-white/90 shadow-sm z-20 border border-white/40 dark:border-white/10 hover:bg-white/80 dark:hover:bg-black/80 transition-all active:scale-95"
+                    className="absolute top-6 right-6 p-2.5 bg-cream-100/80 dark:bg-black/60 backdrop-blur-xl rounded-full text-text-dark dark:text-white/90 shadow-sm z-20 border border-cream-300/60 dark:border-white/10 hover:bg-cream-200 dark:hover:bg-black/80 transition-all active:scale-95"
                 >
                     {zoomLevel > 1 ? <ZoomOut className="w-4 h-4" /> : <ZoomIn className="w-4 h-4" />}
                 </button>
 
                 {/* Main Image Area */}
                 <div className="w-full h-full flex items-center justify-center relative z-0 p-8 md:p-12">
+                    {/* Availability Badge */}
+                    {currentItem.available === false ? (
+                        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-surface-dark/95 backdrop-blur-sm border-2 border-red-500 text-red-600 dark:text-red-400 text-xs font-bold px-4 py-2 rounded-full shadow-lg z-20 flex items-center justify-center leading-none">
+                            OUT OF STOCK
+                        </div>
+                    ) : (
+                        <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-surface-dark/95 backdrop-blur-sm border-2 border-green-500 text-green-600 dark:text-green-400 text-xs font-bold px-4 py-2 rounded-full shadow-lg z-20 flex items-center justify-center leading-none">
+                            IN STOCK
+                        </div>
+                    )}
+
                     <AnimatePresence initial={false} custom={direction} mode="popLayout">
                         <motion.div
                             key={currentIndex}
@@ -131,7 +142,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                                 animate={{ scale: zoomLevel }}
                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                 onDragStart={(e) => e.preventDefault()}
-                                className="max-w-full max-h-full object-contain drop-shadow-2xl select-none"
+                                className="max-w-full max-h-full object-contain drop-shadow-2xl select-none bg-white rounded-xl p-2"
                             />
                         </motion.div>
                     </AnimatePresence>
@@ -142,13 +153,13 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                     <>
                         <button
                             onClick={(e) => { e.stopPropagation(); handlePrevious(); }}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 p-3.5 bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-full text-gray-800 dark:text-white shadow-lg z-20 border border-white/40 hover:bg-white/50 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 hidden md:flex hover:scale-110 active:scale-95"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 p-3.5 bg-cream-100/50 dark:bg-black/30 backdrop-blur-md rounded-full text-text-dark dark:text-white shadow-lg z-20 border border-cream-300/60 dark:border-white/20 hover:bg-cream-200/70 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 hidden md:flex hover:scale-110 active:scale-95"
                         >
                             <ChevronLeft className="w-6 h-6" />
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 p-3.5 bg-white/30 dark:bg-black/30 backdrop-blur-md rounded-full text-gray-800 dark:text-white shadow-lg z-20 border border-white/40 hover:bg-white/50 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 hidden md:flex hover:scale-110 active:scale-95"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 p-3.5 bg-cream-100/50 dark:bg-black/30 backdrop-blur-md rounded-full text-text-dark dark:text-white shadow-lg z-20 border border-cream-300/60 dark:border-white/20 hover:bg-cream-200/70 dark:hover:bg-black/50 transition-all opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 hidden md:flex hover:scale-110 active:scale-95"
                         >
                             <ChevronRight className="w-6 h-6" />
                         </button>
@@ -157,7 +168,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
 
                 {/* Glass Thumbnails - Floating at bottom */}
                 {items.length > 1 && zoomLevel === 1 && (
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/20 dark:bg-black/20 backdrop-blur-xl border border-white/30 dark:border-white/10 p-2 rounded-2xl flex gap-3 shadow-2xl z-20 max-w-[90%] overflow-x-auto scrollbar-hide">
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-cream-100/30 dark:bg-black/20 backdrop-blur-xl border border-cream-300/50 dark:border-white/10 p-2 rounded-2xl flex gap-3 shadow-2xl z-20 max-w-[90%] overflow-x-auto scrollbar-hide">
                         {items.map((item, index) => (
                             <button
                                 key={item.id}
@@ -174,8 +185,14 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                                 <img
                                     src={item.imageUrl}
                                     alt={item.name}
-                                    className={`w-full h-full object-cover bg-white transition-opacity duration-300 ${index === currentIndex ? 'opacity-100' : 'opacity-60 group-hover/thumb:opacity-100'}`}
+                                    className={`w-full h-full object-cover bg-cream-50 dark:bg-white/90 transition-opacity duration-300 ${index === currentIndex ? 'opacity-100' : 'opacity-60 group-hover/thumb:opacity-100'} ${item.available === false ? 'grayscale' : ''}`}
                                 />
+                                {/* Out of stock indicator on thumbnail */}
+                                {item.available === false && (
+                                    <div className="absolute inset-0 bg-red-500/20 flex items-center justify-center">
+                                        <div className="w-full h-0.5 bg-red-500 rotate-45 absolute" />
+                                    </div>
+                                )}
                             </button>
                         ))}
                     </div>
@@ -183,11 +200,11 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
             </div>
 
             {/* Details Section */}
-            <div className="w-full md:w-[40%] h-full overflow-y-auto p-8 md:p-10 flex flex-col bg-white dark:bg-gray-900 relative border-l border-gray-100 dark:border-gray-800">
+            <div className="w-full md:w-[40%] h-full overflow-y-auto p-8 md:p-10 flex flex-col bg-cream-50 dark:bg-surface-dark relative border-l border-cream-300 dark:border-surface-darker">
                 {/* Close Button (Mobile) */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 md:hidden"
+                    className="absolute top-4 right-4 p-2 text-text-muted hover:text-text-dark dark:text-stone-400 dark:hover:text-white md:hidden"
                 >
                     <X className="w-5 h-5" />
                 </button>
@@ -209,7 +226,7 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         key={`title-${currentIndex}`}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 leading-tight font-display tracking-tight"
+                        className="text-3xl md:text-4xl font-bold text-text-dark dark:text-white mb-4 leading-tight font-display tracking-tight"
                     >
                         {currentItem.name}
                     </motion.h2>
@@ -229,10 +246,10 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                         transition={{ delay: 0.2 }}
                         className="space-y-4"
                     >
-                        <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-light">
+                        <p className="text-text-medium dark:text-stone-300 text-lg leading-relaxed font-light">
                             {currentItem.description || (
                                 <>
-                                    Elevate your style with this premium piece from <span className="font-medium text-gray-900 dark:text-white">{currentItem.brand || 'our collection'}</span>. Designed for comfort and versatility, it's the perfect addition to your modern wardrobe.
+                                    Elevate your style with this premium piece from <span className="font-medium text-text-dark dark:text-white">{currentItem.brand || 'our collection'}</span>. Designed for comfort and versatility, it's the perfect addition to your modern wardrobe.
                                 </>
                             )}
                         </p>
@@ -240,8 +257,8 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                     </motion.div>
                 </div>
 
-                <div className="mt-10 pt-8 border-t border-gray-50 dark:border-gray-800">
-                    {currentItem.link ? (
+                <div className="mt-10 pt-8 border-t border-cream-200 dark:border-surface-darker">
+                    {currentItem.available !== false && currentItem.link ? (
                         <a
                             href={currentItem.link}
                             target="_blank"
@@ -254,8 +271,8 @@ const ProductCarousel = ({ isOpen, onClose, items, initialIndex }: ProductCarous
                             <span className="relative z-10">Shop Now</span>
                         </a>
                     ) : (
-                        <div className="w-full py-4 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 text-sm font-medium rounded-xl text-center border border-gray-100 dark:border-gray-700 cursor-not-allowed">
-                            Out of Stock
+                        <div className="w-full py-4 bg-cream-200 dark:bg-surface-darker text-text-muted dark:text-stone-500 text-sm font-medium rounded-xl text-center border border-cream-300 dark:border-surface-muted cursor-not-allowed">
+                            {currentItem.available === false ? 'Out of Stock' : 'Link Not Available'}
                         </div>
                     )}
                 </div>

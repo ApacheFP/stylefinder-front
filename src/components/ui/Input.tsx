@@ -15,7 +15,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-[13px] md:text-[14px] font-roboto font-bold text-text-medium mb-1.5 dark:text-gray-300">
+          <label className="block text-[13px] md:text-[14px] font-roboto font-bold text-text-medium mb-1.5 dark:text-stone-300">
             {label}
           </label>
         )}
@@ -23,7 +23,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             type={isPassword ? (showPassword ? 'text' : 'password') : type}
-            className={`w-full px-4 py-3 min-h-[44px] font-inter text-[13px] md:text-[14px] border rounded-[20px] focus-ring hover:border-gray-400 touch-manipulation dark:bg-gray-800 dark:border-gray-700 dark:text-white ${error ? 'border-red-500 focus:ring-red-500' : 'border-border-input'
+            className={`w-full px-4 py-3 min-h-[44px] font-inter text-[13px] md:text-[14px] border rounded-[20px] focus-ring hover:border-primary/50 touch-manipulation bg-cream-50 dark:bg-surface-darker border-cream-400 dark:border-surface-muted dark:text-white ${error ? 'border-red-500 focus:ring-red-500' : ''
               } ${className} ${isPassword ? 'pr-12' : ''}`}
             {...props}
           />

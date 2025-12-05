@@ -27,8 +27,8 @@ class ErrorBoundary extends Component<Props, State> {
     public render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-6">
-                    <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center border border-gray-100 dark:border-gray-700">
+                <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-surface-dark p-6">
+                    <div className="max-w-md w-full bg-cream-100 dark:bg-surface-darker rounded-2xl shadow-xl p-8 text-center border border-cream-300 dark:border-surface-muted">
                         <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <AlertTriangle className="w-8 h-8 text-red-500 dark:text-red-400" />
                         </div>
@@ -37,11 +37,11 @@ class ErrorBoundary extends Component<Props, State> {
                             Oops! Something went wrong
                         </h1>
 
-                        <p className="text-gray-500 dark:text-gray-400 mb-6">
+                        <p className="text-gray-500 dark:text-stone-400 mb-6">
                             We apologize for the inconvenience. The application encountered an unexpected error.
                         </p>
 
-                        <div className="bg-gray-100 dark:bg-gray-700/50 rounded-lg p-4 mb-6 text-left overflow-auto max-h-32">
+                        <div className="bg-gray-100 dark:bg-surface-muted/50 rounded-lg p-4 mb-6 text-left overflow-auto max-h-32">
                             <code className="text-xs text-red-500 font-mono">
                                 {this.state.error?.message || 'Unknown error'}
                             </code>
