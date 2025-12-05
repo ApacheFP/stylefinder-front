@@ -46,12 +46,32 @@ interface BackendOutfitResponse {
   explanation?: string;
 }
 
+export interface TransformedOutfit {
+  id: string;
+  items: OutfitItem[];
+  totalPrice: number;
+  remainingBudget?: number;
+  explanation?: string;
+}
+
+export interface TransformedOutfitResponse {
+  status: ResponseStatus;
+  hasOutfit: boolean;
+  outfits: TransformedOutfit[];
+  items: OutfitItem[];
+  totalPrice: number;
+  remainingBudget?: number;
+  explanation?: string;
+  message: string;
+}
+
 interface SendMessageResponse {
   status: ResponseStatus;
   conv_id?: number | string;
   conv_title?: string;  // Optional: title for new conversations
   img_url?: string | null;
   content: BackendOutfitResponse;
+  message_id?: string;
 }
 
 interface BackendMessage {
@@ -120,7 +140,9 @@ export const chatService = {
     message: string,
     _filters: OutfitFilters, // Currently unused by backend, but kept for future use
     convId?: string,
-    imageFile?: File
+    imageFile?: File,
+    selectedOutfitIndex?: number | null,
+    selectedMessageId?: string | null
   ): Promise<SendMessageResponse> => {
     // If there's an image, use FormData
     if (imageFile) {
@@ -130,6 +152,12 @@ export const chatService = {
         formData.append('conv_id', convId);
       }
       formData.append('image', imageFile);
+      if (selectedOutfitIndex !== undefined && selectedOutfitIndex !== null) {
+        formData.append('selected_outfit_index', String(selectedOutfitIndex));
+      }
+      if (selectedMessageId) {
+        formData.append('selected_message_id', selectedMessageId);
+      }
       // Note: filters are not used by current backend, but we include message
 
       const response = await api.post<SendMessageResponse>('/messages/send', formData, {
@@ -144,6 +172,8 @@ export const chatService = {
     const response = await api.post<SendMessageResponse>('/messages/send', {
       message,
       conv_id: convId,
+      selected_outfit_index: selectedOutfitIndex,
+      selected_message_id: selectedMessageId
     });
     return response.data;
   },
@@ -195,7 +225,7 @@ export const chatService = {
           id: `outfit-${id}-${idx}`,
           items: transformOutfitItems(outfitResult.outfit),
           totalPrice: outfitResult.cost || calculateTotalPrice(outfitResult.outfit),
-          remainingBudget: outfitResult.remaining_budget,
+          remainingBudget: outfitResult.remaining_budget ?? undefined,
           explanation: outfitResult.explanation || msg.explanation,
         }));
       } else if (singleOutfitData && singleOutfitData.length > 0) {
@@ -258,14 +288,14 @@ export const chatService = {
 
   // Transform backend response to frontend ChatMessage format
   // Status: COMPLETED = outfit response, AWAITING_INPUT = needs more info, Guardrail = blocked
-  transformOutfitResponse: (backendResponse: BackendOutfitResponse, status: ResponseStatus) => {
+  transformOutfitResponse: (backendResponse: BackendOutfitResponse, status: ResponseStatus): TransformedOutfitResponse => {
     // Check for multiple outfits first
     if (backendResponse.outfits && backendResponse.outfits.length > 0) {
       const outfits = backendResponse.outfits.map((outfitResult, idx) => ({
         id: `outfit-${Date.now()}-${idx}`,
         items: transformOutfitItems(outfitResult.outfit),
         totalPrice: outfitResult.cost,
-        remainingBudget: outfitResult.remaining_budget,
+        remainingBudget: outfitResult.remaining_budget ?? undefined,
         explanation: outfitResult.explanation || backendResponse.explanation,
       }));
 
@@ -276,6 +306,7 @@ export const chatService = {
         // Legacy support
         items: outfits[0].items,
         totalPrice: outfits[0].totalPrice,
+        remainingBudget: outfits[0].remainingBudget,
         explanation: outfits[0].explanation,
         message: backendResponse.message,
       };
@@ -299,6 +330,7 @@ export const chatService = {
         }],
         items,
         totalPrice,
+        remainingBudget: undefined,
         explanation,
         message: backendResponse.message,
       };

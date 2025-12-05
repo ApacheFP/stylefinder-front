@@ -18,9 +18,11 @@ interface ChatMessageProps {
   isLoadingExplanation?: boolean;
   onRetry?: (messageId: string, originalMessage: string, originalImage?: File) => void;
   onContentChange?: () => void;
+  onSelectOutfit?: (outfitIndex: number) => void;
+  selectedOutfitIndex?: number | null;
 }
 
-const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, onContentChange }: ChatMessageProps) => {
+const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, onContentChange, onSelectOutfit, selectedOutfitIndex }: ChatMessageProps) => {
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
   const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -313,7 +315,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
                     <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Estimated Total</span>
                     <span className="text-xl font-bold text-gray-900 dark:text-white">${totalPrice.toFixed(2)}</span>
                   </div>
-                  {activeOutfit.remainingBudget != null && (
+                  {typeof activeOutfit.remainingBudget === 'number' && (
                     <div className="flex flex-col border-l border-gray-200 dark:border-gray-600 pl-6">
                       <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider mb-0.5">Remaining Budget</span>
                       <span className={`text-xl font-bold ${activeOutfit.remainingBudget >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -341,8 +343,8 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
                 initialIndex={selectedProductIndex || 0}
               />
 
-              {/* Explain Button */}
-              <div className="flex justify-start">
+              {/* Actions: Explain & Select */}
+              <div className="flex justify-start gap-3">
                 <Button
                   variant="outline"
                   size="sm"
@@ -370,6 +372,30 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
                     <span>{showExplanation ? 'Hide Explanation' : 'Why this outfit?'}</span>
                   )}
                 </Button>
+
+                {onSelectOutfit && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onSelectOutfit(activeOutfitIndex)}
+                    className={`
+                      transition-all duration-200 rounded-full px-4 py-2 font-semibold text-sm flex items-center gap-2 cursor-pointer hover:scale-105
+                      ${selectedOutfitIndex === activeOutfitIndex
+                        ? 'bg-green-600 text-white border-green-600 hover:bg-green-700'
+                        : 'text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }
+                    `}
+                  >
+                    {selectedOutfitIndex === activeOutfitIndex ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        <span>Selected for modification</span>
+                      </>
+                    ) : (
+                      <span>Select to modify</span>
+                    )}
+                  </Button>
+                )}
               </div>
 
               {/* Explanation - Show if it exists and is toggled on */}

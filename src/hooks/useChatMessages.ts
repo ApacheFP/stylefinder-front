@@ -106,9 +106,23 @@ export const useChatMessages = () => {
 
   const [isFetching, setIsFetching] = useState(false);
 
+  const [selectedOutfitIndex, setSelectedOutfitIndex] = useState<number | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+
   const setOnNewMessage = useCallback((callback: () => void) => {
     onNewMessageRef.current = callback;
   }, []);
+
+  const selectOutfit = useCallback((outfitIndex: number, messageId: string) => {
+    if (selectedOutfitIndex === outfitIndex && selectedMessageId === messageId) {
+      // Deselect if already selected
+      setSelectedOutfitIndex(null);
+      setSelectedMessageId(null);
+    } else {
+      setSelectedOutfitIndex(outfitIndex);
+      setSelectedMessageId(messageId);
+    }
+  }, [selectedOutfitIndex, selectedMessageId]);
 
   const loadChatMessages = async (chatId: string, preloadedMessages?: ChatMessage[]) => {
     setIsFetching(true);
@@ -149,21 +163,27 @@ export const useChatMessages = () => {
   };
 
   const sendMessage = async (
-    content: string,
+    message: string,
     imageFile?: File,
     filters?: OutfitFilters,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    explicitOutfitIndex?: number | null,
+    explicitMessageId?: string | null
   ) => {
-    if (!content.trim() && !imageFile) {
+    if (!message.trim() && !imageFile) {
       showToast.error('Please enter a message or attach an image');
       return;
     }
+
+    // Use explicit values if provided, otherwise use state
+    const outfitIndexToSend = explicitOutfitIndex !== undefined ? explicitOutfitIndex : selectedOutfitIndex;
+    const messageIdToSend = explicitMessageId !== undefined ? explicitMessageId : selectedMessageId;
 
     // Create user message for immediate display
     const userMessage: ChatMessage = {
       id: `temp-${Date.now()}`,
       role: 'user',
-      content: content || 'Attached an image',
+      content: message || 'Attached an image',
       timestamp: new Date(),
       imageUrl: imageFile ? URL.createObjectURL(imageFile) : undefined,
     };
@@ -185,11 +205,17 @@ export const useChatMessages = () => {
 
     try {
       const response = await chatService.sendMessage(
-        content,
+        message,
         filters || { outfitType: 'full', selectedItems: [] },
         currentChatId,
-        imageFile
+        imageFile,
+        outfitIndexToSend,
+        messageIdToSend
       );
+
+      // Clear selection after sending
+      setSelectedOutfitIndex(null);
+      setSelectedMessageId(null);
 
       // Update chat ID if this was a new conversation
       let activeChatId = currentChatId;
@@ -226,16 +252,20 @@ export const useChatMessages = () => {
       const outfitData = chatService.transformOutfitResponse(response.content, response.status);
 
       const assistantMessage: ChatMessage = {
-        id: `assistant-${Date.now()}`,
+        id: response.message_id ? String(response.message_id) : `assistant-${Date.now()}`,
         role: 'assistant',
         content: outfitData.message,
         timestamp: new Date(),
         // Include outfits if available
-        outfits: outfitData.outfits,
+        outfits: outfitData.outfits?.map(o => ({
+          ...o,
+          remainingBudget: o.remainingBudget ?? undefined
+        })),
         outfit: outfitData.hasOutfit && outfitData.items.length > 0 ? {
           id: `outfit-${Date.now()}`,
           items: outfitData.items,
           totalPrice: outfitData.totalPrice,
+          remainingBudget: outfitData.remainingBudget ?? undefined,
           explanation: outfitData.explanation,
         } : undefined,
       };
@@ -278,7 +308,7 @@ export const useChatMessages = () => {
         timestamp: new Date(),
         isError: true,
         errorDetails: {
-          originalMessage: content,
+          originalMessage: message,
           originalImage: imageFile,
           errorTitle: errorInfo.title,
           errorMessage: errorInfo.message,
@@ -308,7 +338,7 @@ export const useChatMessages = () => {
     errorMessageId: string,
     originalMessage: string,
     originalImage?: File,
-    filters?: OutfitFilters
+    _filters?: OutfitFilters
   ) => {
     // Remove the error message
     setMessages((prev) => {
@@ -335,7 +365,7 @@ export const useChatMessages = () => {
     });
 
     // Retry sending the message
-    await sendMessage(originalMessage, originalImage, filters);
+    await sendMessage(originalMessage, originalImage, undefined, undefined, undefined, undefined);
   };
 
   const explainOutfit = async (messageId: string, outfitId?: string) => {
@@ -471,5 +501,8 @@ export const useChatMessages = () => {
     isFetching,
     setCurrentChatId,
     setOnNewMessage,
+    selectOutfit,
+    selectedOutfitIndex,
+    selectedMessageId
   };
 };

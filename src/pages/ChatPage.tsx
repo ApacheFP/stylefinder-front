@@ -44,7 +44,10 @@ const ChatPage = () => {
     retryMessage,
     explainOutfit,
     clearMessages,
-    setOnNewMessage
+    setOnNewMessage,
+    selectOutfit,
+    selectedOutfitIndex,
+    selectedMessageId
   } = useChatMessages();
 
   // Auto-scroll behavior
@@ -309,6 +312,8 @@ const ChatPage = () => {
                     isLoadingExplanation={loadingExplanationId === message.id}
                     onRetry={(msgId, originalMsg, originalImg) => retryMessage(msgId, originalMsg, originalImg)}
                     onContentChange={scrollToBottom}
+                    onSelectOutfit={message.role === 'assistant' ? (index) => selectOutfit(index, message.id) : undefined}
+                    selectedOutfitIndex={message.role === 'assistant' && selectedMessageId === message.id ? selectedOutfitIndex : undefined}
                   />
                 ))
               )}
