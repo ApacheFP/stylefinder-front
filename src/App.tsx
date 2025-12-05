@@ -47,9 +47,18 @@ const AnimatedRoutes = () => {
     return <LoadingFallback />;
   }
 
+  // Use a stable key for chat routes to prevent full re-mount when switching chats
+  // This way /chat and /chat/:chatId share the same key and won't trigger page transitions
+  const getRouteKey = (pathname: string) => {
+    if (pathname.startsWith('/chat')) {
+      return 'chat'; // Same key for all chat routes
+    }
+    return pathname;
+  };
+
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      <Routes location={location} key={getRouteKey(location.pathname)}>
         <Route path="/" element={
           isAuthenticated ? (
             <Navigate to="/chat" replace />
