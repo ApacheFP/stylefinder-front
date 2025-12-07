@@ -27,7 +27,7 @@ const ChatPage = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
-  
+
   // Guest gender for non-authenticated users (persisted in localStorage)
   const [guestGender, setGuestGender] = useState<GuestGender | null>(() => {
     const saved = localStorage.getItem('stylefinder_guest_gender');
@@ -126,7 +126,7 @@ const ChatPage = () => {
 
   // Track the previous chatId from URL to detect actual navigation changes
   const prevChatIdRef = useRef<string | undefined>(chatId);
-  
+
   // Track if we're in a guest session with an active conversation
   const guestSessionActiveRef = useRef(false);
 
@@ -134,7 +134,7 @@ const ChatPage = () => {
   useEffect(() => {
     const prevChatId = prevChatIdRef.current;
     prevChatIdRef.current = chatId;
-    
+
     // If there's a chatId in the URL and it's different from current
     if (chatId && chatId !== currentChatId) {
       setInputMessage('');
@@ -145,26 +145,37 @@ const ChatPage = () => {
       });
       return;
     }
-    
+
     // Guest flow: if currentChatId is set but URL has no chatId
     // Mark the session as active so we don't clear messages
     if (!chatId && currentChatId && !isAuthenticated) {
       guestSessionActiveRef.current = true;
       return;
     }
-    
+
     // If there's no chatId in URL but we have a currentChatId, reset to new chat state
     // This happens when user navigates back or to /chat directly
     // BUT: Don't reset if this is an active guest session
-    if (!chatId && currentChatId && !guestSessionActiveRef.current) {
-      // Only reset if the URL actually changed (user navigated), not just a state update
-      if (prevChatId !== chatId || prevChatId === undefined) {
-        clearMessages();
-        setInputMessage('');
-        clearImage();
+    if (!chatId && currentChatId) {
+      // Case 1: We just navigated here from a chat (prevChatId was defined)
+      // Reset to new chat state
+      if (prevChatId) {
+        if (!guestSessionActiveRef.current) {
+          clearMessages();
+          setInputMessage('');
+          clearImage();
+        }
+      }
+      // Case 2: We were already here (prevChatId was undefined), and currentChatId appeared (New Chat started)
+      // Update URL to include the new chat ID
+      else if (isAuthenticated) {
+        navigate(`/chat/${currentChatId}`, { replace: true });
       }
     }
   }, [chatId, currentChatId, loadChatMessages, clearImage, clearMessages, isAuthenticated]);
+
+  // Update URL when a new chat is created (and we have an ID but URL doesn't)
+
 
   // Add new conversation to history when created
   useEffect(() => {
@@ -236,11 +247,12 @@ const ChatPage = () => {
 
   const handleNewChat = () => {
     guestSessionActiveRef.current = false;
-    clearMessages();
+    // clearMessages() is handled by the useEffect when URL changes to /chat
     setInputMessage('');
     clearImage();
     // Reset guest gender for a fresh start (optional: remove from localStorage too)
     if (!isAuthenticated) {
+      clearMessages();
       setGuestGender(null);
       localStorage.removeItem('stylefinder_guest_gender');
     }
