@@ -27,6 +27,12 @@ const ThemeToggle = ({ size = 'md' }: ThemeToggleProps) => {
     lg: 'w-4 h-4',
   };
 
+  const iconPaddingClasses = {
+    sm: 'px-2',
+    md: 'px-2',
+    lg: 'px-2.5',
+  };
+
   const translateClasses = {
     sm: 'translate-x-6',
     md: 'translate-x-7',
@@ -39,10 +45,10 @@ const ThemeToggle = ({ size = 'md' }: ThemeToggleProps) => {
       data-theme-toggle
       className={`
         relative ${sizeClasses[size]} rounded-full p-0.5
-        bg-gradient-to-r transition-all duration-300 ease-out
+        bg-gradient-to-r transition-all duration-300 ease-out ring-1 ring-inset
         ${isDark 
-          ? 'from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/30' 
-          : 'from-amber-400 to-orange-400 shadow-lg shadow-amber-500/30'
+          ? 'from-surface-darker to-surface-dark ring-surface-border shadow-inner' 
+          : 'from-cream-200 to-cream-300 ring-cream-300 shadow-inner'
         }
         hover:scale-105 active:scale-95
         focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
@@ -53,16 +59,16 @@ const ThemeToggle = ({ size = 'md' }: ThemeToggleProps) => {
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
       {/* Track background icons */}
-      <div className="absolute inset-0 flex items-center justify-between px-1.5">
-        <Sun className={`${iconSizeClasses[size]} text-white/40 transition-opacity ${isDark ? 'opacity-100' : 'opacity-0'}`} />
-        <Moon className={`${iconSizeClasses[size]} text-white/40 transition-opacity ${isDark ? 'opacity-0' : 'opacity-100'}`} />
+      <div className={`absolute inset-0 flex items-center justify-between ${iconPaddingClasses[size]}`}>
+        <Sun className={`${iconSizeClasses[size]} text-primary opacity-50 transition-opacity ${isDark ? 'opacity-100' : 'opacity-0'}`} />
+        <Moon className={`${iconSizeClasses[size]} text-primary opacity-50 transition-opacity ${isDark ? 'opacity-0' : 'opacity-100'}`} />
       </div>
 
       {/* Sliding knob */}
       <div
         className={`
           ${knobSizeClasses[size]} rounded-full
-          bg-cream-100 shadow-md
+          bg-primary shadow-md
           transform transition-all duration-300 ease-out
           flex items-center justify-center
           ${isDark ? translateClasses[size] : 'translate-x-0'}
@@ -72,14 +78,14 @@ const ThemeToggle = ({ size = 'md' }: ThemeToggleProps) => {
         <div className="relative">
           <Sun
             className={`
-              ${iconSizeClasses[size]} text-amber-500 absolute inset-0
+              ${iconSizeClasses[size]} text-cream-100 absolute inset-0
               transition-all duration-300
               ${isDark ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'}
             `}
           />
           <Moon
             className={`
-              ${iconSizeClasses[size]} text-indigo-600
+              ${iconSizeClasses[size]} text-cream-100
               transition-all duration-300
               ${isDark ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'}
             `}
