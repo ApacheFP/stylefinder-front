@@ -22,6 +22,15 @@ vi.mock('../components/ui/Button', () => ({
     default: ({ children, ...props }: any) => <button {...props}>{children}</button>,
 }));
 
+// Mock useAuth
+vi.mock('../context/AuthContext', () => ({
+    useAuth: () => ({
+        isAuthenticated: false,
+        isLoading: false,
+        user: null,
+    }),
+}));
+
 describe('LandingPage', () => {
     it('renders correctly', () => {
         render(
