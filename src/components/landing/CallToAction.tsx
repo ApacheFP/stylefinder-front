@@ -4,16 +4,16 @@ import { ArrowRight } from 'lucide-react';
 
 const CallToAction = () => {
     return (
-        <section className="py-20 md:py-28 bg-gradient-to-br from-text-dark via-stone-900 to-stone-950 text-white relative overflow-hidden">
+        <section className="py-20 md:py-28 bg-gradient-to-br from-cream-100 via-cream-200 to-cream-100 dark:from-text-dark dark:via-stone-900 dark:to-stone-950 relative overflow-hidden">
             {/* Decorative elements */}
-            <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+            <div className="absolute top-0 left-0 w-96 h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/10 dark:bg-primary/10 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
 
             {/* Grid pattern overlay */}
             <div
-                className="absolute inset-0 opacity-[0.03]"
+                className="absolute inset-0 opacity-[0.03] dark:opacity-[0.03]"
                 style={{
-                    backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+                    backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)',
                     backgroundSize: '40px 40px'
                 }}
             />
@@ -32,10 +32,10 @@ const CallToAction = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.2 }}
-                        className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6 leading-tight"
+                        className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-6 leading-tight text-text-dark dark:text-white"
                     >
                         Ready to Upgrade<br />
-                        <span className="bg-gradient-to-r from-primary-light via-primary to-secondary bg-clip-text text-transparent">Your Style?</span>
+                        <span className="bg-gradient-to-r from-primary via-secondary to-primary dark:from-primary-light dark:via-primary dark:to-secondary bg-clip-text text-transparent">Your Style?</span>
                     </motion.h2>
 
                     <motion.p
@@ -43,7 +43,7 @@ const CallToAction = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.3 }}
-                        className="text-lg md:text-xl text-white/70 max-w-xl mx-auto mb-10 leading-relaxed"
+                        className="text-lg md:text-xl text-text-medium dark:text-white/70 max-w-xl mx-auto mb-10 leading-relaxed"
                     >
                         Experience the future of personal styling. Start chatting with your AI stylist now.
                     </motion.p>
@@ -58,7 +58,8 @@ const CallToAction = () => {
                             <motion.button
                                 whileHover={{ scale: 1.03, y: -3 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="inline-flex items-center bg-white text-stone-900 hover:bg-cream-100 rounded-xl px-10 py-4 text-base font-bold shadow-2xl shadow-black/30 hover:shadow-white/20 transition-all group"
+                                className="inline-flex items-center bg-primary dark:bg-white text-white dark:text-stone-900 hover:bg-primary-hover dark:hover:bg-cream-100 rounded-xl px-10 py-4 text-base font-bold transition-all group"
+                                style={{ boxShadow: '0 0 30px rgba(166, 124, 82, 0.4)' }}
                             >
                                 Get Started
                                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

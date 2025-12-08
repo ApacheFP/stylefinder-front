@@ -243,7 +243,8 @@ const DemoPreview = () => {
                             <motion.button
                                 whileHover={{ scale: 1.03, y: -2 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="inline-flex items-center gap-2 bg-primary text-white hover:bg-primary-hover rounded-xl px-8 py-4 text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 transition-all group"
+                                className="inline-flex items-center gap-2 bg-primary text-white hover:bg-primary-hover rounded-xl px-8 py-4 text-sm font-bold transition-all group"
+                                style={{ boxShadow: '0 0 25px rgba(166, 124, 82, 0.4)' }}
                             >
                                 Try It Yourself
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

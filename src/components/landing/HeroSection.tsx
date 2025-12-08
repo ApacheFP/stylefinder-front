@@ -1,20 +1,11 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import Button from '../ui/Button';
+import ThemeToggle from '../ui/ThemeToggle';
 import { fadeInUp, staggerContainer } from '../../utils/animations';
 
 const HeroSection = () => {
-    const [isScrolled, setIsScrolled] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     return (
         <section className="relative min-h-[90vh] w-full flex flex-col overflow-hidden bg-gradient-to-br from-cream-50 via-cream-100 to-cream-200 dark:from-surface-dark dark:via-surface-darker dark:to-surface-dark">
@@ -27,37 +18,40 @@ const HeroSection = () => {
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6 }}
-                className={`fixed top-0 left-0 right-0 w-full py-4 px-4 md:px-8 flex justify-between items-center z-[100] transition-all duration-300 ${isScrolled
-                        ? 'bg-cream-50/95 dark:bg-surface-dark/95 backdrop-blur-md shadow-lg shadow-black/5 dark:shadow-black/20 py-3'
-                        : ''
-                    }`}
+                className="fixed top-0 left-0 right-0 w-full z-[100] py-4 px-4 md:px-8"
             >
-                <div className="flex items-center gap-2">
-                    <div className={`flex items-center justify-center rounded-lg shadow-lg shadow-primary/20 transition-all duration-300 ${isScrolled ? 'w-8 h-8 bg-primary dark:bg-primary-light' : 'w-9 h-9 bg-primary dark:bg-primary-light'
-                        }`}>
-                        <span className={`text-white dark:text-surface-dark font-serif italic font-bold transition-all ${isScrolled ? 'text-base' : 'text-lg'
-                            }`}>S</span>
-                    </div>
-                    <span className={`font-serif font-bold tracking-tight text-text-dark dark:text-white transition-all ${isScrolled ? 'text-lg md:text-xl' : 'text-xl md:text-2xl'
-                        }`}>
-                        StyleFinder
-                    </span>
-                </div>
+                {/* Navbar Container */}
+                <div className="max-w-7xl mx-auto flex justify-between items-center bg-cream-50/90 dark:bg-surface-dark/90 backdrop-blur-xl rounded-2xl px-6 py-3 shadow-lg shadow-black/5 dark:shadow-black/20 border border-cream-200/50 dark:border-surface-muted/50">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center gap-2.5 group">
+                        <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-primary shadow-md shadow-primary/25">
+                            <span className="text-white font-serif italic font-bold text-lg">S</span>
+                        </div>
+                        <span className="font-serif font-bold tracking-tight text-text-dark dark:text-white text-xl group-hover:text-primary dark:group-hover:text-primary-light transition-colors">
+                            StyleFinder
+                        </span>
+                    </Link>
 
-                <div className="flex items-center gap-4">
-                    <Link to="/login" className="hidden sm:block text-sm font-medium text-text-dark dark:text-stone-200 hover:text-primary dark:hover:text-primary-light transition-colors">
-                        Log In
-                    </Link>
-                    <Link to="/signup">
-                        <Button size="sm" className="bg-primary text-white hover:bg-primary-hover rounded-xl px-6 py-2 text-xs font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
-                            Sign Up
-                        </Button>
-                    </Link>
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-3 md:gap-4">
+                        <ThemeToggle size="sm" />
+
+                        {/* Divider */}
+                        <div className="hidden sm:block w-px h-6 bg-cream-300 dark:bg-surface-muted" />
+
+                        <Link to="/login">
+                            <Button variant="ghost" size="sm" className="text-xs md:text-sm px-4 md:px-5 border border-cream-300 dark:border-surface-muted hover:border-primary dark:hover:border-primary-light">
+                                Log In
+                            </Button>
+                        </Link>
+                        <Link to="/signup">
+                            <Button variant="primary" size="sm" className="text-xs md:text-sm px-4 md:px-5">
+                                Sign Up
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
             </motion.nav>
-
-            {/* Spacer for fixed nav */}
-            <div className="h-16" />
 
             <div className="flex-1 grid md:grid-cols-2 h-full">
                 {/* Text Content - Left Side */}
@@ -96,18 +90,14 @@ const HeroSection = () => {
 
                         <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4">
                             <Link to="/chat">
-                                <Button size="lg" className="bg-primary text-white hover:bg-primary-hover rounded-xl px-8 py-4 text-sm font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 hover:-translate-y-0.5 transition-all min-w-[180px]">
-                                    Get Started
-                                </Button>
-                            </Link>
-                            <Link to="/login">
-                                <Button
-                                    variant="outline"
-                                    size="lg"
-                                    className="rounded-xl px-8 py-4 text-sm font-bold border-2 border-cream-400 dark:border-surface-muted hover:border-primary dark:hover:border-primary-light hover:bg-primary/5 dark:hover:bg-primary/10 transition-all min-w-[140px]"
+                                <motion.button
+                                    whileHover={{ scale: 1.03, y: -2 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="bg-primary text-white hover:bg-primary-hover rounded-xl px-8 py-4 text-sm font-bold transition-all min-w-[180px]"
+                                    style={{ boxShadow: '0 0 25px rgba(166, 124, 82, 0.5)' }}
                                 >
-                                    Log In
-                                </Button>
+                                    Get Started
+                                </motion.button>
                             </Link>
                         </motion.div>
 
