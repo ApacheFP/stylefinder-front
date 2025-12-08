@@ -14,6 +14,12 @@ export default {
           light: '#C4A484',    // Lighter for dark mode
           dark: '#7A5C3E',     // Darker variant
         },
+        // Secondary colors for landing page (beige/taupe accent)
+        secondary: {
+          DEFAULT: '#9F8170', // Beaver/Taupe/Beige - elegant accent
+          light: '#C4A492',
+          dark: '#7D6354',
+        },
         // Warm dark mode background colors that complement bronze
         surface: {
           dark: '#1C1917',      // stone-900 - main dark bg
@@ -35,11 +41,14 @@ export default {
           medium: '#5C4D3C',    // Medium brown
           light: '#8B7355',     // Light brown
           muted: '#A69580',     // Muted brown
+          lighter: '#B8A994',   // Even lighter brown for landing
         },
         background: {
           DEFAULT: '#FEFDFB',  // Warm cream background
           card: '#FBF9F5',     // Card background
           hover: '#F5F1EA',    // Hover state
+          white: '#FFFFFF',    // Pure white
+          beige: '#F5F5DC',    // Beige for landing page
         },
         border: {
           DEFAULT: '#EDE7DC',  // Warm border
@@ -49,6 +58,7 @@ export default {
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
+        serif: ['Playfair Display', 'Georgia', 'serif'],
       },
       spacing: {
         'xs': 'var(--spacing-xs)',
