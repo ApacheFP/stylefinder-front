@@ -10,7 +10,11 @@ function beautifyUsername(name: string) {
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
 
-const Header = () => {
+interface HeaderProps {
+  chatTitle?: string;
+}
+
+const Header = ({ chatTitle }: HeaderProps) => {
   const { isAuthenticated, user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const navigate = useNavigate();
@@ -42,12 +46,23 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-cream-100 dark:bg-surface-dark dark:border-surface-muted border-b border-cream-300 px-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
+    <header className="relative bg-cream-100 dark:bg-surface-dark dark:border-surface-muted border-b border-cream-300 px-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
       <Link to="/">
         <h1 className="text-lg md:text-xl lg:text-[22px] font-roboto font-bold text-text-dark dark:text-white hover:text-primary transition-colors">
           StyleFinder AI
         </h1>
       </Link>
+
+      {/* Centered Chat Title */}
+      {chatTitle && (
+        <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
+          <div className="px-4 py-1.5 bg-cream-200/60 dark:bg-surface-muted/60 backdrop-blur-sm rounded-full border border-cream-300 dark:border-surface-muted">
+            <span className="text-sm font-medium text-text-dark dark:text-stone-200">
+              {chatTitle}
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center gap-2 md:gap-4">
         <ThemeToggle size="sm" />
@@ -56,11 +71,8 @@ const Header = () => {
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 md:gap-3 hover:opacity-80 transition-opacity"
+              className="flex items-center hover:opacity-80 transition-opacity"
             >
-              <span className="hidden sm:block text-sm font-inter text-text-medium dark:text-white">
-                {userName}
-              </span>
               <div className="w-9 h-9 md:w-10 md:h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold font-inter cursor-pointer hover:bg-primary-hover transition-colors">
                 {userName?.charAt(0).toUpperCase()}
               </div>

@@ -338,7 +338,7 @@ const ChatPage = () => {
         {/* Drag and Drop Overlay */}
         {isDragging && <DragDropOverlay />}
 
-        <Header />
+        <Header chatTitle={currentChatTitle || chatHistory.find(c => c.id === currentChatId)?.title} />
 
         {/* Gender Selector for non-authenticated users */}
         {!isAuthenticated && (

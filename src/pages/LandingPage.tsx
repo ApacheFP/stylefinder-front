@@ -4,8 +4,8 @@ import HeroSection from '../components/landing/HeroSection';
 import BrandsSection from '../components/landing/BrandsSection';
 import ValueProposition from '../components/landing/ValueProposition';
 import HowItWorks from '../components/landing/HowItWorks';
+import DemoPreview from '../components/landing/DemoPreview';
 import CallToAction from '../components/landing/CallToAction';
-import Footer from '../components/landing/Footer';
 
 const LandingPage = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -22,12 +22,12 @@ const LandingPage = () => {
         <BrandsSection />
         <ValueProposition />
         <HowItWorks />
+        <DemoPreview />
         <CallToAction />
       </main>
-
-      <Footer />
     </div>
   );
 };
 
 export default LandingPage;
+

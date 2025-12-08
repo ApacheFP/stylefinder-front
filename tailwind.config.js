@@ -105,6 +105,10 @@ export default {
           '0%, 100%': { boxShadow: '0 0 5px rgba(166, 124, 82, 0.3)' },
           '50%': { boxShadow: '0 0 20px rgba(166, 124, 82, 0.6)' },
         },
+        'gradient-x': {
+          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '50%': { backgroundPosition: '100% 50%' },
+        },
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
@@ -114,6 +118,7 @@ export default {
         'scale-in': 'scale-in 0.2s ease-out',
         'smooth-bounce': 'smooth-bounce 0.4s ease-in-out',
         'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
+        'gradient-x': 'gradient-x 3s ease infinite',
       },
     },
   },
