@@ -46,7 +46,7 @@ const Header = ({ chatTitle }: HeaderProps) => {
   };
 
   return (
-    <header className="relative bg-cream-100 dark:bg-surface-dark dark:border-surface-muted border-b border-cream-300 px-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
+    <header className="relative bg-cream-100 dark:bg-surface-dark dark:border-surface-muted border-b border-cream-300 pl-14 lg:pl-4 pr-4 md:px-6 lg:px-8 py-3 md:py-4 flex justify-between items-center">
       <Link to="/">
         <h1 className="text-lg md:text-xl lg:text-[22px] font-roboto font-bold text-text-dark dark:text-white hover:text-primary transition-colors">
           StyleFinder AI

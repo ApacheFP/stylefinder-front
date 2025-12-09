@@ -360,6 +360,7 @@ const ChatPage = () => {
               isLoggedIn={isLoggedIn}
               userName={userName}
               onSuggestionClick={(suggestion) => setInputMessage(suggestion)}
+              suggestionsDisabled={!isAuthenticated && !guestGender}
             />
           ) : (
             <div className="max-w-[992px] mx-auto space-y-6">

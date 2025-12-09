@@ -162,7 +162,7 @@ const DemoPreview = () => {
                                                 </div>
 
                                                 {/* Product Cards Grid */}
-                                                <div className="grid grid-cols-4 gap-2 mb-3">
+                                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                                                     {mockProducts.map((product, index) => (
                                                         <motion.div
                                                             key={index}

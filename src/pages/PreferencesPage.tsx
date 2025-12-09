@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react';
 import Button from '../components/ui/Button';
 import PreferencesSkeleton from '../components/ui/PreferencesSkeleton';
 import SearchableMultiSelect from '../components/ui/SearchableMultiSelect';
+import ParticleBackground from '../components/ui/ParticleBackground';
 import { preferencesService } from '../services/preferencesService';
 import type { AllPreferencesResponse } from '../services/preferencesService';
 import { showToast } from '../utils/toast';
@@ -101,7 +102,7 @@ const PreferencesPage = () => {
       // Costruisci l'oggetto completo con TUTTE le preferenze disponibili
       // Se una preferenza non è selezionata, manda stringa vuota per cancellarla
       const completePreferences: Record<string, string> = {};
-      
+
       // Prima, aggiungi tutte le preferenze esistenti dallo stato attuale
       // Questo preserva i valori che l'utente ha già settato
       Object.entries(preferences).forEach(([key, value]) => {
@@ -110,13 +111,13 @@ const PreferencesPage = () => {
           completePreferences[key] = value;
         }
       });
-      
+
       // Poi, assicurati che tutte le preferenze disponibili siano presenti
       // Se non esistono nello stato, manda stringa vuota per cancellarle
       Object.values(allPreferences).forEach((pref) => {
         // Salta "Genere" perché verrà mappato a "gender"
         if (pref.name === 'Genere') return;
-        
+
         // Se la preferenza non è già stata aggiunta, aggiungi con valore corrente o vuoto
         if (!(pref.name in completePreferences)) {
           completePreferences[pref.name] = preferences[pref.name] || '';
@@ -163,8 +164,11 @@ const PreferencesPage = () => {
   const sortedPreferences = Object.entries(allPreferences).sort(([idA], [idB]) => Number(idA) - Number(idB));
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-surface-dark px-4 py-8">
-      <div className="max-w-2xl w-full bg-cream-100 dark:bg-surface-darker rounded-2xl shadow-lg p-6 md:p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-surface-dark px-4 py-8 relative overflow-hidden">
+      {/* Particle Background */}
+      <ParticleBackground />
+
+      <div className="max-w-2xl w-full bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 relative z-10">
         <h1 className="text-xl md:text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">
           Your Preferences
         </h1>
@@ -229,8 +233,8 @@ const PreferencesPage = () => {
                           key={value}
                           onClick={() => handleSingleSelect(pref.name, value)}
                           className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-all duration-200 border-2 ${isSelected
-                              ? 'bg-primary/10 border-primary text-primary dark:text-primary-light'
-                              : 'bg-cream-100 dark:bg-surface-darker border-cream-300 dark:border-surface-muted text-gray-600 dark:text-stone-400 hover:border-primary/50 hover:bg-cream-200 dark:hover:bg-surface-muted'
+                            ? 'bg-primary/10 border-primary text-primary dark:text-primary-light'
+                            : 'bg-cream-100 dark:bg-surface-darker border-cream-300 dark:border-surface-muted text-gray-600 dark:text-stone-400 hover:border-primary/50 hover:bg-cream-200 dark:hover:bg-surface-muted'
                             }`}
                         >
                           <span className="capitalize">{value}</span>
@@ -248,8 +252,8 @@ const PreferencesPage = () => {
                           key={value}
                           onClick={() => handleToggleValue(pref.name, value)}
                           className={`px-4 py-2 min-h-[44px] rounded-full text-sm md:text-base font-medium transition-all duration-200 border-2 ${isSelected
-                              ? 'bg-primary/10 border-primary text-primary dark:text-primary-light'
-                              : 'bg-cream-100 dark:bg-surface-darker border-cream-300 dark:border-surface-muted text-gray-600 dark:text-stone-400 hover:border-primary/50 hover:bg-cream-200 dark:hover:bg-surface-muted'
+                            ? 'bg-primary/10 border-primary text-primary dark:text-primary-light'
+                            : 'bg-cream-100 dark:bg-surface-darker border-cream-300 dark:border-surface-muted text-gray-600 dark:text-stone-400 hover:border-primary/50 hover:bg-cream-200 dark:hover:bg-surface-muted'
                             }`}
                         >
                           <span className="capitalize">{value}</span>

@@ -27,10 +27,21 @@ const SHORTCUTS_WIN: Shortcut[] = [
 const KeyboardShortcutsHelper = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMac, setIsMac] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     // Detect OS
     setIsMac(navigator.platform.toUpperCase().indexOf('MAC') >= 0);
+
+    // Detect mobile/touch devices - they don't have physical keyboards
+    const checkIsMobile = () => {
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = window.innerWidth < 768;
+      setIsMobile(isTouchDevice && isSmallScreen);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
 
     // Listen for '?' key to toggle shortcuts panel
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -38,12 +49,12 @@ const KeyboardShortcutsHelper = () => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
-      
+
       if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
         setIsOpen(prev => !prev);
       }
-      
+
       // Close on Escape
       if (e.key === 'Escape') {
         setIsOpen(false);
@@ -51,17 +62,25 @@ const KeyboardShortcutsHelper = () => {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', checkIsMobile);
+    };
   }, []);
 
   const shortcuts = isMac ? SHORTCUTS : SHORTCUTS_WIN;
 
+  // Don't render on mobile devices - keyboards shortcuts are useless there
+  if (isMobile) {
+    return null;
+  }
+
   return (
     <>
-      {/* Floating button to show shortcuts */}
+      {/* Floating button to show shortcuts - hidden on small screens */}
       <motion.button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-4 z-40 p-2.5 bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-muted rounded-full shadow-lg hover:shadow-xl transition-shadow group"
+        className="hidden md:block fixed bottom-20 right-4 z-40 p-2.5 bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-muted rounded-full shadow-lg hover:shadow-xl transition-shadow group"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         title="Keyboard shortcuts (?)"

@@ -7,6 +7,7 @@ import { authService } from '../services/authService';
 import { chatService } from '../services/chatService';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import ParticleBackground from '../components/ui/ParticleBackground';
 import { showToast } from '../utils/toast';
 import { fadeInUp } from '../utils/animations';
 import ProfileSkeleton from '../components/ui/ProfileSkeleton';
@@ -140,8 +141,11 @@ const ProfilePage = () => {
     }
 
     return (
-        <div className="min-h-screen bg-background dark:bg-surface-dark p-6 md:p-12">
-            <div className="max-w-2xl mx-auto">
+        <div className="min-h-screen bg-background dark:bg-surface-dark p-6 md:p-12 relative overflow-hidden">
+            {/* Particle Background */}
+            <ParticleBackground />
+
+            <div className="max-w-2xl mx-auto relative z-10">
                 {/* Header */}
                 <motion.div
                     className="flex items-center gap-4 mb-8"

@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Menu, X } from 'lucide-react';
 import Button from '../ui/Button';
 import ThemeToggle from '../ui/ThemeToggle';
 import { fadeInUp, staggerContainer } from '../../utils/animations';
 
 const HeroSection = () => {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     return (
         <section className="relative min-h-[90vh] w-full flex flex-col overflow-hidden bg-gradient-to-br from-cream-50 via-cream-100 to-cream-200 dark:from-surface-dark dark:via-surface-darker dark:to-surface-dark">
@@ -36,21 +38,63 @@ const HeroSection = () => {
                     <div className="flex items-center gap-3 md:gap-4">
                         <ThemeToggle size="sm" />
 
-                        {/* Divider */}
-                        <div className="hidden sm:block w-px h-6 bg-cream-300 dark:bg-surface-muted" />
+                        {/* Divider - hidden on mobile */}
+                        <div className="hidden md:block w-px h-6 bg-cream-300 dark:bg-surface-muted" />
 
-                        <Link to="/login">
-                            <Button variant="ghost" size="sm" className="text-xs md:text-sm px-4 md:px-5 border border-cream-300 dark:border-surface-muted hover:border-primary dark:hover:border-primary-light">
-                                Log In
-                            </Button>
-                        </Link>
-                        <Link to="/signup">
-                            <Button variant="primary" size="sm" className="text-xs md:text-sm px-4 md:px-5">
-                                Sign Up
-                            </Button>
-                        </Link>
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center gap-3">
+                            <Link to="/login">
+                                <Button variant="ghost" size="sm" className="text-xs md:text-sm px-4 md:px-5 border border-cream-300 dark:border-surface-muted hover:border-primary dark:hover:border-primary-light">
+                                    Log In
+                                </Button>
+                            </Link>
+                            <Link to="/signup">
+                                <Button variant="primary" size="sm" className="text-xs md:text-sm px-4 md:px-5">
+                                    Sign Up
+                                </Button>
+                            </Link>
+                        </div>
+
+                        {/* Mobile Hamburger Button */}
+                        <button
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="md:hidden p-2 rounded-lg hover:bg-cream-200 dark:hover:bg-surface-muted transition-colors"
+                            aria-label="Toggle mobile menu"
+                        >
+                            {mobileMenuOpen ? (
+                                <X className="w-5 h-5 text-text-dark dark:text-white" />
+                            ) : (
+                                <Menu className="w-5 h-5 text-text-dark dark:text-white" />
+                            )}
+                        </button>
                     </div>
                 </div>
+
+                {/* Mobile Menu Dropdown */}
+                <AnimatePresence>
+                    {mobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.2 }}
+                            className="md:hidden mt-2 max-w-7xl mx-auto bg-cream-50/95 dark:bg-surface-dark/95 backdrop-blur-xl rounded-xl px-4 py-3 shadow-lg border border-cream-200/50 dark:border-surface-muted/50"
+                        >
+                            <div className="flex flex-col gap-2">
+                                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                                    <Button variant="ghost" size="sm" className="w-full justify-center text-sm border border-cream-300 dark:border-surface-muted">
+                                        Log In
+                                    </Button>
+                                </Link>
+                                <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                                    <Button variant="primary" size="sm" className="w-full justify-center text-sm">
+                                        Sign Up
+                                    </Button>
+                                </Link>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </motion.nav>
 
             <div className="flex-1 grid md:grid-cols-2 h-full">
@@ -72,7 +116,7 @@ const HeroSection = () => {
 
                         <motion.h1
                             variants={fadeInUp}
-                            className="text-4xl md:text-5xl lg:text-6xl font-serif text-text-dark dark:text-white mb-6 leading-[1.15]"
+                            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif text-text-dark dark:text-white mb-6 leading-[1.15]"
                         >
                             Curated Style, <br />
                             <span className="italic bg-gradient-to-r from-primary via-secondary to-primary dark:from-primary-light dark:via-primary dark:to-primary-light bg-[length:200%_auto] animate-gradient-x bg-clip-text text-transparent">

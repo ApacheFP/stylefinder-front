@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
+import ParticleBackground from '../components/ui/ParticleBackground';
 import { showToast } from '../utils/toast';
 
 const SignUpPage = () => {
@@ -36,8 +37,11 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-surface-dark px-4 py-8">
-      <div className="max-w-md w-full bg-cream-100 dark:bg-surface-darker rounded-2xl shadow-lg p-6 md:p-8 border border-cream-300 dark:border-surface-muted">
+    <div className="min-h-screen flex items-center justify-center bg-background dark:bg-surface-dark px-4 py-8 relative overflow-hidden">
+      {/* Particle Background */}
+      <ParticleBackground />
+
+      <div className="max-w-md w-full bg-cream-100/95 dark:bg-surface-darker/90 backdrop-blur-sm rounded-2xl shadow-lg p-6 md:p-8 border border-cream-300 dark:border-surface-muted relative z-10">
         {/* Back Button */}
         <button
           onClick={() => navigate('/')}
