@@ -273,6 +273,8 @@ export const useChatMessages = (guestGender?: string) => {
           remainingBudget: outfitData.remainingBudget ?? undefined,
           explanation: outfitData.explanation,
         } : undefined,
+        budgetOptions: outfitData.budgetOptions,
+        outfitGenerationOptions: outfitData.outfitGenerationOptions,
       };
 
       // Add assistant message to state and cache

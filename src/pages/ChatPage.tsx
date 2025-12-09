@@ -19,7 +19,7 @@ import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
 import KeyboardShortcutsHelper from '../components/ui/KeyboardShortcutsHelper';
 import { chatService } from '../services/chatService';
 import { beautifyUsername } from '../utils/stringUtils';
-import type { ChatHistory } from '../types';
+import type { ChatHistory, BudgetOption } from '../types';
 
 type GuestGender = 'male' | 'female' | 'non-binary';
 
@@ -273,6 +273,20 @@ const ChatPage = () => {
     sendMessage(messageToSend, imageToSend);
   };
 
+  const handleOptionSelect = (option: BudgetOption) => {
+    let message;
+    if (option.max_budget === 0) {
+      message = "My max budget is unlimited";
+    } else {
+      message = `My max budget is ${option.max_budget}`;
+    }
+    sendMessage(message);
+  };
+
+  const handleOutfitOptionSelect = (option: import('../types').OutfitGenerationOption) => {
+    sendMessage(option.value);
+  };
+
   const showEmptyState = messages.length === 0;
 
   return (
@@ -369,7 +383,7 @@ const ChatPage = () => {
                 <ChatMessageSkeleton />
               ) : (
                 // Show actual messages
-                messages.map((message) => (
+                messages.map((message, index) => (
                   <ChatMessage
                     key={message.id}
                     message={message}
@@ -379,6 +393,9 @@ const ChatPage = () => {
                     onContentChange={scrollToBottom}
                     onSelectOutfit={message.role === 'assistant' ? (index) => selectOutfit(index, message.id) : undefined}
                     selectedOutfitIndex={message.role === 'assistant' && selectedMessageId === message.id ? selectedOutfitIndex : undefined}
+                    onOptionSelect={(option) => handleOptionSelect(option)}
+                    onOutfitOptionSelect={handleOutfitOptionSelect}
+                    isLast={index === messages.length - 1}
                   />
                 ))
               )}

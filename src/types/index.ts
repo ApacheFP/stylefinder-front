@@ -14,6 +14,14 @@ export interface UserPreferences {
 }
 
 // Chat types
+// Outfit Generation Option for the poll
+export interface OutfitGenerationOption {
+  id: string;
+  label: string;
+  description: string;
+  value: string; // The value to send back to the backend
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
@@ -29,6 +37,15 @@ export interface ChatMessage {
     errorMessage?: string;
   };
   outfits?: Outfit[]; // Support for multiple outfit options
+  budgetOptions?: BudgetOption[]; // Interactive budget poll options
+  outfitGenerationOptions?: OutfitGenerationOption[]; // Interactive outfit generation options poll
+}
+
+export interface BudgetOption {
+  label: string;
+  min_budget: number;
+  max_budget: number;
+  description: string;
 }
 
 export interface ChatHistory {

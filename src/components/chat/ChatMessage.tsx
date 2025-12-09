@@ -2,13 +2,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Maximize2, ShoppingBag, AlertTriangle, RefreshCw, Copy, Check, Sparkles, User, Search } from 'lucide-react';
-import type { ChatMessage as ChatMessageType } from '../../types';
+import type { ChatMessage as ChatMessageType, BudgetOption } from '../../types';
 import ReactMarkdown from 'react-markdown';
 import ProductCard from '../ui/ProductCard';
 import ProductCarousel from '../ui/ProductCarousel';
 import Button from '../ui/Button';
 import OutfitExplanation from './OutfitExplanation';
 import ImageAttachment from './ImageAttachment';
+import BudgetPoll from './BudgetPoll';
+import OutfitOptionPoll from './OutfitOptionPoll';
 import { fadeInUp } from '../../utils/animations';
 import { formatTime } from '../../utils/dateUtils';
 
@@ -20,9 +22,12 @@ interface ChatMessageProps {
   onContentChange?: () => void;
   onSelectOutfit?: (outfitIndex: number) => void;
   selectedOutfitIndex?: number | null;
+  onOptionSelect?: (option: BudgetOption) => void;
+  onOutfitOptionSelect?: (option: import('../../types').OutfitGenerationOption) => void;
+  isLast?: boolean;
 }
 
-const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, onContentChange, onSelectOutfit, selectedOutfitIndex }: ChatMessageProps) => {
+const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, onContentChange, onSelectOutfit, selectedOutfitIndex, onOptionSelect, onOutfitOptionSelect, isLast = false }: ChatMessageProps) => {
   const [selectedProductIndex, setSelectedProductIndex] = useState<number | null>(null);
   const [activeOutfitIndex, setActiveOutfitIndex] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -223,24 +228,42 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
       <div className={`flex-1 min-w-0 max-w-3xl relative group`}>
         {/* Text content */}
         {!activeOutfit ? (
-          <div className="bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-muted rounded-2xl rounded-tl-none px-5 py-4 shadow-sm max-w-lg relative">
-            <div className="prose prose-sm max-w-none dark:prose-invert">
-              <ReactMarkdown>{message.content}</ReactMarkdown>
+          <div className="space-y-3">
+            <div className="bg-cream-100 dark:bg-surface-darker border border-cream-300 dark:border-surface-muted rounded-2xl rounded-tl-none px-5 py-4 shadow-sm max-w-lg relative">
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <ReactMarkdown>{message.content}</ReactMarkdown>
+              </div>
+
+              {/* Copy button - appears on hover */}
+              {showActions && message.content && (
+                <button
+                  onClick={handleCopy}
+                  className="absolute -right-10 top-2 p-1.5 rounded-lg bg-gray-100 dark:bg-surface-muted hover:bg-gray-200 dark:hover:bg-surface-border transition-colors opacity-0 group-hover:opacity-100"
+                  title="Copy message"
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Copy className="w-4 h-4 text-gray-500 dark:text-stone-400" />
+                  )}
+                </button>
+              )}
             </div>
 
-            {/* Copy button - appears on hover */}
-            {showActions && message.content && (
-              <button
-                onClick={handleCopy}
-                className="absolute -right-10 top-2 p-1.5 rounded-lg bg-gray-100 dark:bg-surface-muted hover:bg-gray-200 dark:hover:bg-surface-border transition-colors opacity-0 group-hover:opacity-100"
-                title="Copy message"
-              >
-                {copied ? (
-                  <Check className="w-4 h-4 text-green-500" />
-                ) : (
-                  <Copy className="w-4 h-4 text-gray-500 dark:text-stone-400" />
-                )}
-              </button>
+            {/* Budget Poll - show if available and is last message */}
+            {message.budgetOptions && message.budgetOptions.length > 0 && onOptionSelect && isLast && (
+              <BudgetPoll
+                options={message.budgetOptions}
+                onSelect={onOptionSelect}
+              />
+            )}
+
+            {/* Outfit Option Poll - show if available and is last message */}
+            {message.outfitGenerationOptions && message.outfitGenerationOptions.length > 0 && onOutfitOptionSelect && isLast && (
+              <OutfitOptionPoll
+                options={message.outfitGenerationOptions}
+                onSelect={onOutfitOptionSelect}
+              />
             )}
           </div>
         ) : (
@@ -251,6 +274,14 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
                 <ReactMarkdown>{message.content}</ReactMarkdown>
               </div>
             </div>
+
+            {/* Budget Poll - show if available and is last message */}
+            {message.budgetOptions && message.budgetOptions.length > 0 && onOptionSelect && isLast && (
+              <BudgetPoll
+                options={message.budgetOptions}
+                onSelect={onOptionSelect}
+              />
+            )}
 
             {/* Multiple Outfits Tabs */}
             {outfits.length > 1 && (

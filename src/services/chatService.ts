@@ -44,6 +44,8 @@ interface BackendOutfitResponse {
   outfits?: BackendOutfitResult[]; // New multiple outfits support
   message: string;
   explanation?: string;
+  budget_options?: any[]; // Budget options for polling
+  outfit_generation_options?: any[]; // Outfit generation options for polling
 }
 
 export interface TransformedOutfit {
@@ -63,6 +65,8 @@ export interface TransformedOutfitResponse {
   remainingBudget?: number;
   explanation?: string;
   message: string;
+  budgetOptions?: any[];
+  outfitGenerationOptions?: any[];
 }
 
 interface SendMessageResponse {
@@ -84,6 +88,8 @@ interface BackendMessage {
   outfit?: BackendOutfitItem[];
   outfits?: BackendOutfitResult[]; // Backend sends 'outfits' list for multiple options
   created_at?: string;  // Backend uses 'created_at', not 'timestamp'
+  budget_options?: any[];
+  outfit_generation_options?: any[];
 }
 
 interface BackendConversation {
@@ -252,6 +258,8 @@ export const chatService = {
         // Keep legacy outfit property for backward compatibility if needed, 
         // but UI should prefer 'outfits'
         outfit: processedOutfits ? processedOutfits[0] : undefined,
+        budgetOptions: msg.budget_options,
+        outfitGenerationOptions: msg.outfit_generation_options,
       };
     });
 
@@ -313,6 +321,8 @@ export const chatService = {
         remainingBudget: outfits[0].remainingBudget,
         explanation: outfits[0].explanation,
         message: backendResponse.message,
+        budgetOptions: backendResponse.budget_options,
+        outfitGenerationOptions: backendResponse.outfit_generation_options,
       };
     }
 
@@ -337,6 +347,8 @@ export const chatService = {
         remainingBudget: undefined,
         explanation,
         message: backendResponse.message,
+        budgetOptions: backendResponse.budget_options,
+        outfitGenerationOptions: backendResponse.outfit_generation_options,
       };
     }
 
@@ -349,6 +361,8 @@ export const chatService = {
       totalPrice: 0,
       explanation: '',
       message: backendResponse.message,
+      budgetOptions: backendResponse.budget_options,
+      outfitGenerationOptions: backendResponse.outfit_generation_options,
     };
   },
 };

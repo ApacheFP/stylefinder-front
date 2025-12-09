@@ -58,6 +58,16 @@ vi.mock('./OutfitExplanation', () => ({
     ),
 }));
 
+vi.mock('./BudgetPoll', () => ({
+    default: ({ options, onSelect }: any) => (
+        <div data-testid="budget-poll">
+            {options.map((opt: any) => (
+                <button key={opt.label} onClick={() => onSelect(opt)}>{opt.label}</button>
+            ))}
+        </div>
+    ),
+}));
+
 describe('ChatMessage', () => {
     const mockOnExplainOutfit = vi.fn();
 
@@ -311,5 +321,48 @@ describe('ChatMessage', () => {
         expect(windowOpenSpy).toHaveBeenCalledTimes(2);
 
         windowOpenSpy.mockRestore();
+    });
+
+    it('conditionally renders budget poll based on isLast prop', () => {
+        const message: ChatMessageType = {
+            id: '2',
+            role: 'assistant',
+            content: 'How much do you want to spend?',
+            budgetOptions: [
+                { label: 'Low', description: 'Cheap', min_budget: 0, max_budget: 50 },
+                { label: 'High', description: 'Expensive', min_budget: 50, max_budget: 100 },
+            ],
+            timestamp: new Date(),
+        };
+
+        const mockOnOptionSelect = vi.fn();
+
+        // Case 1: isLast is true -> Poll should be visible
+        const { unmount } = render(
+            <ChatMessage
+                message={message}
+                onExplainOutfit={mockOnExplainOutfit}
+                onOptionSelect={mockOnOptionSelect}
+                isLast={true}
+            />
+        );
+
+        expect(screen.getByText('Low')).toBeInTheDocument();
+        expect(screen.getByText('High')).toBeInTheDocument();
+
+        unmount();
+
+        // Case 2: isLast is false -> Poll should NOT be visible
+        render(
+            <ChatMessage
+                message={message}
+                onExplainOutfit={mockOnExplainOutfit}
+                onOptionSelect={mockOnOptionSelect}
+                isLast={false}
+            />
+        );
+
+        expect(screen.queryByText('Low')).not.toBeInTheDocument();
+        expect(screen.queryByText('High')).not.toBeInTheDocument();
     });
 });
