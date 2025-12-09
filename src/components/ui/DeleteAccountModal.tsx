@@ -73,7 +73,7 @@ const DeleteAccountModal = ({ isOpen, onClose, onConfirm, isDeleting }: DeleteAc
                     <Button
                         variant="primary"
                         onClick={onConfirm}
-                        disabled={isDeleting || deleteConfirmation !== 'DELETE'}
+                        disabled={isDeleting || deleteConfirmation.toUpperCase() !== 'DELETE'}
                         className="flex-1 bg-red-500 hover:bg-red-600 text-white shadow-lg shadow-red-500/20 border-transparent transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                     >
                         {isDeleting ? 'Deleting...' : 'Delete Account'}
