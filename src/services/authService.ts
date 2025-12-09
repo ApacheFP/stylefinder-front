@@ -116,4 +116,13 @@ export const authService = {
     const response = await api.delete<{ success: boolean }>('/user/delete');
     return response.data.success;
   },
+
+  // Login with Google OAuth
+  // Backend endpoint: POST /user/google-login
+  loginWithGoogle: async (credential: string) => {
+    const response = await api.post<LoginResponse>('/user/google-login', { credential });
+    return {
+      user: transformUser(response.data.user),
+    };
+  },
 };

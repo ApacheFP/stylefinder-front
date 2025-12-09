@@ -9,6 +9,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   signUp: (name: string, email: string, password: string) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
 }
@@ -60,6 +61,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const loginWithGoogle = async (credential: string) => {
+    const response = await authService.loginWithGoogle(credential);
+    setUser(response.user);
+  };
+
   const updateUser = (updatedUser: User) => {
     setUser(updatedUser);
   };
@@ -70,6 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated: !!user,
     login,
     signUp,
+    loginWithGoogle,
     logout,
     updateUser,
   };

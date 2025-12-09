@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { lazy, Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -88,22 +89,26 @@ const AnimatedRoutes = () => {
 };
 
 function App() {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <Toaster
-              position="top-right"
-              reverseOrder={false}
-              containerStyle={{
-                top: 80, // Avoid overlap with header
-              }}
-            />
-            <AnimatedRoutes />
-          </BrowserRouter>
-        </AuthProvider>
-      </ThemeProvider>
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <ThemeProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <Toaster
+                position="top-right"
+                reverseOrder={false}
+                containerStyle={{
+                  top: 80, // Avoid overlap with header
+                }}
+              />
+              <AnimatedRoutes />
+            </BrowserRouter>
+          </AuthProvider>
+        </ThemeProvider>
+      </GoogleOAuthProvider>
     </ErrorBoundary>
   );
 }

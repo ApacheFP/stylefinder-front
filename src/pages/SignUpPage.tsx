@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import ParticleBackground from '../components/ui/ParticleBackground';
+import GoogleLoginButton from '../components/ui/GoogleLoginButton';
 import { showToast } from '../utils/toast';
 
 const SignUpPage = () => {
@@ -98,6 +99,22 @@ const SignUpPage = () => {
             Sign Up
           </Button>
         </form>
+
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-cream-300 dark:border-surface-muted" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-cream-100 dark:bg-surface-darker text-text-medium dark:text-stone-400">
+              or
+            </span>
+          </div>
+        </div>
+
+        <GoogleLoginButton
+          onSuccess={() => navigate('/preferences')}
+          mode="signup"
+        />
 
         <p className="mt-6 text-center text-sm md:text-base font-inter text-text-medium dark:text-stone-400">
           Already have an account?{' '}
