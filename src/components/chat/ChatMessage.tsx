@@ -412,7 +412,7 @@ const ChatMessage = ({ message, onExplainOutfit, isLoadingExplanation, onRetry, 
                     className={`
                       transition-all duration-200 rounded-full px-4 py-2 font-semibold text-sm flex items-center gap-2 cursor-pointer hover:scale-105
                       ${selectedOutfitIndex === activeOutfitIndex
-                        ? 'bg-green-600 text-white border-green-600 hover:bg-green-700'
+                        ? 'bg-primary text-white border-primary hover:bg-primary-hover'
                         : 'text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }
                     `}
