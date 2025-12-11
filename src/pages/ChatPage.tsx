@@ -248,12 +248,13 @@ const ChatPage = () => {
 
   const handleNewChat = () => {
     guestSessionActiveRef.current = false;
-    // clearMessages() is handled by the useEffect when URL changes to /chat
     setInputMessage('');
     clearImage();
-    // Reset guest gender for a fresh start (optional: remove from localStorage too)
+    // Always clear messages immediately to ensure clean state
+    // This fixes the case where an error occurs before conv_id is assigned
+    clearMessages();
+    // Reset guest gender for a fresh start
     if (!isAuthenticated) {
-      clearMessages();
       setGuestGender(null);
       localStorage.removeItem('stylefinder_guest_gender');
     }
