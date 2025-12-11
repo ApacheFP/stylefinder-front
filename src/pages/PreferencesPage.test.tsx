@@ -72,6 +72,18 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
+// Mock framer-motion
+vi.mock('framer-motion', () => ({
+    motion: {
+        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    },
+}));
+
+// Mock ParticleBackground to avoid ThemeProvider dependency
+vi.mock('../components/ui/ParticleBackground', () => ({
+    default: () => <div data-testid="particle-background" />,
+}));
+
 describe('PreferencesPage', () => {
     const mockAllPreferences = {
         '1': { id: 1, name: 'Gender', values: ['Man', 'Woman'] },

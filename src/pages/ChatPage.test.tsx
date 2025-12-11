@@ -221,10 +221,18 @@ describe('ChatPage', () => {
     });
 
     it('handles new chat', () => {
+        // For non-authenticated users, clearMessages is called directly
+        // For authenticated users, it's handled via useEffect on URL change
+        (useAuth as any).mockReturnValue({
+            isAuthenticated: false,
+            user: null,
+        });
+
         renderWithRouter(<ChatPage />);
 
         fireEvent.click(screen.getByText('New Chat'));
 
+        // For non-authenticated users, clearMessages is called directly
         expect(defaultChatMessages.clearMessages).toHaveBeenCalled();
         expect(defaultImageUpload.clearImage).toHaveBeenCalled();
     });

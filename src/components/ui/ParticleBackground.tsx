@@ -1,10 +1,80 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../../context/ThemeContext';
+
+// Theme transition duration - must match CSS variable
+const THEME_TRANSITION_DURATION = 400;
+
+interface Particle {
+    x: number;
+    y: number;
+    size: number;
+    speedX: number;
+    speedY: number;
+    color: string;
+    targetColor: string;
+    transitionProgress: number;
+}
+
+// Color interpolation helper
+const interpolateColor = (startColor: string, endColor: string, progress: number): string => {
+    // Parse rgba values
+    const parseRgba = (color: string) => {
+        const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+),?\s*([\d.]+)?\)/);
+        if (match) {
+            return {
+                r: parseInt(match[1]),
+                g: parseInt(match[2]),
+                b: parseInt(match[3]),
+                a: parseFloat(match[4] || '1')
+            };
+        }
+        return { r: 0, g: 0, b: 0, a: 1 };
+    };
+
+    const start = parseRgba(startColor);
+    const end = parseRgba(endColor);
+
+    const r = Math.round(start.r + (end.r - start.r) * progress);
+    const g = Math.round(start.g + (end.g - start.g) * progress);
+    const b = Math.round(start.b + (end.b - start.b) * progress);
+    const a = start.a + (end.a - start.a) * progress;
+
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+};
 
 const ParticleBackground = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const { theme } = useTheme();
+    const particlesRef = useRef<Particle[]>([]);
+    const animationFrameRef = useRef<number>(0);
+    const prevThemeRef = useRef(theme);
 
+    // Get color for theme
+    const getColorForTheme = useCallback((isDark: boolean) => {
+        const alpha = isDark
+            ? Math.random() * 0.3 + 0.1
+            : Math.random() * 0.2 + 0.05;
+        return isDark
+            ? `rgba(196, 164, 132, ${alpha})` // Light bronze for dark mode
+            : `rgba(166, 124, 82, ${alpha})`; // Bronze for light mode
+    }, []);
+
+    // Create a particle
+    const createParticle = useCallback((canvas: HTMLCanvasElement, isDark: boolean): Particle => {
+        const color = getColorForTheme(isDark);
+        return {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 0.5,
+            speedX: Math.random() * 0.5 - 0.25,
+            speedY: Math.random() * 0.5 - 0.25,
+            color,
+            targetColor: color,
+            transitionProgress: 1
+        };
+    }, [getColorForTheme]);
+
+    // Initialize particles
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -12,78 +82,51 @@ const ParticleBackground = () => {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        let animationFrameId: number;
-        let particles: Particle[] = [];
-
         const resizeCanvas = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initParticles();
-        };
-
-        class Particle {
-            x: number;
-            y: number;
-            size: number;
-            speedX: number;
-            speedY: number;
-            color: string;
-
-            constructor() {
-                this.x = Math.random() * (canvas?.width || window.innerWidth);
-                this.y = Math.random() * (canvas?.height || window.innerHeight);
-                this.size = Math.random() * 2 + 0.5; // Random size between 0.5 and 2.5
-                this.speedX = Math.random() * 0.5 - 0.25; // Random speed
-                this.speedY = Math.random() * 0.5 - 0.25;
-
-                // Theme-aware colors - Warm bronze/tan
-                const isDark = document.documentElement.classList.contains('dark');
-                // Using warm bronze colors
-                this.color = isDark
-                    ? `rgba(196, 164, 132, ${Math.random() * 0.3 + 0.1})` // Light bronze for dark mode
-                    : `rgba(166, 124, 82, ${Math.random() * 0.2 + 0.05})`; // Bronze for light mode
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-
-                // Wrap around screen
-                if (canvas) {
-                    if (this.x > canvas.width) this.x = 0;
-                    if (this.x < 0) this.x = canvas.width;
-                    if (this.y > canvas.height) this.y = 0;
-                    if (this.y < 0) this.y = canvas.height;
-                }
-            }
-
-            draw() {
-                if (!ctx) return;
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        const initParticles = () => {
-            particles = [];
-            const particleCount = Math.floor(window.innerWidth * 0.4); // Even higher density
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
+            // Reinitialize particles on resize
+            const isDark = theme === 'dark';
+            const particleCount = Math.floor(window.innerWidth * 0.4);
+            particlesRef.current = Array.from({ length: particleCount }, () =>
+                createParticle(canvas, isDark)
+            );
         };
 
         const animate = () => {
             if (!ctx || !canvas) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            particles.forEach(particle => {
-                particle.update();
-                particle.draw();
+            particlesRef.current.forEach(particle => {
+                // Update position
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+
+                // Wrap around screen
+                if (particle.x > canvas.width) particle.x = 0;
+                if (particle.x < 0) particle.x = canvas.width;
+                if (particle.y > canvas.height) particle.y = 0;
+                if (particle.y < 0) particle.y = canvas.height;
+
+                // Handle color transition
+                if (particle.transitionProgress < 1) {
+                    particle.transitionProgress += 16 / THEME_TRANSITION_DURATION; // ~60fps
+                    if (particle.transitionProgress > 1) particle.transitionProgress = 1;
+                    particle.color = interpolateColor(
+                        particle.color,
+                        particle.targetColor,
+                        particle.transitionProgress
+                    );
+                }
+
+                // Draw particle
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fill();
             });
 
-            animationFrameId = requestAnimationFrame(animate);
+            animationFrameRef.current = requestAnimationFrame(animate);
         };
 
         // Initial setup
@@ -94,9 +137,23 @@ const ParticleBackground = () => {
 
         return () => {
             window.removeEventListener('resize', resizeCanvas);
-            cancelAnimationFrame(animationFrameId);
+            cancelAnimationFrame(animationFrameRef.current);
         };
-    }, [theme]); // Re-init on theme change to update colors
+    }, [createParticle, theme]);
+
+    // Handle theme changes - trigger smooth color transition
+    useEffect(() => {
+        if (prevThemeRef.current === theme) return;
+        prevThemeRef.current = theme;
+
+        const isDark = theme === 'dark';
+
+        // Start color transition for all particles
+        particlesRef.current.forEach(particle => {
+            particle.targetColor = getColorForTheme(isDark);
+            particle.transitionProgress = 0;
+        });
+    }, [theme, getColorForTheme]);
 
     return (
         <canvas

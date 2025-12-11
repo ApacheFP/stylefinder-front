@@ -51,7 +51,7 @@ const ProductCard = ({ item, onImageClick }: ProductCardProps) => {
               alt={item.name}
               loading="lazy"
               referrerPolicy="no-referrer"
-              className="max-w-[90%] max-h-[90%] object-contain transition-all duration-300 rounded-lg bg-white p-1 shadow-sm"
+              className="max-w-[90%] max-h-[90%] object-contain transition-all duration-300 rounded-lg bg-white dark:bg-surface-muted p-1 shadow-sm"
               initial={{ opacity: 0 }}
               animate={{
                 opacity: imageLoaded ? (isHovered ? 0.4 : 1) : 0,

@@ -53,6 +53,23 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
+// Mock framer-motion
+vi.mock('framer-motion', () => ({
+    motion: {
+        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    },
+}));
+
+// Mock ParticleBackground to avoid ThemeProvider dependency
+vi.mock('../components/ui/ParticleBackground', () => ({
+    default: () => <div data-testid="particle-background" />,
+}));
+
+// Mock GoogleLoginButton
+vi.mock('../components/ui/GoogleLoginButton', () => ({
+    default: () => <div data-testid="google-login-button" />,
+}));
+
 describe('LoginPage', () => {
     const mockLogin = vi.fn();
 

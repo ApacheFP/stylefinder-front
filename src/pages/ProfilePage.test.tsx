@@ -69,6 +69,41 @@ vi.mock('../components/ui/Skeleton', () => ({
     default: () => <div data-testid="skeleton" />,
 }));
 
+// Mock ProfileSkeleton
+vi.mock('../components/ui/ProfileSkeleton', () => ({
+    default: () => <div data-testid="profile-skeleton" />,
+}));
+
+// Mock ParticleBackground to avoid ThemeProvider dependency
+vi.mock('../components/ui/ParticleBackground', () => ({
+    default: () => <div data-testid="particle-background" />,
+}));
+
+// Mock DeleteAccountModal
+vi.mock('../components/ui/DeleteAccountModal', () => ({
+    default: ({ isOpen, onConfirm, onClose }: any) => (
+        isOpen ? (
+            <div data-testid="delete-account-modal">
+                <p>Are you sure?</p>
+                <input placeholder="Type DELETE to confirm" />
+                <button onClick={onClose}>Cancel</button>
+                <button onClick={onConfirm}>Delete Account</button>
+            </div>
+        ) : null
+    ),
+}));
+
+// Mock DeleteAllChatsModal
+vi.mock('../components/ui/DeleteAllChatsModal', () => ({
+    default: ({ isOpen, onClose }: any) => (
+        isOpen ? (
+            <div data-testid="delete-chats-modal">
+                <button onClick={onClose}>Cancel</button>
+            </div>
+        ) : null
+    ),
+}));
+
 const mockUser = {
     id: '1',
     name: 'Test User',
@@ -116,7 +151,7 @@ describe('ProfilePage', () => {
         });
 
         renderWithAuth(<ProfilePage />);
-        expect(screen.getAllByTestId('skeleton').length).toBeGreaterThan(0);
+        expect(screen.getByTestId('profile-skeleton')).toBeInTheDocument();
     });
 
     it('renders profile not found state', () => {
@@ -216,7 +251,7 @@ describe('ProfilePage', () => {
         const deleteButton = screen.getByText('Delete Account', { selector: 'button' });
         fireEvent.click(deleteButton);
 
-        expect(screen.getByTestId('modal')).toBeInTheDocument();
+        expect(screen.getByTestId('delete-account-modal')).toBeInTheDocument();
         expect(screen.getByText('Are you sure?')).toBeInTheDocument();
     });
 

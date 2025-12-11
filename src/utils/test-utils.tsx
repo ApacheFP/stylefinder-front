@@ -21,6 +21,13 @@ Object.defineProperty(window, 'matchMedia', {
     })),
 });
 
+// Mock ResizeObserver
+(globalThis as any).ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+}));
+
 // Mock framer-motion
 vi.mock('framer-motion', async () => {
     const actual = await vi.importActual('framer-motion');
@@ -44,7 +51,13 @@ vi.mock('framer-motion', async () => {
             span: ({ children, ...props }: any) => <span {...filterProps(props)}>{children}</span>,
             img: ({ ...props }: any) => <img {...filterProps(props)} />,
             textarea: ({ ...props }: any) => <textarea {...filterProps(props)} />,
-            // Add other elements as needed
+            h1: ({ children, ...props }: any) => <h1 {...filterProps(props)}>{children}</h1>,
+            h2: ({ children, ...props }: any) => <h2 {...filterProps(props)}>{children}</h2>,
+            h3: ({ children, ...props }: any) => <h3 {...filterProps(props)}>{children}</h3>,
+            p: ({ children, ...props }: any) => <p {...filterProps(props)}>{children}</p>,
+            nav: ({ children, ...props }: any) => <nav {...filterProps(props)}>{children}</nav>,
+            section: ({ children, ...props }: any) => <section {...filterProps(props)}>{children}</section>,
+            a: ({ children, ...props }: any) => <a {...filterProps(props)}>{children}</a>,
         },
         AnimatePresence: ({ children }: any) => <>{children}</>,
     };

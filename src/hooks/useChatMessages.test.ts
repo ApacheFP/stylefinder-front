@@ -84,8 +84,17 @@ describe('useChatMessages', () => {
         // Verify optimistic update (user message added)
         expect(result.current.messages.some(m => m.content === 'Hello AI' && m.role === 'user')).toBe(true);
 
-        // Verify API call - now includes guestGender parameter (undefined for default)
-        expect(chatService.sendMessage).toHaveBeenCalledWith('Hello AI', expect.anything(), undefined, undefined, undefined);
+        // Verify API call - matches the full signature: 
+        // message, filters, chatId, imageFile, outfitIndex, messageId, guestGender
+        expect(chatService.sendMessage).toHaveBeenCalledWith(
+            'Hello AI',
+            { outfitType: 'full', selectedItems: [] },
+            undefined, // chatId
+            undefined, // imageFile
+            null,      // outfitIndex
+            null,      // messageId
+            undefined  // guestGender
+        );
 
         // Verify state updates after response
         expect(result.current.currentChatId).toBe('new-chat-id');

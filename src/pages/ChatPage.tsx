@@ -15,6 +15,7 @@ import ChatInput from '../components/chat/ChatInput';
 import DragDropOverlay from '../components/chat/DragDropOverlay';
 import GenderSelector from '../components/chat/GenderSelector';
 import TypingIndicator from '../components/ui/TypingIndicator';
+import ParticleBackground from '../components/ui/ParticleBackground';
 import ScrollToBottomButton from '../components/ui/ScrollToBottomButton';
 import KeyboardShortcutsHelper from '../components/ui/KeyboardShortcutsHelper';
 import { chatService } from '../services/chatService';
@@ -290,7 +291,9 @@ const ChatPage = () => {
   const showEmptyState = messages.length === 0;
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background dark:bg-surface-dark">
+    <div className="flex h-screen overflow-hidden bg-background dark:bg-surface-dark relative">
+      {/* Particle Background */}
+      <ParticleBackground />
       {/* Hamburger Menu - Mobile Only */}
       <HamburgerMenu
         isOpen={isSidebarOpen}
