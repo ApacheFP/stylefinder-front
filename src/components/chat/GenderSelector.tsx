@@ -17,7 +17,7 @@ const genderOptions: { value: Gender; label: string }[] = [
 
 const GenderSelector = ({ selectedGender, onSelectGender, disabled = false }: GenderSelectorProps) => {
   const needsSelection = !selectedGender && !disabled;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -28,14 +28,14 @@ const GenderSelector = ({ selectedGender, onSelectGender, disabled = false }: Ge
         <div className="flex items-center gap-2 text-text-dark dark:text-stone-200">
           <User className="w-4 h-4 text-primary" />
           <span className="text-sm font-inter font-medium">
-            {disabled 
-              ? 'Style preference:' 
+            {disabled
+              ? 'Clothing preference:'
               : needsSelection
-                ? 'Select your style to start:'
-                : 'Select your style:'}
+                ? 'Select clothing preference to start:'
+                : 'Select clothing preference:'}
           </span>
         </div>
-        
+
         <div className="flex gap-1.5">
           {genderOptions.map((option) => {
             const isSelected = selectedGender === option.value;
