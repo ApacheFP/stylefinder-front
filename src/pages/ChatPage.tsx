@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { flushSync } from 'react-dom';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
@@ -247,17 +248,19 @@ const ChatPage = () => {
   ]);
 
   const handleNewChat = () => {
-    guestSessionActiveRef.current = false;
-    setInputMessage('');
-    clearImage();
-    // Always clear messages immediately to ensure clean state
-    // This fixes the case where an error occurs before conv_id is assigned
-    clearMessages();
-    // Reset guest gender for a fresh start
-    if (!isAuthenticated) {
-      setGuestGender(null);
-      localStorage.removeItem('stylefinder_guest_gender');
-    }
+    // Use flushSync to ensure state is cleared synchronously before navigation
+    // This prevents the brief flash of old chat content when clicking "New Chat"
+    flushSync(() => {
+      guestSessionActiveRef.current = false;
+      setInputMessage('');
+      clearImage();
+      clearMessages();
+      // Reset guest gender for a fresh start
+      if (!isAuthenticated) {
+        setGuestGender(null);
+        localStorage.removeItem('stylefinder_guest_gender');
+      }
+    });
     navigate('/chat');
   };
 
