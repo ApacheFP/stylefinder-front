@@ -1,0 +1,852 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% Geometry
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=2.5cm
+}
+
+% Colors
+\definecolor{primary}{RGB}{166, 124, 82}
+\definecolor{codebackground}{RGB}{248, 248, 248}
+\definecolor{codeborder}{RGB}{200, 200, 200}
+\definecolor{linkcolor}{RGB}{0, 102, 153}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    urlcolor=linkcolor,
+    citecolor=primary
+}
+
+% Code listing style
+\lstset{
+    backgroundcolor=\color{codebackground},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{codeborder},
+    tabsize=2,
+    showstringspaces=false,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{primary}
+}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textit{StyleFinder AI - Frontend Report}}
+\fancyhead[R]{\textit{\nouppercase{\leftmark}}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Title formatting
+\titleformat{\section}{\Large\bfseries\color{primary}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% Document info
+\title{
+    \vspace{-2cm}
+    {\Huge\bfseries\color{primary} StyleFinder AI}\\[0.5cm]
+    {\Large Frontend Development Report}\\[0.3cm]
+    {\large Documentazione Tecnica e Roadmap di Sviluppo}
+}
+\author{
+    \textbf{Frontend Developer}\\
+    Sviluppatore Unico del Frontend
+}
+\date{Gennaio 2026}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\vspace{1cm}
+
+\begin{abstract}
+\noindent
+Questo documento descrive il lavoro di sviluppo frontend per \textbf{StyleFinder AI}, un'applicazione web intelligente che utilizza l'intelligenza artificiale per assistere gli utenti nella creazione di outfit personalizzati. Il report illustra l'architettura del progetto, le tecnologie adottate, i componenti sviluppati, le sfide affrontate e la roadmap seguita durante lo sviluppo. Come unico sviluppatore frontend del progetto, questo documento rappresenta una panoramica completa del lavoro svolto.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+%===============================================================================
+\section{Introduzione}
+%===============================================================================
+
+\subsection{Panoramica del Progetto}
+
+StyleFinder AI è una \textbf{Smart Application} web-based progettata per risolvere il problema comune della creazione di outfit e dell'indecisione durante lo shopping. Il sistema permette agli utenti di esprimere le proprie esigenze in linguaggio naturale e ricevere istantaneamente look curati e pronti all'acquisto, assemblati da piattaforme e-commerce live.
+
+\subsection{Obiettivi del Frontend}
+
+Gli obiettivi principali dello sviluppo frontend sono stati:
+
+\begin{itemize}
+    \item Creare un'\textbf{interfaccia utente moderna e intuitiva} che faciliti l'interazione con il sistema AI
+    \item Implementare un'\textbf{esperienza conversazionale fluida} tramite interfaccia chat
+    \item Garantire un \textbf{design responsive} ottimizzato per tutti i dispositivi
+    \item Sviluppare \textbf{componenti riutilizzabili} seguendo le best practices React
+    \item Integrare \textbf{animazioni e transizioni} per migliorare l'user experience
+    \item Implementare un \textbf{sistema di autenticazione} sicuro e funzionale
+    \item Predisporre l'architettura per una \textbf{facile integrazione} con il backend
+\end{itemize}
+
+\subsection{Ruolo dello Sviluppatore}
+
+Come \textbf{unico sviluppatore frontend} del progetto, ho avuto la responsabilità completa di:
+
+\begin{itemize}
+    \item Architettura e struttura del progetto
+    \item Scelta dello stack tecnologico
+    \item Design e implementazione dei componenti UI
+    \item Gestione dello stato dell'applicazione
+    \item Integrazione con le API backend
+    \item Testing e quality assurance
+    \item Documentazione tecnica
+\end{itemize}
+
+%===============================================================================
+\section{Stack Tecnologico}
+%===============================================================================
+
+\subsection{Framework e Librerie Principali}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Tecnologia} & \textbf{Versione} & \textbf{Scopo} \\
+\midrule
+React & 19.2.0 & Framework UI principale \\
+TypeScript & 5.9.3 & Tipizzazione statica \\
+Vite & 7.2.2 & Build tool e dev server \\
+React Router & 7.9.5 & Routing client-side \\
+Tailwind CSS & 3.4.18 & Framework CSS utility-first \\
+Framer Motion & 12.23.24 & Animazioni e transizioni \\
+Axios & 1.13.2 & HTTP client per API \\
+Lucide React & 0.553.0 & Libreria icone \\
+React Hot Toast & 2.6.0 & Sistema di notifiche \\
+\bottomrule
+\end{tabular}
+\caption{Stack tecnologico principale}
+\end{table}
+
+\subsection{Strumenti di Sviluppo}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{7cm}@{}}
+\toprule
+\textbf{Tool} & \textbf{Versione} & \textbf{Utilizzo} \\
+\midrule
+Vitest & 4.0.14 & Framework di testing \\
+Testing Library & 16.3.0 & Utility per test React \\
+ESLint & 9.39.1 & Linting del codice \\
+PostCSS & 8.5.6 & Processore CSS \\
+Autoprefixer & 10.4.22 & Prefissi CSS automatici \\
+\bottomrule
+\end{tabular}
+\caption{Strumenti di sviluppo e testing}
+\end{table}
+
+\subsection{Motivazioni delle Scelte Tecnologiche}
+
+\subsubsection{React 19 con TypeScript}
+La scelta di React è stata motivata dalla sua \textbf{maturità}, \textbf{vasto ecosistema} e \textbf{supporto della community}. TypeScript è stato integrato per garantire type-safety, migliorare la manutenibilità del codice e ridurre i bug in fase di sviluppo.
+
+\subsubsection{Vite}
+Vite è stato preferito a Create React App per le sue \textbf{prestazioni superiori} in fase di sviluppo (Hot Module Replacement istantaneo) e per i \textbf{tempi di build ottimizzati} in produzione.
+
+\subsubsection{Tailwind CSS}
+L'approccio utility-first di Tailwind ha permesso uno \textbf{sviluppo rapido} del design, garantendo al contempo \textbf{consistenza visiva} e \textbf{facile manutenzione} degli stili.
+
+\subsubsection{Framer Motion}
+Per le animazioni, Framer Motion offre un'\textbf{API dichiarativa} perfettamente integrata con React, permettendo di creare transizioni fluide e performanti.
+
+\subsection{Design System e Palette Colori}
+
+È stato sviluppato un \textbf{design system custom} con una palette colori coordinata per entrambi i temi:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Colore} & \textbf{Light Mode} & \textbf{Dark Mode} \\
+\midrule
+Primary & \#A67C52 (Bronze) & \#C4A484 (Light Bronze) \\
+Secondary & \#9F8170 (Taupe) & \#C4A492 (Light Taupe) \\
+Background & \#FEFDFB (Cream) & \#1C1917 (Stone 900) \\
+Surface & \#FBF9F5 (Light Cream) & \#292524 (Stone 800) \\
+Text & \#3D3229 (Warm Brown) & \#FFFFFF (White) \\
+\bottomrule
+\end{tabular}
+\caption{Palette colori del design system}
+\end{table}
+
+La configurazione Tailwind include:
+\begin{itemize}
+    \item Colori semantici custom (\texttt{primary}, \texttt{secondary}, \texttt{surface}, \texttt{cream})
+    \item Font families personalizzate (Playfair Display per titoli, Inter per body)
+    \item Keyframes custom per animazioni (fadeIn, shimmer, ripple, scale-in)
+    \item CSS variables per spacing e border-radius consistenti
+\end{itemize}
+
+%===============================================================================
+\section{Architettura del Progetto}
+%===============================================================================
+
+\subsection{Struttura delle Directory}
+
+\begin{lstlisting}[language=bash, caption=Struttura del progetto frontend]
+src/
+|-- components/          # Componenti UI riutilizzabili
+|   |-- chat/           # Componenti specifici chat
+|   |-- landing/        # Componenti landing page
+|   |-- layout/         # Layout (Sidebar, Header)
+|   |-- ui/             # Componenti UI base
+|-- pages/              # Pagine dell'applicazione
+|-- context/            # React Context providers
+|-- services/           # Servizi API
+|-- hooks/              # Custom React hooks
+|-- types/              # Definizioni TypeScript
+|-- utils/              # Funzioni utility
+\end{lstlisting}
+
+\subsection{Pattern Architetturali}
+
+\subsubsection{Component-Based Architecture}
+Ogni elemento dell'interfaccia è stato sviluppato come \textbf{componente isolato e riutilizzabile}, seguendo il principio di \textit{Single Responsibility}. I componenti sono organizzati per dominio funzionale.
+
+\subsubsection{Context API per State Management}
+Per la gestione dello stato globale sono stati implementati due Context principali:
+
+\begin{itemize}
+    \item \textbf{AuthContext}: gestione autenticazione utente, sessioni, login/logout
+    \item \textbf{ThemeContext}: gestione tema (light/dark mode)
+\end{itemize}
+
+\subsubsection{Custom Hooks}
+La logica di business riutilizzabile è stata estratta in custom hooks:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Hook} & \textbf{Funzionalità} \\
+\midrule
+\texttt{useChatMessages} & Gestione messaggi chat, invio, ricezione \\
+\texttt{useImageUpload} & Upload immagini con drag\&drop \\
+\texttt{useScrollToBottom} & Auto-scroll intelligente \\
+\texttt{useKeyboardShortcuts} & Scorciatoie da tastiera \\
+\texttt{useLocalStorage} & Persistenza dati locale \\
+\texttt{useOutfitFilters} & Gestione filtri outfit \\
+\bottomrule
+\end{tabular}
+\caption{Custom hooks sviluppati}
+\end{table}
+
+\subsubsection{Service Layer}
+I servizi API sono centralizzati in un layer dedicato che astrae le chiamate HTTP:
+
+\begin{itemize}
+    \item \texttt{authService}: autenticazione (login, signup, logout, Google OAuth, update profile)
+    \item \texttt{chatService}: gestione conversazioni, messaggi, explain outfit
+    \item \texttt{preferencesService}: preferenze utente con helper per multi-value
+\end{itemize}
+
+\subsubsection{Error Boundary}
+È stato implementato un \textbf{Error Boundary} a livello root che cattura errori React non gestiti, mostrando una UI di fallback invece di un crash completo dell'applicazione.
+
+%===============================================================================
+\section{Componenti Sviluppati}
+%===============================================================================
+
+\subsection{Pagine Principali}
+
+\subsubsection{Landing Page}
+La landing page è stata progettata per presentare il prodotto in modo \textbf{accattivante e professionale}. È composta da:
+
+\begin{itemize}
+    \item \textbf{HeroSection}: sezione hero con CTA principale e navigazione
+    \item \textbf{BrandsSection}: showcase dei brand partner
+    \item \textbf{ValueProposition}: proposta di valore del prodotto
+    \item \textbf{HowItWorks}: spiegazione del funzionamento in 3 step
+    \item \textbf{DemoPreview}: anteprima interattiva dell'applicazione
+    \item \textbf{CallToAction}: sezione finale con invito all'azione
+    \item \textbf{Footer}: footer con link e informazioni
+\end{itemize}
+
+\subsubsection{Chat Page}
+La pagina principale dell'applicazione, dove avviene l'interazione con l'AI:
+
+\begin{itemize}
+    \item Layout a due colonne (sidebar + area chat)
+    \item Gestione conversazioni multiple con cache in memoria
+    \item Supporto per utenti autenticati e guest
+    \item Upload immagini con drag \& drop
+    \item Visualizzazione outfit con carousel
+    \item Sincronizzazione URL con stato chat (\texttt{/chat/:chatId})
+    \item Particle background animato
+    \item Keyboard shortcuts helper
+\end{itemize}
+
+\subsubsection{Pagine Autenticazione}
+\begin{itemize}
+    \item \textbf{LoginPage}: form di login con validazione e Google OAuth
+    \item \textbf{SignUpPage}: registrazione con Google OAuth
+    \item \textbf{PreferencesPage}: configurazione preferenze con SearchableMultiSelect per liste lunghe
+    \item \textbf{ProfilePage}: gestione profilo, cambio password, eliminazione account
+    \item \textbf{HowToUsePage}: guida all'utilizzo dell'applicazione
+\end{itemize}
+
+\subsection{Componenti Chat}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Componente} & \textbf{Descrizione} \\
+\midrule
+\texttt{ChatInput} & Input messaggio con supporto immagini \\
+\texttt{ChatMessage} & Visualizzazione singolo messaggio \\
+\texttt{ChatEmptyState} & Stato vuoto con suggerimenti \\
+\texttt{ChatMessageSkeleton} & Loading skeleton \\
+\texttt{DragDropOverlay} & Overlay per drag \& drop \\
+\texttt{GenderSelector} & Selezione genere per guest \\
+\texttt{ImageAttachment} & Preview immagine allegata \\
+\texttt{OutfitExplanation} & Spiegazione AI dell'outfit \\
+\texttt{BudgetPoll} & Selezione interattiva budget \\
+\texttt{OutfitOptionPoll} & Selezione tra opzioni outfit \\
+\bottomrule
+\end{tabular}
+\caption{Componenti dell'interfaccia chat}
+\end{table}
+
+\subsection{Componenti UI Base}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Componente} & \textbf{Descrizione} \\
+\midrule
+\texttt{Button} & Pulsante con varianti (primary, ghost, danger) \\
+\texttt{Input} & Campo input stilizzato con validazione \\
+\texttt{Modal} & Finestra modale riutilizzabile con animazioni \\
+\texttt{ProductCard} & Card prodotto con hover effects e lazy loading \\
+\texttt{ProductCarousel} & Carousel per outfit con swipe e zoom \\
+\texttt{Skeleton} & Loading placeholder con shimmer \\
+\texttt{TypingIndicator} & Indicatore "sta scrivendo" animato \\
+\texttt{ThemeToggle} & Switch tema light/dark con transizione \\
+\texttt{HamburgerMenu} & Menu hamburger mobile con overlay \\
+\texttt{ImageLightbox} & Visualizzatore immagini fullscreen \\
+\texttt{Tooltip} & Tooltip informativo \\
+\texttt{ScrollToBottomButton} & Pulsante scroll automatico \\
+\texttt{ParticleBackground} & Sfondo particelle animato \\
+\texttt{SearchableMultiSelect} & Dropdown con ricerca per liste lunghe \\
+\texttt{DeleteAccountModal} & Modale conferma eliminazione account \\
+\texttt{DeleteAllChatsModal} & Modale conferma eliminazione chat \\
+\texttt{GoogleLoginButton} & Pulsante login Google stilizzato \\
+\texttt{KeyboardShortcutsHelper} & Helper scorciatoie tastiera \\
+\bottomrule
+\end{tabular}
+\caption{Componenti UI di base}
+\end{table}
+
+%===============================================================================
+\section{Funzionalità Implementate}
+%===============================================================================
+
+\subsection{Sistema di Autenticazione}
+
+Il sistema di autenticazione supporta:
+
+\begin{itemize}
+    \item \textbf{Login tradizionale}: email + password
+    \item \textbf{Google OAuth 2.0}: autenticazione con account Google tramite \texttt{@react-oauth/google}
+    \item \textbf{Registrazione}: con validazione campi e auto-login post-registrazione
+    \item \textbf{Sessioni persistenti}: cookie-based sessions con Flask-Login
+    \item \textbf{Modalità Guest}: utilizzo senza registrazione (con selezione genere)
+    \item \textbf{Protected Routes}: pagine accessibili solo ad utenti autenticati
+    \item \textbf{Session Check}: verifica automatica sessione al mount dell'app
+\end{itemize}
+
+\subsubsection{Flusso di Autenticazione}
+\begin{enumerate}
+    \item L'app verifica la sessione corrente tramite \texttt{/user/session}
+    \item Se esiste sessione valida, l'utente viene autenticato automaticamente
+    \item Le Protected Routes reindirizzano a login se non autenticati
+    \item Il logout invalida la sessione lato server
+\end{enumerate}
+
+\subsection{Interfaccia Chat}
+
+\subsubsection{Funzionalità Core}
+\begin{itemize}
+    \item Invio messaggi in linguaggio naturale
+    \item Ricezione e visualizzazione outfit raccomandati
+    \item Storico conversazioni con persistenza
+    \item Rinomina e eliminazione chat
+    \item Indicatori di stato (loading, typing, error)
+\end{itemize}
+
+\subsubsection{Upload Immagini}
+\begin{itemize}
+    \item Drag \& drop con overlay visivo
+    \item Validazione formato (JPG, PNG, GIF, WebP)
+    \item Preview immagine prima dell'invio
+    \item Rimozione immagine allegata
+\end{itemize}
+
+\subsubsection{Visualizzazione Outfit}
+\begin{itemize}
+    \item Carousel per outfit multipli con navigazione swipe
+    \item Product card con immagine, prezzo, brand
+    \item Indicatore disponibilità (in stock/out of stock)
+    \item Link diretto all'e-commerce
+    \item Lightbox per zoom immagine con gesture pinch-to-zoom
+    \item Spiegazione AI dell'outfit (Explain This Outfit)
+    \item Selezione outfit per follow-up conversazionale
+    \item Navigazione da tastiera (frecce, ESC)
+\end{itemize}
+
+\subsection{Responsive Design}
+
+L'applicazione è \textbf{completamente responsive} con breakpoint ottimizzati:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Breakpoint} & \textbf{Adattamenti} \\
+\midrule
+Mobile ($<$768px) & Sidebar collassabile, menu hamburger, grid singola colonna, touch targets ≥44px \\
+Tablet (768-1024px) & Grid a due colonne, layout ottimizzato \\
+Desktop ($>$1024px) & Sidebar fissa, grid a tre colonne, hover effects \\
+\bottomrule
+\end{tabular}
+\caption{Breakpoint responsive}
+\end{table}
+
+\subsection{Tema Light/Dark}
+
+Il sistema di temi include:
+\begin{itemize}
+    \item Toggle manuale light/dark
+    \item Rilevamento preferenza sistema
+    \item Persistenza scelta utente in localStorage
+    \item Palette colori ottimizzata per entrambi i temi
+\end{itemize}
+
+\subsection{Animazioni e Transizioni}
+
+Implementate con Framer Motion, le animazioni sono organizzate in un \textbf{sistema modulare} nel file \texttt{utils/animations.ts}:
+
+\begin{itemize}
+    \item \textbf{Page transitions}: fade + slide con AnimatePresence
+    \item \textbf{fadeIn/fadeInUp}: per apparizione elementi
+    \item \textbf{slideInLeft/slideInRight}: per pannelli laterali
+    \item \textbf{scaleIn}: per modali e cards
+    \item \textbf{staggerContainer}: per liste con animazione sequenziale
+    \item \textbf{Hover effects}: scale e shadow dinamici
+    \item \textbf{Skeleton shimmer}: effetto loading con gradient animato
+    \item \textbf{Smooth scroll}: scroll automatico ai nuovi messaggi
+\end{itemize}
+
+\subsubsection{Lazy Loading e Code Splitting}
+Le pagine sono caricate dinamicamente con \texttt{React.lazy()} per ottimizzare il bundle iniziale:
+
+\begin{lstlisting}[language=bash, caption=Lazy loading delle pagine]
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+\end{lstlisting}
+
+Un componente \texttt{LoadingFallback} mostra uno spinner durante il caricamento.
+
+\subsubsection{Effetti Celebrativi}
+Per migliorare l'engagement, sono stati implementati \textbf{confetti effects} (libreria \texttt{canvas-confetti}) per azioni positive come il salvataggio preferenze.
+
+%===============================================================================
+\section{Integrazione Backend}
+%===============================================================================
+
+\subsection{API Layer}
+
+L'integrazione con il backend è gestita attraverso un layer di servizi centralizzato. Il file \texttt{api.ts} configura Axios con:
+
+\begin{itemize}
+    \item Base URL configurabile via environment variables
+    \item Interceptor per gestione token di autenticazione
+    \item Gestione centralizzata errori HTTP
+    \item Timeout di 60 secondi (per operazioni AI che richiedono tempo)
+    \item \textbf{Cookie-based sessions} con \texttt{withCredentials: true} per Flask-Login
+\end{itemize}
+
+\subsection{Gestione Errori HTTP}
+
+È stato implementato un sistema di \textbf{error handling granulare} che mappa i codici HTTP a messaggi user-friendly:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{5cm}@{}}
+\toprule
+\textbf{Codice} & \textbf{Titolo} & \textbf{Gestione} \\
+\midrule
+400 & Invalid Request & Validazione input \\
+401 & Session Expired & Redirect a login \\
+403 & Access Denied & Permessi insufficienti \\
+404 & Not Found & Risorsa non trovata \\
+429 & Too Many Requests & Rate limiting \\
+500 & Server Error / No Results & Distinzione tra errori e assenza risultati \\
+502/503/504 & Service Unavailable & Server temporaneamente offline \\
+ERR\_NETWORK & Network Error & Problema di connessione \\
+\bottomrule
+\end{tabular}
+\caption{Mappatura errori HTTP}
+\end{table}
+
+Il sistema distingue intelligentemente tra \textbf{errori reali} e \textbf{assenza di risultati} (es. "No candidates found"), mostrando messaggi appropriati all'utente.
+
+\subsection{Endpoint Integrati}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Metodo} & \textbf{Endpoint} & \textbf{Funzionalità} \\
+\midrule
+POST & /messages/send & Invio messaggio e ricezione outfit \\
+GET & /conversations & Lista conversazioni \\
+GET & /chat & Messaggi di una conversazione \\
+PUT & /conversations/rename & Rinomina conversazione \\
+DELETE & /conversations/delete & Elimina conversazione \\
+POST & /outfit/explain & Genera spiegazione outfit \\
+POST & /auth/login & Login utente \\
+POST & /auth/signup & Registrazione \\
+POST & /auth/google & Login con Google \\
+GET & /auth/me & Utente corrente \\
+POST & /auth/logout & Logout \\
+\bottomrule
+\end{tabular}
+\caption{Endpoint API integrati}
+\end{table}
+
+\subsection{Gestione Risposte}
+
+Il frontend gestisce diversi stati di risposta dal backend:
+\begin{itemize}
+    \item \textbf{AWAITING\_INPUT}: attesa input aggiuntivo (budget poll, outfit options)
+    \item \textbf{COMPLETED}: risposta completa con outfit
+    \item \textbf{Guardrail}: risposta filtrata dal sistema di sicurezza AI
+\end{itemize}
+
+\subsection{Aspetti di Sicurezza}
+
+\begin{itemize}
+    \item \textbf{CORS}: configurazione withCredentials per cookie cross-origin
+    \item \textbf{XSS Prevention}: uso di React (escape automatico) e \texttt{referrerPolicy="no-referrer"} per immagini esterne
+    \item \textbf{Session Security}: cookie-based sessions gestite lato server
+    \item \textbf{Protected Routes}: redirect automatico per pagine protette
+    \item \textbf{Input Validation}: validazione client-side prima dell'invio
+\end{itemize}
+
+%===============================================================================
+\section{Testing}
+%===============================================================================
+
+\subsection{Framework e Setup}
+
+Il progetto utilizza \textbf{Vitest} come framework di testing, configurato con:
+\begin{itemize}
+    \item \texttt{jsdom} per simulazione ambiente browser
+    \item \texttt{@testing-library/react} per test di componenti
+    \item \texttt{@testing-library/user-event} per simulazione interazioni
+    \item Coverage report con \texttt{@vitest/coverage-v8}
+\end{itemize}
+
+\subsection{Copertura Test}
+
+Sono stati implementati test per:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Categoria} & \textbf{File di Test} \\
+\midrule
+Componenti UI & Button, Input, Modal, ProductCard, Skeleton... \\
+Componenti Chat & ChatInput, ChatMessage, ChatEmptyState... \\
+Componenti Landing & HeroSection, BrandsSection, HowItWorks... \\
+Pagine & LandingPage, LoginPage, ChatPage, ProfilePage... \\
+Context & AuthContext, ThemeContext \\
+Hooks & useChatMessages, useImageUpload, useScrollToBottom... \\
+Services & authService, chatService, preferencesService \\
+\bottomrule
+\end{tabular}
+\caption{Copertura test per categoria}
+\end{table}
+
+%===============================================================================
+\section{Roadmap di Sviluppo}
+%===============================================================================
+
+\subsection{Fase 1: Setup e Struttura Base}
+
+\textbf{Obiettivo}: Creare le fondamenta del progetto
+
+\begin{enumerate}
+    \item Inizializzazione progetto con Vite + React + TypeScript
+    \item Configurazione Tailwind CSS e sistema di design
+    \item Setup ESLint e configurazione linting
+    \item Struttura directory e pattern architetturali
+    \item Implementazione routing con React Router
+    \item Creazione componenti UI base (Button, Input, Modal)
+\end{enumerate}
+
+\subsection{Fase 2: Landing Page e Autenticazione}
+
+\textbf{Obiettivo}: Creare l'entry point e il sistema di accesso
+
+\begin{enumerate}
+    \item Design e implementazione Landing Page
+    \item Componenti hero section con animazioni
+    \item Pagine Login e Sign Up
+    \item Integrazione Google OAuth
+    \item Implementazione AuthContext
+    \item Protected Routes per pagine autenticate
+\end{enumerate}
+
+\subsection{Fase 3: Interfaccia Chat Core}
+
+\textbf{Obiettivo}: Sviluppare l'interfaccia principale di interazione
+
+\begin{enumerate}
+    \item Layout ChatPage con sidebar e area messaggi
+    \item Componenti ChatInput e ChatMessage
+    \item Gestione stato messaggi con useChatMessages hook
+    \item Integrazione API per invio/ricezione messaggi
+    \item Storico conversazioni con persistenza
+    \item Empty state e loading states
+\end{enumerate}
+
+\subsection{Fase 4: Visualizzazione Outfit}
+
+\textbf{Obiettivo}: Mostrare le raccomandazioni AI
+
+\begin{enumerate}
+    \item ProductCard con immagine, prezzo, brand
+    \item ProductCarousel per outfit multipli
+    \item Indicatori disponibilità prodotti
+    \item Link diretti agli e-commerce
+    \item ImageLightbox per zoom
+    \item Funzionalità "Explain This Outfit"
+\end{enumerate}
+
+\subsection{Fase 5: Upload Immagini}
+
+\textbf{Obiettivo}: Permettere input visivo
+
+\begin{enumerate}
+    \item Hook useImageUpload
+    \item Drag \& drop con overlay visivo
+    \item Validazione formati e dimensioni
+    \item Preview e rimozione immagine
+    \item Integrazione con invio messaggio
+\end{enumerate}
+
+\subsection{Fase 6: Funzionalità Avanzate}
+
+\textbf{Obiettivo}: Arricchire l'esperienza utente
+
+\begin{enumerate}
+    \item Budget Poll interattivo
+    \item Outfit Option Poll
+    \item Selezione outfit per follow-up
+    \item Modalità Guest con selezione genere
+    \item Keyboard shortcuts
+    \item Pagina preferenze utente
+    \item Pagina profilo con gestione account
+\end{enumerate}
+
+\subsection{Fase 7: Polish e Ottimizzazioni}
+
+\textbf{Obiettivo}: Perfezionare l'applicazione
+
+\begin{enumerate}
+    \item Animazioni e transizioni con Framer Motion
+    \item Skeleton loading per tutti i componenti
+    \item Error boundaries e gestione errori
+    \item Ottimizzazione performance (lazy loading)
+    \item Responsive design completo
+    \item Tema dark mode
+    \item Accessibilità (ARIA labels, keyboard navigation)
+\end{enumerate}
+
+\subsection{Fase 8: Testing e Documentazione}
+
+\textbf{Obiettivo}: Garantire qualità e manutenibilità
+
+\begin{enumerate}
+    \item Setup Vitest e Testing Library
+    \item Test unitari per componenti UI
+    \item Test per hooks custom
+    \item Test per context e services
+    \item Coverage report
+    \item Documentazione README
+    \item Documentazione tecnica (questo report)
+\end{enumerate}
+
+%===============================================================================
+\section{Sfide e Soluzioni}
+%===============================================================================
+
+\subsection{Gestione Stato Chat Complesso}
+
+\textbf{Sfida}: La gestione dei messaggi chat richiedeva tracking di stati multipli (loading, error, outfit, immagini allegati, selezione outfit per follow-up).
+
+\textbf{Soluzione}: Creazione del hook \texttt{useChatMessages} che centralizza tutta la logica, espone un'API pulita ai componenti, e gestisce internamente la complessità con useRef per evitare re-render inutili. Include anche un sistema di \textbf{cache in memoria} per evitare ricaricamenti.
+
+\subsection{Sincronizzazione URL e Stato}
+
+\textbf{Sfida}: Mantenere sincronizzati l'URL (chatId nel path) con lo stato interno della chat, gestendo anche la navigazione browser e la modalità guest.
+
+\textbf{Soluzione}: Utilizzo di useEffect con dipendenze accurate, refs per tracciare stati precedenti (\texttt{prevChatIdRef}), e logica condizionale per distinguere navigazione utente da cambi di stato interni. Gestione speciale per guest sessions senza persistenza URL.
+
+\subsection{Performance Rendering Messaggi}
+
+\textbf{Sfida}: Con molti messaggi e outfit complessi, il rendering poteva diventare lento.
+
+\textbf{Soluzione}: 
+\begin{itemize}
+    \item Lazy loading delle immagini prodotto con \texttt{loading="lazy"}
+    \item Skeleton loading per perceived performance
+    \item Key stabili per i componenti lista
+    \item Memoizzazione dove necessario
+    \item Blur placeholder effect durante caricamento immagini
+\end{itemize}
+
+\subsection{Supporto Guest e Autenticati}
+
+\textbf{Sfida}: L'applicazione doveva funzionare sia per utenti registrati che guest, con comportamenti diversi (persistenza, storico, preferenze).
+
+\textbf{Soluzione}: Logica condizionale nel ChatPage e useChatMessages, con selezione genere per guest persistita in localStorage. Il \texttt{GenderSelector} appare solo per utenti non autenticati.
+
+\subsection{Responsive Sidebar}
+
+\textbf{Sfida}: La sidebar doveva essere fissa su desktop ma collassabile su mobile, senza perdere lo stato delle conversazioni.
+
+\textbf{Soluzione}: Stato \texttt{isSidebarOpen} controllato da hamburger menu, con chiusura automatica su resize a desktop tramite media query listener. Overlay semi-trasparente su mobile per UX migliorata.
+
+\subsection{Transizioni Tema Fluide}
+
+\textbf{Sfida}: Il cambio tema causava flash visivi sgradevoli.
+
+\textbf{Soluzione}: Implementazione di un sistema di transizione con classe CSS \texttt{theme-transitioning} che applica transizioni sincronizzate a tutti gli elementi, rimossa dopo 400ms.
+
+%===============================================================================
+\section{Conclusioni}
+%===============================================================================
+
+\subsection{Risultati Raggiunti}
+
+Lo sviluppo frontend di StyleFinder AI ha portato alla creazione di:
+
+\begin{itemize}
+    \item Un'\textbf{applicazione web completa} e production-ready
+    \item Un'\textbf{interfaccia utente moderna} con design system coerente
+    \item Un'\textbf{architettura scalabile} basata su componenti riutilizzabili
+    \item Un'\textbf{esperienza utente fluida} con animazioni e feedback appropriati
+    \item Un \textbf{codebase manutenibile} con TypeScript e testing
+    \item Una \textbf{documentazione completa} per futuri sviluppatori
+\end{itemize}
+
+\subsection{Metriche Progetto}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Metrica} & \textbf{Valore} \\
+\midrule
+Componenti sviluppati & 50+ \\
+Pagine implementate & 7 \\
+Custom hooks & 6 \\
+Services API & 3 \\
+File di test & 35+ \\
+Linee di codice (stimate) & 15.000+ \\
+Varianti animazione Framer & 10+ \\
+Colori design system & 25+ \\
+\bottomrule
+\end{tabular}
+\caption{Metriche del progetto frontend}
+\end{table}
+
+\subsection{Tecnologie Chiave Padroneggiante}
+
+Durante lo sviluppo sono state acquisite competenze approfondite in:
+
+\begin{itemize}
+    \item \textbf{React 19}: Hooks avanzati, Context API, lazy loading, Suspense
+    \item \textbf{TypeScript}: Tipizzazione forte, generics, type guards
+    \item \textbf{Tailwind CSS}: Design system custom, dark mode, responsive
+    \item \textbf{Framer Motion}: Animazioni complesse, gesture, layout animations
+    \item \textbf{Vite}: Configurazione build, environment variables, plugin
+    \item \textbf{Testing}: Unit testing con Vitest, Testing Library patterns
+    \item \textbf{OAuth 2.0}: Integrazione Google Sign-In
+    \item \textbf{REST API}: Axios interceptors, error handling, cookie sessions
+\end{itemize}
+
+\subsection{Sviluppi Futuri}
+
+Possibili evoluzioni del frontend:
+
+\begin{itemize}
+    \item Implementazione PWA (Progressive Web App)
+    \item Notifiche push per nuovi outfit
+    \item Integrazione real-time con WebSocket
+    \item A/B testing per ottimizzazione conversioni
+    \item Analytics e tracking comportamentale
+    \item Internazionalizzazione (i18n)
+    \item Miglioramenti accessibilità (WCAG 2.1 AA)
+\end{itemize}
+
+\vspace{1cm}
+
+\noindent\rule{\textwidth}{0.4pt}
+
+\begin{center}
+\textit{Documento redatto da: Frontend Developer - StyleFinder AI}\\
+\textit{Gennaio 2026}
+\end{center}
+
+\end{document}

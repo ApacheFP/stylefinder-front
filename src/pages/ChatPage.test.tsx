@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { screen, fireEvent } from '@testing-library/react';
+import { render } from '../utils/test-utils';
 import ChatPage from './ChatPage';
 import { useAuth } from '../context/AuthContext';
 import { useChatMessages } from '../hooks/useChatMessages';
@@ -92,15 +92,6 @@ vi.mock('../components/ui/ScrollToBottomButton', () => ({
     default: ({ onClick }: any) => <button data-testid="scroll-button" onClick={onClick} />,
 }));
 
-// Helper function to render with router
-const renderWithRouter = (ui: React.ReactElement) => {
-    return render(
-        <MemoryRouter>
-            {ui}
-        </MemoryRouter>
-    );
-};
-
 describe('ChatPage', () => {
     const mockMessages = [
         { id: '1', role: 'user', content: 'Hello' },
@@ -156,7 +147,7 @@ describe('ChatPage', () => {
     });
 
     it('renders empty state initially', () => {
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     });
 
@@ -166,7 +157,7 @@ describe('ChatPage', () => {
             messages: mockMessages,
         });
 
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         expect(screen.getAllByTestId('message')).toHaveLength(2);
         expect(screen.queryByTestId('empty-state')).not.toBeInTheDocument();
     });
@@ -177,7 +168,7 @@ describe('ChatPage', () => {
             isFetching: true,
         });
 
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         expect(screen.getByTestId('skeleton')).toBeInTheDocument();
     });
 
@@ -188,12 +179,12 @@ describe('ChatPage', () => {
             isLoading: true,
         });
 
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         expect(screen.getByTestId('typing-indicator')).toBeInTheDocument();
     });
 
     it('handles suggestion click', () => {
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
 
         // Suggestion click updates input message state. 
         // We can verify this by checking if ChatInput receives the value, 
@@ -216,7 +207,7 @@ describe('ChatPage', () => {
     });
 
     it('loads chat history on mount', async () => {
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         expect(chatService.getChatHistory).toHaveBeenCalled();
     });
 
@@ -228,7 +219,7 @@ describe('ChatPage', () => {
             user: null,
         });
 
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
 
         fireEvent.click(screen.getByText('New Chat'));
 
@@ -248,7 +239,7 @@ describe('ChatPage', () => {
             sendMessage: sendMessageMock,
         });
 
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
 
         fireEvent.click(screen.getByText('Send'));
 
@@ -256,19 +247,19 @@ describe('ChatPage', () => {
     });
 
     it('toggles sidebar on hamburger click', () => {
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         fireEvent.click(screen.getByTestId('hamburger'));
         // Again, internal state, but we cover the line.
     });
 
     it('closes sidebar when Sidebar triggers onClose', () => {
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         fireEvent.click(screen.getByText('Close Sidebar'));
     });
 
     it('closes sidebar on mobile when creating new chat', () => {
         Object.defineProperty(window, 'innerWidth', { writable: true, configurable: true, value: 500 });
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
         fireEvent.click(screen.getByText('New Chat'));
     });
 
@@ -280,7 +271,7 @@ describe('ChatPage', () => {
             scrollToBottom: scrollToBottomMock,
         });
 
-        renderWithRouter(<ChatPage />);
+        render(<ChatPage />);
 
         fireEvent.click(screen.getByTestId('scroll-button'));
         expect(scrollToBottomMock).toHaveBeenCalled();

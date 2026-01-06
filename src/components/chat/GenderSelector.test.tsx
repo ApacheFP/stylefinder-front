@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent } from '@testing-library/react';
+import { render } from '../../utils/test-utils';
 import GenderSelector from './GenderSelector';
 
 // Mock framer-motion
@@ -35,7 +36,7 @@ describe('GenderSelector', () => {
             />
         );
 
-        expect(screen.getByText(/Select your style/)).toBeInTheDocument();
+        expect(screen.getByText(/Select clothing preference to start/)).toBeInTheDocument();
     });
 
     it('shows different text when disabled', () => {
@@ -47,7 +48,7 @@ describe('GenderSelector', () => {
             />
         );
 
-        expect(screen.getByText(/Style preference/)).toBeInTheDocument();
+        expect(screen.getByText(/Clothing preference/)).toBeInTheDocument();
         expect(screen.getByText(/start a new chat to change/)).toBeInTheDocument();
     });
 
@@ -104,7 +105,7 @@ describe('GenderSelector', () => {
             />
         );
 
-        expect(screen.getByText(/Select your style to start/)).toBeInTheDocument();
+        expect(screen.getByText(/Select clothing preference to start/)).toBeInTheDocument();
     });
 
     it('applies emphasis styling to buttons when no gender is selected', () => {
